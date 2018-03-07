@@ -3,7 +3,7 @@ Still much work to do - many error messages - Automation for internal Windows Pe
 
 	1) Automatic Proxy Detection
 	2) Elevated or unelevated Detection
-  3) Forensic Mode oder Pentest Mode 
+  	3) Forensic Mode oder Pentest Mode 
 		a. Forensik -> Loki + PSRECON + Todo: Threathunting functions
 		b. Pentest -> Internal Windows Domain System 
 			i. Inveigh NBNS/SMB/HTTPS Spoofing
