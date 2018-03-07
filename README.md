@@ -18,3 +18,7 @@ Still much work to do - many error messages - Automation for internal Windows Pe
 			viii. Share Enumeration
 			ix. FindGPOLocation --> Search for user/group rights 
 			x. Find-Fruit
+
+disclaimer:
+
+I'm not responsible for anything you do with this program, so please only use it for good and educational purposes.
