@@ -481,7 +481,7 @@ write-host "       [+] ----->",$systemRoles[[int]$systemRoleID],"`n" ; sleep 1
 $forensicMode = Read-Host -Prompt 'Do you want to use forensic- or pentest-Mode? (forensic/pentest)'
 if ($forensicMode -eq "forensic" -or $forensicMode -eq "f" -or $forensicMode -eq "for")
 {
-    if ($Principal.IsInRole($AdminRole))
+    if (isadmin)
     {
         Write-Host -ForegroundColor Green "Elevated PowerShell session detected. Continuing."
 
