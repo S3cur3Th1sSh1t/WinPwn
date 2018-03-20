@@ -1,5 +1,5 @@
 # WinPwn
-Still much work to do - many error messages - Automation for internal Windows Penetrationtest
+Still much work to do - Automation for internal Windows Penetrationtest. 
 
 	1) Automatic Proxy Detection
 	2) Elevated or unelevated Detection
@@ -18,6 +18,11 @@ Still much work to do - many error messages - Automation for internal Windows Pe
 			viii. Share Enumeration
 			ix. FindGPOLocation --> Search for user/group rights 
 			x. Find-Fruit
+
+Just Import the Modules with "Import-Module .\WinPwn_v0.3.ps1"
+And Start the automatic Script with "WinPwn".
+
+
 
 disclaimer:
 
