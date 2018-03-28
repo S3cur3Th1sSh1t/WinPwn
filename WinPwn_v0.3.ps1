@@ -31,10 +31,6 @@ function dependencychecks
          }
 
 
-        $aceTypes = @{ 
-                             0           =     "Allow";
-                             1           =     "Deny"
-        }
         #Proxy Detect #1
         proxydetect
         
