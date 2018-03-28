@@ -31,19 +31,6 @@ function dependencychecks
          }
 
 
-         $permissionFlags = @{
-                            0x1         =     "Read-List";
-                            0x2         =     "Write-Create";
-                    	    0x4         =     "Append-Create Subdirectory";                  	
-                    	   0x20         =     "Execute file-Traverse directory";
-                       	   0x40         =     "Delete child"
-                        0x10000         =     "Delete";                     
-                        0x40000         =     "Write access to DACL";
-                        0x80000         =     "Write Onwer"
-         }
-
-
-
         $aceTypes = @{ 
                              0           =     "Allow";
                              1           =     "Deny"
