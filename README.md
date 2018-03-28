@@ -13,8 +13,10 @@ Still much work to do - Automation for internal Windows Penetrationtest.
 			iv. Privilege Escalation -> Powersploit (Allchecks), GPP-Passwords,  MS-Exploit Search (Sherlock)
 			v. Lazagne Password recovery
 			vi. Exploitation -> Kerberoasting, Mimikittenz, Mimikatz with Admin-rights
-			vii. LateralMovement ->  FindLocalAdminAccess --> Invoke-MassMimikatz --> DomainPasswordspray
-				1) Todo: Powershell Empire Integration
+			vii. LateralMovement ->  FindLocalAdminAccess 
+				1) Invoke-MassMimikatz || Powershell Empire Remote Launcher Execution over WMI
+				2) DomainPasswordspray
+				
 			viii. Share Enumeration
 			ix. FindGPOLocation --> Search for user/group rights 
 			x. Find-Fruit
