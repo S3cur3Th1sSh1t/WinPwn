@@ -24,7 +24,7 @@ Still much work to do - Automation for internal Windows Penetrationtest.
 Just Import the Modules with "Import-Module .\WinPwn_v0.4.ps1" or with 
 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.4.ps1')
 
-And Start the Script with "WinPwn".
+And Start the Script with "WinPwn". The Winpwn function has to be started from the same directory, where the Script was imported.
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Windows%20PowerShell.png)
 
