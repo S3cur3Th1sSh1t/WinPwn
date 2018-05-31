@@ -26,6 +26,8 @@ iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com
 
 And Start the Script with "WinPwn". The Winpwn function has to be started from the same directory, where the Script was imported.
 
+The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
+
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Windows%20PowerShell.png)
 
 disclaimer:
