@@ -24,7 +24,7 @@ Functions available after Import:
 
 The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
 
-![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Windows%20PowerShell.png)
+![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
 
 
 ## Legal disclaimer:
