@@ -1,5 +1,5 @@
 # WinPwn
-Still much work to do - Automation for internal Windows Penetrationtest. Different local recon modules, domain recon modules, pivilege escalation and exploitation modules.
+Still much work to do - Automation for internal Windows Penetrationtest. Different local recon modules, domain recon modules, pivilege escalation and exploitation modules. Any suggestions, feedback and comments are welcome!
 
 Just Import the Modules with "Import-Module .\WinPwn_v0.6.ps1" or with 
 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.6.ps1')
