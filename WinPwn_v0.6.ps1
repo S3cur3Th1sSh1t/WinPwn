@@ -64,12 +64,6 @@ function dependencychecks
         }
         else {mkdir $currentPath\Exploitation\}
         
-        if (Test-Path $currentPath\Forensics\)
-        {
-            Write-Host -ForegroundColor Red ''$currentPath\Forensics\' already exists'
-        }
-        else {mkdir $currentPath\Forensics\}
-        
         write-host "[?] Checking for Default PowerShell version ..`n" -ForegroundColor black -BackgroundColor white  ; sleep 1
         
         if($PSVersion -lt 2){
