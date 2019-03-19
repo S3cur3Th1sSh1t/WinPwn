@@ -66,7 +66,7 @@ function dependencychecks
         write-host "       [+] ----->",$systemRoles[[int]$systemRoleID],"`n" ; sleep 1
 }
 
-pathCheck
+function pathCheck
 {
 <#
         .DESCRIPTION
