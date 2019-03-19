@@ -6,7 +6,7 @@ iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com
 
 Functions available after Import:
 1) #### `WinPwn` -> Guides the user through all functions/Modules with simple questions.
-2) #### `Inveigh` -> Executes Inveigh in a new Console window (https://github.com/Kevin-Robertson/Inveigh)
+2) #### `Inveigh` -> Executes Inveigh in a new Console window (https://github.com/Kevin-Robertson/Inveigh), SMB-Relay attacks with Session management afterwards
 3) #### `sessionGopher` -> Executes Sessiongopher in memory (https://github.com/Arvanaghi/SessionGopher)
 4) #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz after with admin rights (https://github.com/PowerShellMafia/PowerSploit)
 5) #### `localreconmodules` -> Executes different Get-Computerdetails and Just another Windows Privilege escalation script + Winspect (https://github.com/PowerShellMafia/PowerSploit, https://github.com/A-mIn3/WINspect, https://github.com/411Hall/JAWS)
@@ -20,7 +20,8 @@ Functions available after Import:
 13) #### `groupsearch` -> FindGPOLocation (Powerview / Powersploit)
 14) #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
 15) #### `isadmin` -> Checks for local admin access
-16) #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB.
+16) #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
+17) #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering. (https://blog.netspi.com/exploiting-adidns/#wildcard)
 
 The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
 
