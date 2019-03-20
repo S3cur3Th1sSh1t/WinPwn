@@ -827,6 +827,12 @@ function WinPwn
         sharenumeration
     }
     
+    $adi = Read-Host -Prompt 'Do you want to create a ADIDNS Wildcard record? (yes/no)'
+    if ($adi -eq "yes" -or $adi -eq "y" -or $adi -eq "Yes" -or $adi -eq "Y")
+    {
+        adidns
+    }
+    
     #RDP Access
     $rdp = Read-Host -Prompt 'Do you want to search for Systems you have RDP/Admin-Access to? (yes/no)'
     while ($rdp -eq "yes" -or $rdp -eq "y" -or $rdp -eq "Yes" -or $rdp -eq "Y")
