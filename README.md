@@ -1,7 +1,11 @@
 # WinPwn
-Still much work to do - Automation for internal Windows Penetrationtest. Different local recon modules, domain recon modules, pivilege escalation and exploitation modules. Any suggestions, feedback and comments are welcome!
+In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. For this reason I tried my hand at my own script with automatic proxy recognition and integration. The script is mostly based on well-known large other offensive security Powershell projects. I only load them one after the other into RAM via IEX Downloadstring and partially automate the execution to save time.
 
-Just Import the Modules with "Import-Module .\WinPwn_v0.6.ps1" or with 
+Yes it is not a C# and it may be flagged by antivirus solutions. Windows Defender for example blocks some of the known scripts/functions.
+
+Different local recon modules, domain recon modules, pivilege escalation and exploitation modules. Any suggestions, feedback and comments are welcome!
+
+Just Import the Modules with "Import-Module .\WinPwn_v0.7.ps1" or with 
 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.6.ps1')
 
 Functions available after Import:
@@ -24,6 +28,9 @@ Functions available after Import:
 17) #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering. (https://blog.netspi.com/exploiting-adidns/#wildcard)
 
 The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
+
+Todo:
+- Get the scripts from my own creds repository (https://github.com/SecureThisShit/Creds) to be independent from changes in the original repositories.
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
 
