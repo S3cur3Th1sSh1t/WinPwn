@@ -1,5 +1,5 @@
 # WinPwn
-In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. For this reason I tried my hand at my own script with automatic proxy recognition and integration. The script is mostly based on well-known large other offensive security Powershell projects. I only load them one after the other into RAM via IEX Downloadstring and partially automate the execution to save time.
+In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. For this reason I wrote my own script with automatic proxy recognition and integration. The script is mostly based on well-known large other offensive security Powershell projects. I only load them one after the other into RAM via IEX Downloadstring and partially automate the execution to save time.
 
 Yes it is not a C# and it may be flagged by antivirus solutions. Windows Defender for example blocks some of the known scripts/functions.
 
