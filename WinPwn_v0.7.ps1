@@ -288,6 +288,14 @@ function localreconmodules
 
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
 
+	    $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
+            $WUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name WUServer -ErrorAction SilentlyContinue).WUServer
+
+            if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
+	    {
+        	Write-Host -ForegroundColor Yellow "WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!"
+		echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> $currentPath\LocalRecon\WsusoverHTTP.txt
+            }
 
             if (isadmin)
             {
