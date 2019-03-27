@@ -330,7 +330,7 @@ function localreconmodules
                 if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
                 {
                     get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                    $shares = get-content .\passhuntshares.txt | select-object -skip 5
+                    $shares = get-content .\passhuntshares.txt | Select-String -pattern "C:" -notmatch | select-object -skip 3
                     foreach ($line in $shares)
                     {
                        invoke-expression "cmd /c start powershell -Command {.\passhunt.exe -s $line -o $currentPath}" 
