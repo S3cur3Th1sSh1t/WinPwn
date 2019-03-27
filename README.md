@@ -13,7 +13,7 @@ Functions available after Import:
 2) #### `Inveigh` -> Executes Inveigh in a new Console window (https://github.com/Kevin-Robertson/Inveigh), SMB-Relay attacks with Session management afterwards
 3) #### `sessionGopher` -> Executes Sessiongopher and Asking for parameters (https://github.com/Arvanaghi/SessionGopher)
 4) #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz (https://github.com/PowerShellMafia/PowerSploit)
-5) #### `localreconmodules` -> Executes Get-Computerdetails and Just another Windows Privilege escalation script + Winspect (https://github.com/PowerShellMafia/PowerSploit, https://github.com/A-mIn3/WINspect, https://github.com/411Hall/JAWS)
+5) #### `localreconmodules` -> Collects system Informations, Executes passhunt (https://github.com/Dionach/PassHunt), Executes Get-Computerdetails and Just another Windows Privilege escalation script + Winspect (https://github.com/PowerShellMafia/PowerSploit, https://github.com/A-mIn3/WINspect, https://github.com/411Hall/JAWS)
 6) #### `JAWS` -> Just another Windows Privilege Escalation script gets executed
 7) #### `domainreconmodules` -> Different Powerview situal awareness functions get executed and the output stored on disk. In Addition a Userlist for DomainpasswordSpray gets stored on disk. An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. (https://github.com/sense-of-security/ADRecon, https://github.com/PowerShellMafia/PowerSploit, https://github.com/dafthack/DomainPasswordSpray)
 8) #### `Privescmodules` -> Executes different privesc scripts in memory (Sherlock https://github.com/rasta-mouse/Sherlock, PowerUp, GPP-Files, WCMDump)
@@ -32,6 +32,7 @@ The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAtt
 Todo:
 - Get the scripts from my own creds repository (https://github.com/SecureThisShit/Creds) to be independent from changes in the original repositories.
 - Proxy Options via PAC-File are not correctly found in the moment
+- Obfuscate all Scripts for AV-Evasion
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
 
