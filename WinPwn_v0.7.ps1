@@ -373,7 +373,7 @@ function localreconmodules
             If (Test-Path -Path C:\Windows\system32\sysprep.inf){copy C:\Windows\system32\sysprep.inf "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow "Sysprep.inf Found, check it for passwords"}
             If (Test-Path -Path C:\Windows\system32\sysprep\sysprep.xml){copy C:\Windows\system32\sysprep\sysprep.xml "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow "Sysprep.inf Found, check it for passwords"}
 
-            Get-Childitem –Path C:\inetpub\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue >> "$currentPath\LocalRecon\webconfigfiles.txt"
+            Get-Childitem -Path C:\inetpub\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue >> "$currentPath\LocalRecon\webconfigfiles.txt"
 
             Get-WmiObject -Query "Select * from Win32_Process" | where {$_.Name -notlike "svchost*"} | Select Name, Handle, @{Label="Owner";Expression={$_.GetOwner().User}} | ft -AutoSize >> "$currentPath\LocalRecon\RunningTasks.txt"
 
