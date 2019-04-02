@@ -17,7 +17,7 @@ Functions available after Import:
 4) #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz
 5) #### `localreconmodules` -> Collects infosec relevant system Information, Executes passhunt, Get-Computerdetails and Just another Windows Privilege escalation script + Winspect
 6) #### `JAWS` -> Just another Windows Privilege Escalation script
-7) #### `domainreconmodules` -> Powerview function output gets stored on disk for review. A search for AD-Passwords in description fields is done. Unconstrained delegation systems/users are enumerated. An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. 
+7) #### `domainreconmodules` -> Powerview function output gets stored on disk for review. A search for AD-Passwords in description fields is done. Unconstrained delegation systems/users are enumerated. SQL Server discovery and Auditing functions (default credentials, passwords in the database and more). An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. 
 8) #### `Privescmodules` -> Executes different privesc scripts in memory (PowerUp Allchecks, Sherlock, GPPPasswords)
 9) #### `lazagnemodule` -> Downloads and executes lazagne.exe (if not detected by AV) 
 10) #### `latmov` -> Searches for Systems with Admin-Access in the domain for lateral movement. Mass-Mimikatz can be used after for the found systems. DomainPassword-Spray for new Credentials can also be used here.
@@ -57,6 +57,7 @@ The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAtt
 - [X] [samratashok](https://github.com/samratashok/) - nishang
 - [X] [leechristensen](https://github.com/leechristensen/) - Random Repo
 - [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts
+- [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
