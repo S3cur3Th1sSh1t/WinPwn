@@ -45,7 +45,7 @@ The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAtt
 ## CREDITS
 
 - [X] [Kevin-Robertson](https://github.com/Kevin-Robertson/) - Inveigh, Powermad, Invoke-TheHash
-- [X] [Arvanaghi](https://github.com/Arvanaghi/) - 
+- [X] [Arvanaghi](https://github.com/Arvanaghi/) - SessionGopher
 - [X] [PowerShellMafia](https://github.com/PowerShellMafia/) - Powersploit
 - [X] [Dionach](https://github.com/Dionach/) - PassHunt
 - [X] [A-mIn3](https://github.com/A-mIn3/) - WINSpect
@@ -56,6 +56,7 @@ The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAtt
 - [X] [AlessandroZ](https://github.com/AlessandroZ/) - LaZagne
 - [X] [samratashok](https://github.com/samratashok/) - nishang
 - [X] [leechristensen](https://github.com/leechristensen/) - Random Repo
+- [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
