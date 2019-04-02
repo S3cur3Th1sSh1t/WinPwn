@@ -45,7 +45,7 @@ The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAtt
 ## CREDITS
 
 - [X] [Kevin-Robertson](https://github.com/Kevin-Robertson/) - Inveigh, Powermad, Invoke-TheHash
-- [X] [Arvanaghi](https://github.com/Arvanaghi/ - 
+- [X] [Arvanaghi](https://github.com/Arvanaghi/) - 
 - [X] [PowerShellMafia](https://github.com/PowerShellMafia/) - Powersploit
 - [X] [Dionach](https://github.com/Dionach/) - PassHunt
 - [X] [A-mIn3](https://github.com/A-mIn3/) - WINSpect
