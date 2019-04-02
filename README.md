@@ -27,17 +27,18 @@ Functions available after Import:
 14) #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
 15) #### `isadmin` -> Checks for local admin access on the local system
 16) #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
-17) #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering. (https://blog.netspi.com/exploiting-adidns/#wildcard)
+17) #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
+
 
 The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
 
 ## TO-DO
 - [x] Some obfuskation
-- [] More obfuscation
-- [] Proxy via PAC-File support
+- [ ] More obfuscation
+- [ ] Proxy via PAC-File support
 - [x] Get the scripts from my own creds repository (https://github.com/SecureThisShit/Creds) to be independent from changes in the original repositories
-- [] More Recon/Exploitation functions
-- [] msDS-AllowedToActOnBehalfOfOtherIdentity Ressource based constrained delegation
+- [ ] More Recon/Exploitation functions
+- [ ] msDS-AllowedToActOnBehalfOfOtherIdentity Ressource based constrained delegation
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
 
