@@ -18,12 +18,12 @@ Functions available after Import:
 5. #### `localreconmodules` -> Collects infosec relevant system Information, Executes passhunt, Get-Computerdetails and Just another Windows Privilege escalation script + Winspect
 6. #### `JAWS` -> Just another Windows Privilege Escalation script
 7. #### `domainreconmodules` -> 
-  7. Powerview function output gets stored on disk for review. 
-  7. A search for AD-Passwords in description fields is done. 
-  7. Unconstrained delegation systems/users are enumerated. 
-  7. SQL Server discovery and Auditing functions (default credentials, passwords in the database and more).
-  7. MS-RPRN Check for Domaincontrollers
-  7. An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. 
+  i. ### Powerview function output gets stored on disk for review. 
+  ii. ### A search for AD-Passwords in description fields is done. 
+  iii. ### Unconstrained delegation systems/users are enumerated. 
+  iv. ### SQL Server discovery and Auditing functions (default credentials, passwords in the database and more).
+  v. ### MS-RPRN Check for Domaincontrollers
+  vi. ### An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. 
 8. #### `Privescmodules` -> Executes different privesc scripts in memory (PowerUp Allchecks, Sherlock, GPPPasswords)
 9. #### `lazagnemodule` -> Downloads and executes lazagne.exe (if not detected by AV) 
 10. #### `latmov` -> Searches for Systems with Admin-Access in the domain for lateral movement. Mass-Mimikatz can be used after for the found systems. DomainPassword-Spray for new Credentials can also be used here.
