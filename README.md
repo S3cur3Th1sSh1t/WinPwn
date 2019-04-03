@@ -25,7 +25,7 @@ Functions available after Import:
 12) #### `shareenumeration` -> Invoke-Filefinder and Invoke-Sharefinder (Powerview / Powersploit)
 13) #### `groupsearch` -> Get-DomainGPOUserLocalGroupMapping - find Systems where you have Admin-access or RDP access to via Group Policy Mapping (Powerview / Powersploit)
 14) #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
-15) #### `isadmin` -> Checks for local admin access on the local system
+15) #### `powerSQL` -> SQL Server discovery, Check access with current user, Audit for default credentials + UNCPath Injection Attacks
 16) #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
 17) #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
 
