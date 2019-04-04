@@ -562,7 +562,21 @@ function domainreconmodules
                             echo "$domc" >> "$currentPath\DomainRecon\MS-RPNVulnerableDC_$domc.txt"
                         }
                     }
-                    #Todo Spoolscan for other active Domain Server machines
+		    $othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'
+            	    if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
+                    {
+		    	Write-Host -ForegroundColor Yellow "Searching for active Servers in the domain, this can take a while depending on the domain size"
+		    	$ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
+			foreach ($acserver in $ActiveServers.dnshostname)
+                    	{
+                        	if (spoolscan -target $acserver)
+                        	{
+                            		Write-Host -ForegroundColor Yellow "Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now"
+                            		echo "$acserver" >> "$currentPath\DomainRecon\MS-RPNVulnerableServers.txt"
+                        	}
+                    	}
+		    }
+                    
 	        }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
