@@ -1,0 +1,3 @@
+[submodule "p0wnedShell"]
+	path = p0wnedShell
+	url = https://github.com/SecureThisShit/p0wnedShell.git
