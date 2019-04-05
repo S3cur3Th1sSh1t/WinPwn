@@ -36,7 +36,11 @@ Functions available after Import:
 * #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
 
 
-The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAttack Tool for Applocker/PS-Restriction Bypass (https://github.com/jaredhaight/PSAttack).
+The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
+
+![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/p0wnedmenu.PNG)
+
+![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/p0wned.png)
 
 ## TO-DO
 - [x] Some obfuskation
@@ -64,6 +68,7 @@ The "oBEJHzXyARrq.exe"-Executable is an obfuscated Version of jaredhaights PSAtt
 - [X] [leechristensen](https://github.com/leechristensen/) - Random Repo
 - [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts
 - [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
+- [X] [Cn33liz](https://github.com/Cn33liz/) - p0wnedShell
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
