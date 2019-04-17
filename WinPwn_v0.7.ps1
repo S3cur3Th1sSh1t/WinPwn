@@ -332,6 +332,7 @@ function localreconmodules
             Get-NetNeighbor -AddressFamily IPv4 | ft ifIndex,IPAddress,LinkLayerAddress,State >> "$currentPath\LocalRecon\ArpTable.txt"
             netstat -ano >> "$currentPath\LocalRecon\ActiveConnections.txt"
             net share >> "$currentPath\LocalRecon\Networkshares.txt"
+	    wmic product get name,version >> "$currentPath\LocalRecon\InstalledSoftware.txt"
             
             
             $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
