@@ -52,6 +52,7 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [x] Get the scripts from my own creds repository (https://github.com/SecureThisShit/Creds) to be independent from changes in the original repositories
 - [ ] More Recon/Exploitation functions
 - [ ] msDS-AllowedToActOnBehalfOfOtherIdentity Ressource based constrained delegation
+- [ ] Add MS17-10 Scanner
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
 
