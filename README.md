@@ -18,7 +18,14 @@ Functions available after Import:
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
 * #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
 * #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz
-* #### `localreconmodules` -> Collects infosec relevant system Information, Executes passhunt, Get-Computerdetails and Just another Windows Privilege escalation script + Winspect
+* #### `localreconmodules` -> 
+  * Checks the Powershell event logs for credentials or other sensitive informations
+  * Checks for WSUS Server over HTTP (Fake Update vulnerability)
+  * Checks the local SMB-Signing state
+  * Collects various local system informations (Installed Software + vulnerable software, Shares, privileges, local groups, network information
+  * Searches for passwords in the registry as well as in files on the hard disk + Browser Credentials
+  * Search for .NET Binaries on the local system (which can be reverse engineered for vulnerability analysis) 
+  * Optional: Get-Computerdetails (Powersploit) , Just another Windows Privilege escalation script, Winspect
 * #### `JAWS` -> Just another Windows Privilege Escalation script
 * #### `domainreconmodules` -> 
   * Powerview function output gets stored on disk for review. 
@@ -37,7 +44,7 @@ Functions available after Import:
 * #### `powerSQL` -> SQL Server discovery, Check access with current user, Audit for default credentials + UNCPath Injection Attacks
 * #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
 * #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
-
+* #### `MS17-10` -> Scan active windows Servers in the domain or all systems for MS17-10 (Eternalblue) vulnerability
 
 The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
 
