@@ -1242,7 +1242,18 @@ function WinPwn
         Author: @securethisshit
         License: BSD 3-Clause
     #>
+$intro = @'
 
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> Automate some internal Penetrationtest processes
+
+'@
     if (isadmin)
     {
         Write-Host -ForegroundColor Green 'Elevated PowerShell session detected. Continuing.'
