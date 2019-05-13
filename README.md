@@ -62,6 +62,7 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [ ] msDS-AllowedToActOnBehalfOfOtherIdentity Ressource based constrained delegation
 - [x] Add MS17-10 Scanner
 - [ ] Add menu for better handling of functions
+- [x] Amsi Bypass
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
 
@@ -82,6 +83,7 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts
 - [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
 - [X] [Cn33liz](https://github.com/Cn33liz/) - p0wnedShell
+- [X] [rasta-mouse](https://github.com/rasta-mouse/) - Amsi AmsiScanBufferBypass
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
