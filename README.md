@@ -1,3 +1,5 @@
+[![](https://img.shields.io/badge/Donate-Bitcoin-blue.svg?style=flat)](https://blockchain.info/address/1MXReD1F4w5SUXK3phLVJ5M8KrXJHfecmZ)
+
 # WinPwn
 In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I often ran the same scripts one after the other to get information about the current system and/or the domain. To automate this process and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
 The script is mostly based on well-known large other offensive security Powershell projects. They are loaded into RAM via IEX Downloadstring.
