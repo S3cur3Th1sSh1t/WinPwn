@@ -192,7 +192,7 @@ function sharpcradle{
     	    }
 	    
     }
-    else if ([Environment]::Is64BitProcess)
+    elseif ([Environment]::Is64BitProcess)
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
