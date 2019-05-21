@@ -121,6 +121,7 @@ function sharpcradle{
         Author: @securethisshit
         License: BSD 3-Clause
     #>
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     if ([Environment]::Is64BitProcess)
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
