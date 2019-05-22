@@ -485,7 +485,7 @@ function localreconmodules
     		$rules
 	    }
 	    
-	    Get-firewallRule -enabled $true | sort direction,name | format-table -property Name,localPorts,direction | out-string -Width 4096 >> >> "$currentPath\LocalRecon\Firewall_Rules.txt" 
+	    Get-firewallRule -enabled $true | sort direction,name | format-table -property Name,localPorts,direction | out-string -Width 4096 >> "$currentPath\LocalRecon\Firewall_Rules.txt" 
 	    
 	    $output = " Files with Full Control and Modify Access`r`n"
 	    $output = $output +  "-----------------------------------------------------------`r`n"
@@ -521,7 +521,7 @@ function localreconmodules
             }
             }
 	    
-	    $output >> >> "$currentPath\LocalRecon\Files_and_Folders_with_Full_Modify_Access.txt"
+	    $output >> "$currentPath\LocalRecon\Files_and_Folders_with_Full_Modify_Access.txt"
 	    
 	    Write-Host -ForegroundColor Yellow 'Checking for potential sensitive user files'
 	    get-childitem "C:\Users\" -recurse -Include *.zip,*.rar,*.7z,*.gz,*.conf,*.rdp,*.kdbx,*.crt,*.pem,*.ppk,*.txt,*.xml,*.vnc.*.ini,*.vbs,*.bat,*.ps1,*.cmd -EA SilentlyContinue | %{$_.FullName } | out-string >> "$currentPath\LocalRecon\Potential_Sensitive_User_Files.txt" 
@@ -555,8 +555,7 @@ function localreconmodules
 			if ($netbiosEnabled){Write-Host 'Netbios is active, vulnerability found.'; echo "Netbios Active, check localrecon folder for network interface Info" >> "$currentPath\Vulnerabilities\NetbiosActive.txt"}
 	    	}
 	    	$nic = gwmi win32_networkadapter | where {$_.index -match $network.index}
-	    	$OutputObj  += @
-		{
+	    	$OutputObj  += @{
 	    		Nic = $nic.netconnectionid
  	    		NetBiosEnabled = $netbiosEnabled
 	    	}
