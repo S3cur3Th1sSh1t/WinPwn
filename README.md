@@ -48,6 +48,7 @@ Functions available after Import:
 * #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
 * #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
 * #### `MS17-10` -> Scan active windows Servers in the domain or all systems for MS17-10 (Eternalblue) vulnerability
+* #### `Sharpcradle` -> Specify an URL to a C# File and Arguments to load them to RAM and execute after
 
 The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
 
