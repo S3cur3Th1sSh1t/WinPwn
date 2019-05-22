@@ -29,7 +29,6 @@ Functions available after Import:
   * Searches for passwords in the registry as well as in files on the hard disk + Browser Credentials
   * Search for .NET Binaries on the local system (which can be reverse engineered for vulnerability analysis) 
   * Optional: Get-Computerdetails (Powersploit) , Just another Windows Privilege escalation script, Winspect
-* #### `JAWS` -> Just another Windows Privilege Escalation script
 * #### `domainreconmodules` -> 
   * Powerview function output gets stored on disk for review. 
   * A search for AD-Passwords in description fields is done. 
