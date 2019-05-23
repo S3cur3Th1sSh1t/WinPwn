@@ -470,6 +470,8 @@ function localreconmodules
 	    net share >> "$currentPath\LocalRecon\Networkshares.txt"
 	    Write-Host -ForegroundColor Yellow 'Getting hosts file content'
 	    get-content $env:windir\System32\drivers\etc\hosts | out-string  >> "$currentPath\LocalRecon\etc_Hosts_Content.txt"
+	    Get-ChildItem -Path HKLM:\Software\*\Shell\open\command\ >> "$currentPath\LocalRecon\Test_for_Argument_Injection.txt"
+	    
 	    Write-Host -ForegroundColor Yellow 'Searching for files with Full Control and Modify Access'
 	    Function Get-FireWallRule
     	    {
