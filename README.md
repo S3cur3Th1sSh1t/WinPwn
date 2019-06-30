@@ -1,12 +1,10 @@
 [![](https://img.shields.io/badge/Donate-Bitcoin-blue.svg?style=flat)](https://blockchain.info/address/1MXReD1F4w5SUXK3phLVJ5M8KrXJHfecmZ)
 
 # WinPwn
-In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I often ran the same scripts one after the other to get information about the current system and/or the domain. To automate this process and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
+In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetrationtest processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
 The script is mostly based on well-known large other offensive security Powershell projects. They are loaded into RAM via IEX Downloadstring.
 
-Yes it is not a C# and it may be flagged by antivirus solutions. Windows Defender for example blocks some of the known scripts/functions. Maybe someday a C# Version will follow.
-
-Any suggestions, feedback and comments are welcome!
+Any suggestions, feedback, Pull requests and comments are welcome! 
 
 Just Import the Modules with:
 `Import-Module .\WinPwn.ps1` or 
