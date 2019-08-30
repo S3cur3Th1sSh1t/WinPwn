@@ -18,7 +18,7 @@ If you find yourself stuck on a windows system with no internet access - no prob
 
 Functions available after Import:
 * #### `WinPwn` -> Menu to choose attacks:
-![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.JPG)
+![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.jpg)
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
 * #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
 * #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz
