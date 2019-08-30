@@ -1673,8 +1673,8 @@ __        ___       ____
     {
         Write-Host "================ WinPwn ================"
         Write-Host -ForegroundColor Green '1. Execute Inveigh - ADIDNS/LLMNR/mDNS/NBNS spoofer! '
-        Write-Host -ForegroundColor Green '2. Start local recon phase! '
-        Write-Host -ForegroundColor Green '3. Start domain recon phase! '
+        Write-Host -ForegroundColor Green '2. Start local recon modules! '
+        Write-Host -ForegroundColor Green '3. Start domain recon modules! '
         Write-Host -ForegroundColor Green '4. Try to escalate my local privileges! '
         Write-Host -ForegroundColor Green '5. Kerberoast some service accounts! '
         Write-Host -ForegroundColor Green '6. Search for SQL Servers in the domain and pwn them if possible! '
@@ -1692,9 +1692,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '18. Find some network shares! '
 	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
 	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
-	Write-Host -ForegroundColor Green '21. Show some polar bears in action!'
-    Write-Host -ForegroundColor Green '22. Do an Group Policy Audit using Grouper2!'
-        Write-Host -ForegroundColor Green '23. Exit. '
+    	Write-Host -ForegroundColor Green '21. Do an Group Policy Audit using Grouper2!'
+        Write-Host -ForegroundColor Green '22. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1720,11 +1719,10 @@ __        ___       ____
             18{sharenumeration}
 	    19{sharpcradle -allthosedotnet $true}
 	    20{sharpcradle}
-	    21{sharpcradle -polar $true}
-        22{GPOAudit}
+            21{GPOAudit}
        }
     }
- While ($masterquestion -ne 23)
+ While ($masterquestion -ne 22)
      
     
     #End
