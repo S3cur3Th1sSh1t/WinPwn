@@ -1,10 +1,10 @@
+[![](https://img.shields.io/badge/Donate-Bitcoin-blue.svg?style=flat)](https://blockchain.info/address/1MXReD1F4w5SUXK3phLVJ5M8KrXJHfecmZ)
+
 # WinPwn
-In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I often ran the same scripts one after the other to get information about the current system and/or the domain. To automate this process and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
+In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetrationtest processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
 The script is mostly based on well-known large other offensive security Powershell projects. They are loaded into RAM via IEX Downloadstring.
 
-Yes it is not a C# and it may be flagged by antivirus solutions. Windows Defender for example blocks some of the known scripts/functions. Maybe someday a C# Version will follow.
-
-Any suggestions, feedback and comments are welcome!
+Any suggestions, feedback, Pull requests and comments are welcome! 
 
 Just Import the Modules with:
 `Import-Module .\WinPwn.ps1` or 
@@ -27,7 +27,6 @@ Functions available after Import:
   * Searches for passwords in the registry as well as in files on the hard disk + Browser Credentials
   * Search for .NET Binaries on the local system (which can be reverse engineered for vulnerability analysis) 
   * Optional: Get-Computerdetails (Powersploit) , Just another Windows Privilege escalation script, Winspect
-* #### `JAWS` -> Just another Windows Privilege Escalation script
 * #### `domainreconmodules` -> 
   * Powerview function output gets stored on disk for review. 
   * A search for AD-Passwords in description fields is done. 
@@ -46,6 +45,7 @@ Functions available after Import:
 * #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
 * #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
 * #### `MS17-10` -> Scan active windows Servers in the domain or all systems for MS17-10 (Eternalblue) vulnerability
+* #### `Sharpcradle` -> Specify an URL to a C# File and Arguments to load them to RAM and execute after
 
 The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
 
