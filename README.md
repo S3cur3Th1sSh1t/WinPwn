@@ -77,9 +77,6 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [x] Add menu for better handling of functions
 - [x] Amsi Bypass
 
-
-![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/Pwn.png)
-
 ## CREDITS
 
 - [X] [Kevin-Robertson](https://github.com/Kevin-Robertson/) - Inveigh, Powermad, Invoke-TheHash
