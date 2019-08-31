@@ -21,35 +21,45 @@ Functions available after Import:
 ![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.jpg)
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
 * #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
-* #### `Mimikatzlocal` -> Executes Invoke-WCMDump and Invoke-Mimikatz
+* #### `kittielocal` ->
+  * Obfuscated Invoke-Mimikatz version
+  * Safetykatz in memory
+  * Dump lsass using rundll32 technique
+  * Download and run Lazagne
+  * Dump Browser credentials
+  * Extract juicy informations from memory
+  * Exfiltrate Wifi-Credentials
+  * Dump SAM-File NTLM Hashes
 * #### `localreconmodules` -> 
+  * Collect installed software, vulnerable software, Shares, network information, groups, privileges and many more
+  * Check typical vulns like SMB-Signing, LLMNR Poisoning, MITM6 , WSUS over HTTP
   * Checks the Powershell event logs for credentials or other sensitive informations
-  * Checks for WSUS Server over HTTP (Fake Update vulnerability)
-  * Checks the local SMB-Signing state
-  * Collects various local system informations (Installed Software + vulnerable software, Shares, privileges, local groups, network information
-  * Searches for passwords in the registry as well as in files on the hard disk + Browser Credentials
-  * Search for .NET Binaries on the local system (which can be reverse engineered for vulnerability analysis) 
-  * Optional: Get-Computerdetails (Powersploit) , Just another Windows Privilege escalation script, Winspect
+  * Search for passwords in the registry and on the file system
+  * Find sensitive files (config files, RDP files, keepass Databases)
+  * Search for .NET Binaries on the local system 
+  * Optional: Get-Computerdetails (Powersploit) and PSRecon
 * #### `domainreconmodules` -> 
-  * Powerview function output gets stored on disk for review. 
-  * A search for AD-Passwords in description fields is done. 
-  * Unconstrained delegation systems/users are enumerated. 
-  * SQL Server discovery and Auditing functions (default credentials, passwords in the database and more).
+  * Collect various domain informations for manual review 
+  * Find AD-Passwords in description fields
+  * Search for potential sensitive domain share files
+  * ACLAnalysis
+  * Unconstrained delegation systems/users are enumerated
+  * MS17-10 Scanner for domain systems
+  * SQL Server discovery and Auditing functions (default credentials, passwords in the database and more)
   * MS-RPRN Check for Domaincontrollers
+  * Group Policy Audit with Grouper2
   * An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. 
 * #### `Privescmodules` -> Executes different privesc scripts in memory (PowerUp Allchecks, Sherlock, GPPPasswords)
-* #### `lazagnemodule` -> Downloads and executes lazagne.exe (if not detected by AV) 
-* #### `latmov` -> Searches for Systems with Admin-Access in the domain for lateral movement. Mass-Mimikatz can be used after for the found systems. DomainPassword-Spray for new Credentials can also be used here.
-* #### `empirelauncher` -> Launch powershell empire oneliner on remote Systems
+* #### `latmov` -> Searches for Systems with Admin-Access in the domain for lateral movement. Mass-Mimikatz can be used after for the found systems
 * #### `shareenumeration` -> Invoke-Filefinder and Invoke-Sharefinder (Powerview / Powersploit)
 * #### `groupsearch` -> Get-DomainGPOUserLocalGroupMapping - find Systems where you have Admin-access or RDP access to via Group Policy Mapping (Powerview / Powersploit)
 * #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
 * #### `powerSQL` -> SQL Server discovery, Check access with current user, Audit for default credentials + UNCPath Injection Attacks
 * #### `Sharphound` -> Downloads Sharphound and collects Information for the Bloodhound DB
-* #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record and run Inveigh for mass hash gathering.
+* #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record
 * #### `MS17-10` -> Scan active windows Servers in the domain or all systems for MS17-10 (Eternalblue) vulnerability
-* #### `Sharpcradle` -> Specify an URL to a C# File and Arguments to load them to RAM and execute after
-* #### `GPOAudit` -> Group Policy Audit with Grouper2
+* #### `Sharpcradle` -> Load C# Files from a remote Webserver to RAM
+* #### `DomainPassSpray` -> DomainPasswordSpray Attacks, one password for all domain users
 
 The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
 
@@ -87,8 +97,9 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts
 - [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
 - [X] [Cn33liz](https://github.com/Cn33liz/) - p0wnedShell
-- [X] [rasta-mouse](https://github.com/rasta-mouse/) - Amsi AmsiScanBufferBypass
+- [X] [rasta-mouse](https://github.com/rasta-mouse/) - AmsiScanBufferBypass
 - [X] [l0ss](https://github.com/l0ss/) - Grouper2
+- [X] [dafthack](https://github.com/dafthack/) - DomainPasswordSpray
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
