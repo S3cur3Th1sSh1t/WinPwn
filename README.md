@@ -76,6 +76,9 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [x] Add MS17-10 Scanner
 - [x] Add menu for better handling of functions
 - [x] Amsi Bypass
+- [ ] Mailsniper integration
+- [ ] Azure Checks / Modules integration
+- [ ] LAPS Toolkit integration
 
 ## CREDITS
 
