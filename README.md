@@ -18,7 +18,7 @@ If you find yourself stuck on a windows system with no internet access - no prob
 
 Functions available after Import:
 * #### `WinPwn` -> Menu to choose attacks:
-![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/WinPwn.jpg)
+![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/images/WinPwn.jpg)
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
 * #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
 * #### `kittielocal` ->
@@ -61,15 +61,10 @@ Functions available after Import:
 * #### `Sharpcradle` -> Load C# Files from a remote Webserver to RAM
 * #### `DomainPassSpray` -> DomainPasswordSpray Attacks, one password for all domain users
 
-The submodule is a forked and edited version of https://github.com/Cn33liz/p0wnedShell. You can compile it yourself and use it for powershell restriction bypass and AMSI-Bypass. Most AV-Solutions can be evaded this way. Just run the executable File, choose 17. and execute WinPwn.
-
-![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/p0wnedmenu.PNG)
-
-![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/p0wned.png)
 
 ## TO-DO
 - [x] Some obfuskation
-- [ ] More obfuscation
+- [x] More obfuscation
 - [ ] Proxy via PAC-File support
 - [x] Get the scripts from my own creds repository (https://github.com/S3cur3Th1sSh1t/Creds) to be independent from changes in the original repositories
 - [ ] More Recon/Exploitation functions
@@ -78,7 +73,6 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [x] Amsi Bypass
 - [ ] Mailsniper integration
 - [ ] Azure Checks / Modules integration
-- [ ] LAPS Toolkit integration
 
 ## CREDITS
 
@@ -100,6 +94,7 @@ The submodule is a forked and edited version of https://github.com/Cn33liz/p0wne
 - [X] [rasta-mouse](https://github.com/rasta-mouse/) - AmsiScanBufferBypass
 - [X] [l0ss](https://github.com/l0ss/) - Grouper2
 - [X] [dafthack](https://github.com/dafthack/) - DomainPasswordSpray
+- [X] [enjoiz](https://github.com/enjoiz/Privesc) - PrivEsc
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
