@@ -1027,13 +1027,14 @@ function domainreconmodules
 	        $DomainPolicy = forsakes -Policy Domain
             $DomainPolicy.KerberosPolicy >> "$currentPath\DomainRecon\Kerberospolicy.txt"
             $DomainPolicy.SystemAccess >> "$currentPath\DomainRecon\Passwordpolicy.txt"
-	        
+	    
+	    Write-Host -ForegroundColor Yellow 'Searching for LAPS Administrators'
+            lapschecks
+	    
             Write-Host -ForegroundColor Yellow 'Searching for Systems we have RDP access to..'
 	        rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        }
             
-	     Write-Host -ForegroundColor Yellow 'Searching for LAPS Administrators'
-            lapschecks
 	    
             function spoolvulnscan{
             
