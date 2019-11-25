@@ -45,6 +45,7 @@ Functions available after Import:
   * ACLAnalysis
   * Unconstrained delegation systems/users are enumerated
   * MS17-10 Scanner for domain systems
+  * Bluekeep Scanner for domain systems
   * SQL Server discovery and Auditing functions (default credentials, passwords in the database and more)
   * MS-RPRN Check for Domaincontrollers
   * Group Policy Audit with Grouper2
@@ -60,6 +61,7 @@ Functions available after Import:
 * #### `MS17-10` -> Scan active windows Servers in the domain or all systems for MS17-10 (Eternalblue) vulnerability
 * #### `Sharpcradle` -> Load C# Files from a remote Webserver to RAM
 * #### `DomainPassSpray` -> DomainPasswordSpray Attacks, one password for all domain users
+* #### `bluekeep` -> Bluekeep Scanner for domain systems
 
 
 ## TO-DO
@@ -72,7 +74,6 @@ Functions available after Import:
 - [x] Add menu for better handling of functions
 - [x] Amsi Bypass
 - [ ] Mailsniper integration
-- [ ] Azure Checks / Modules integration
 
 ## CREDITS
 
