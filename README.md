@@ -112,6 +112,7 @@ Functions available after Import:
 - [X] [l0ss](https://github.com/l0ss/) - Grouper2
 - [X] [dafthack](https://github.com/dafthack/) - DomainPasswordSpray
 - [X] [enjoiz](https://github.com/enjoiz/Privesc) - PrivEsc
+- [X] [itm4n](https://github.com/itm4n) - Invoke-PrivescCheck
 - [X] [James Forshaw](https://github.com/tyranid) - UACBypasses
 - [X] [Oddvar Moe](https://github.com/api0cradle) - UACBypass
 
