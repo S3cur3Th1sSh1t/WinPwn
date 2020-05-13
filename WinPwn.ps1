@@ -452,8 +452,8 @@ __        ___       ____
 '@
             Write-Host "================ WinPwn ================"
             Write-Host -ForegroundColor Green '1. Just run Invoke-WCMDump (no Admin need)! '
-            Write-Host -ForegroundColor Green '2. Run an obfuscated version of the powerhell kittie (Admin session only, heuristic detection likely)! '
-            Write-Host -ForegroundColor Green '3. Run Safetykatz in memory (Admin session only)! '
+            Write-Host -ForegroundColor Green '2. Run an obfuscated version of the powerhell kittie! '
+            Write-Host -ForegroundColor Green '3. Run Safetykatz in memory (Admin session only) - often detected by AV atm. the process gets killed here! '
             Write-Host -ForegroundColor Green '4. Only dump lsass using rundll32 technique! (Admin session only) '
             Write-Host -ForegroundColor Green '5. Download and run an obfuscated lazagne executable! '
             Write-Host -ForegroundColor Green '6. Dump Browser credentials using Sharpweb! (no Admin need)'
