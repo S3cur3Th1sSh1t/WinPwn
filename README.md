@@ -2,7 +2,7 @@
 
 # WinPwn
 In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I also often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetrationtest processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
-The script is mostly based on well-known large other offensive security Powershell projects. They are loaded into RAM via IEX Downloadstring.
+The script is mostly based on well-known large other offensive security Powershell projects.
 
 Any suggestions, feedback, Pull requests and comments are welcome! 
 
@@ -37,6 +37,7 @@ Functions available after Import:
   * Customized Mimikittenz Version
   * Exfiltrate Wifi-Credentials
   * Dump SAM-File NTLM Hashes
+  * SharpCloud
 * #### `localreconmodules` -> 
   * Collect installed software, vulnerable software, Shares, network information, groups, privileges and many more
   * Check typical vulns like SMB-Signing, LLMNR Poisoning, MITM6 , WSUS over HTTP
@@ -50,15 +51,21 @@ Functions available after Import:
   * Collect various domain informations for manual review
   * Find AD-Passwords in description fields
   * Search for potential sensitive domain share files
-  * ACLAnalysis
   * Unconstrained delegation systems/users are enumerated
+  * Generate Bloodhound Report
   * MS17-10 Scanner for domain systems
   * Bluekeep Scanner for domain systems
-  * SQL Server discovery and Auditing functions (default credentials, passwords in the database and more)
+  * SQL Server discovery and Auditing functions - PowerUpSQL
   * MS-RPRN Check for Domaincontrollers or all systems
   * Group Policy Audit with Grouper2
-  * An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon. 
-* #### `Privescmodules` -> Executes different privesc scripts in memory (PowerUp Allchecks, Sherlock, GPPPasswords, dll Hijacking, File Permissions, IKEExt Check, Rotten/Juicy Potato Check)
+  * An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon
+  * Check Printers for common vulns
+  * Search for Resource-Based Constrained Delegation attack paths 
+* #### `Privescmodules` 
+  * itm4ns Invoke-PrivescCheck
+  * winPEAS
+  * Powersploits PowerUp Allchecks, Sherlock, GPPPasswords
+  * Dll Hijacking, File Permissions, Registry permissions and weak keys, Rotten/Juicy Potato Check
 * #### `kernelexploits` ->
   * MS15-077 - (XP/Vista/Win7/Win8/2000/2003/2008/2012) x86 only!
   * MS16-032 - (2008/7/8/10/2012)!
@@ -69,7 +76,9 @@ Functions available after Import:
   * CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019!
   * CVE-2019-1215 - September 2019 - x64 only!
   * CVE-2020-0638 - February 2020 - x64 only!
+  * CVE-2020-0796 - SMBGhost
   * Juicy-Potato Exploit
+  * itm4ns Printspoofer
 * #### `UACBypass` ->
   * UAC Magic, Based on James Forshaw's three part post on UAC
   * UAC Bypass cmstp technique, by Oddvar Moe
@@ -124,7 +133,7 @@ Functions available after Import:
 - [X] [l0ss](https://github.com/l0ss/) - Grouper2
 - [X] [dafthack](https://github.com/dafthack/) - DomainPasswordSpray
 - [X] [enjoiz](https://github.com/enjoiz/Privesc) - PrivEsc
-- [X] [itm4n](https://github.com/itm4n) - Invoke-PrivescCheck
+- [X] [itm4n](https://github.com/itm4n) - Invoke-PrivescCheck & PrintSpoofer
 - [X] [James Forshaw](https://github.com/tyranid) - UACBypasses
 - [X] [Oddvar Moe](https://github.com/api0cradle) - UACBypass
 - [X] [Carlos Polop](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS) - winPEAS

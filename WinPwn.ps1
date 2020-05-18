@@ -2176,6 +2176,11 @@ function privescmodules
         License: BSD 3-Clause
     #>
     #Privilege Escalation Phase
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive   
+    )
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     @'
