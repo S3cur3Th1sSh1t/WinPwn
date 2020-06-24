@@ -1701,7 +1701,7 @@ function spoolvulnscan
         }
         else
         {$answer = "no"}
-        if ($answer)
+        if ($answer -eq "yes" -or $answer -eq "y" -or $answer -eq "Yes" -or $answer -eq "Y")
         {
                   Write-Host -ForegroundColor Yellow "Please enter the hash capturing IP-Adress:"
                   $captureip = Read-Host
