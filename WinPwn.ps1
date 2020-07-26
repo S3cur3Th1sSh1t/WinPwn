@@ -1522,7 +1522,7 @@ function domainreconmodules
 
             thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"
 
-            Get-ADUser -Filter {UserAccountControl -band 0x0020} >> "$currentPath\Vulnerabilities\UsersWithoutPassword.txt"
+            Get-ADUser -Filter {UserAccountControl -band 0x0020} >> "$currentPath\Vulnerabilities\UsersWithoutPasswordPolicy.txt"
 
             Write-Host -ForegroundColor Yellow 'Searching for Users without password Change for a long time'
 	        $Date = (Get-Date).AddYears(-1).ToFileTime()
