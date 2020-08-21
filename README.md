@@ -105,9 +105,9 @@ Functions available after Import:
 - [ ] Proxy via PAC-File support
 - [x] Get the scripts from my own creds repository (https://github.com/S3cur3Th1sSh1t/Creds) to be independent from changes in the original repositories
 - [ ] More Recon/Exploitation functions
-- [x] Add MS17-10 Scanner
 - [x] Add menu for better handling of functions
 - [x] Amsi Bypass
+- [X] Block ETW
 
 ## CREDITS
 
@@ -122,8 +122,8 @@ Functions available after Import:
 - [X] [rasta-mouse](https://github.com/rasta-mouse/) - Sherlock, Amsi Bypass,  PPID Spoof & BlockDLLs
 - [X] [AlessandroZ](https://github.com/AlessandroZ/) - LaZagne
 - [X] [samratashok](https://github.com/samratashok/) - nishang
-- [X] [leechristensen](https://github.com/leechristensen/) - Random Repo
-- [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts, Seatbelt, Ghostpack
+- [X] [leechristensen](https://github.com/leechristensen/) - Random Repo, Spoolsample, other ps1 scripts
+- [X] [HarmJ0y](https://github.com/HarmJ0y) - Many good Blogposts, Gists and Scripts, all Ghostpack binaries
 - [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
 - [X] [Cn33liz](https://github.com/Cn33liz/) - p0wnedShell
 - [X] [rasta-mouse](https://github.com/rasta-mouse/) - AmsiScanBufferBypass
@@ -134,8 +134,15 @@ Functions available after Import:
 - [X] [James Forshaw](https://github.com/tyranid) - UACBypasses
 - [X] [Oddvar Moe](https://github.com/api0cradle) - UACBypass
 - [X] [Carlos Polop](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS) - winPEAS
-- [X] [gentilkiwi](https://github.com/gentilkiwi) - Mimikatz
+- [X] [gentilkiwi](https://github.com/gentilkiwi) - Mimikatz, Kekeo
 - [X] [hlldz](https://github.com/hlldz) - Invoke-Phantom
+- [X] [Matthew Graeber](https://github.com/mattifestation) - many Ps1 Scripts which are nearly used everywhere
+- [X] [Steve Borosh](https://github.com/rvrsh3ll/) - Misc-Powershell-Scripts, SharpPrinter, SharpSSDP
+- [X] [Sean Metcalf](https://twitter.com/PyroTek3) - SPN-Scan + many usefull articles @adsecurity.org
+- [X] [@l0ss and @Sh3r4](https://github.com/SnaffCon/Snaffler) - Snaffler
+- [X] [FSecureLABS](https://github.com/FSecureLABS) - GPO Tools
+- [X] [vletoux](https://github.com/vletoux) - PingCastle Scanners
+- [X] [All people working on Bloodhound](https://github.com/BloodHoundAD) - SharpHound Collector
 
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
