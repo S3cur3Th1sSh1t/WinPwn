@@ -389,12 +389,12 @@ function sessionGopher
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                SeGopher -Thorough -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
+                Invoke-S3ssionGoph3r -Thorough -AllDomain >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
                 Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                SeGopher -Alldomain >> $currentPath\LocalRecon\SessionGopher.txt
+                Invoke-S3ssionGoph3r -Alldomain >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
     else
@@ -407,12 +407,12 @@ function sessionGopher
             if ($session -eq "yes" -or $session -eq "y" -or $session -eq "Yes" -or $session -eq "Y")
             {
                 Write-Host -ForegroundColor Yellow 'Starting Local SessionGopher, output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                SeGopher -Thorough >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
+                Invoke-S3ssionGoph3r -Thorough >> $currentPath\LocalRecon\SessionGopher.txt -Outfile
             }
             else 
             {
                 Write-Host -ForegroundColor Yellow 'Starting SessionGopher without thorough tests,output is generated in '$currentPath'\LocalRecon\SessionGopher.txt:'
-                SeGopher >> $currentPath\LocalRecon\SessionGopher.txt
+                Invoke-S3ssionGoph3r >> $currentPath\LocalRecon\SessionGopher.txt
             }
     }
 }
