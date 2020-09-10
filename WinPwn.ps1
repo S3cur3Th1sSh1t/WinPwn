@@ -1216,12 +1216,13 @@ __        ___       ____
         Write-Host -ForegroundColor Green '1. Collect general computer informations, this will take some time!'
         Write-Host -ForegroundColor Green '2. Check Powershell event logs for credentials or other sensitive information! '
         Write-Host -ForegroundColor Green '3. Collect Browser credentials as well as the history! '
-        Write-Host -ForegroundColor Green '4. Search for .NET Binaries on this system! '
+        Write-Host -ForegroundColor Green '4. Search for .NET Service-Binaries on this system! '
         Write-Host -ForegroundColor Green '5. Search for Passwords on this system using passhunt.exe!'
         Write-Host -ForegroundColor Green '6. Start SessionGopher! '
         Write-Host -ForegroundColor Green '7. Search for sensitive files on this local system (config files, rdp files, password files and more)! '
         Write-Host -ForegroundColor Green '8. Execute PSRecon or Get-ComputerDetails (powersploit)! '
-        Write-Host -ForegroundColor Green '9. Exit. '
+        Write-Host -ForegroundColor Green '9. Search for any .NET binary file in a share! '
+        Write-Host -ForegroundColor Green '10. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1235,9 +1236,10 @@ __        ___       ____
              6{sessiongopher}
              7{sensitivefiles}
              8{morerecon}
+             9{dotnetsearch}
        }
     }
- While ($masterquestion -ne 9)
+ While ($masterquestion -ne 10)
 }
 
 function Get-IndexedFiles 
@@ -1269,6 +1271,42 @@ function Get-IndexedFiles
      $rs.MoveNext()
      }
      }
+}
+
+function dotnetsearch
+{
+    # Copied from https://gist.github.com/TheWover/49c5cfd0bbcd4b6c54eb1bb29812ce6e
+    Param([parameter(Mandatory=$true,
+       HelpMessage="Directory to search for .NET Assemblies in.")]
+       $Directory,
+       [parameter(Mandatory=$false,
+       HelpMessage="Whether or not to search recursively.")]
+       [switch]$Recurse = $true,
+       [parameter(Mandatory=$false,
+       HelpMessage="Whether or not to include DLLs in the search.")]
+       [switch]$DLLs = $true,
+       [parameter(Mandatory=$false,
+       HelpMessage="Whether or not to include all files in the search.")]
+       [switch]$All = $true)
+    pathcheck
+    if($All)
+    {
+        Get-ChildItem -Path $Directory -Recurse:$Recurse -ErrorAction SilentlyContinue -Force  | % { try {$asn = [System.Reflection.AssemblyName]::GetAssemblyName($_.fullname); $_.fullname >> "$currentPath\DotNetBinaries.txt"} catch {} }
+        type "$currentPath\DotNetBinaries.txt"
+        Sleep(4)
+    }
+    else
+    {
+        Get-ChildItem -Path $Directory -Filter *.exe -Recurse:$Recurse -ErrorAction SilentlyContinue -Force  | % { try {$asn = [System.Reflection.AssemblyName]::GetAssemblyName($_.fullname); $_.fullname >> "$currentPath\DotNetBinaries.txt"} catch {} }
+        
+        if ($DLLs)
+        {
+            Get-ChildItem -Path $Directory -Filter *.dll -Recurse:$Recurse -ErrorAction SilentlyContinue -Force  | % { try {$asn = [System.Reflection.AssemblyName]::GetAssemblyName($_.fullname); $_.fullname >> "$currentPath\DotNetBinaries.txt"} catch {} }
+        }
+        type "$currentPath\DotNetBinaries.txt"
+        Sleep(4)
+    }
+
 }
 
 function SYSTEMShell
@@ -3066,15 +3104,15 @@ __        ___       ____
              3{domainreconmodules}
              4{privescmodules}
              5{kernelexploits}
-	         6{UACBypass}
-	         7{SYSTEMShell}
+	     6{UACBypass}
+	     7{SYSTEMShell}
              8{kerberoasting}
              9{kittielocal}
              10{adidnsmenu}
              11{sessionGopher}
             12{inv-phantom}
             13{sharpcradle -allthosedotnet}
-	        14{sharpcradle -web}
+	    14{sharpcradle -web}
             15{domainpassspray}
 	    16{mimiload}
         
