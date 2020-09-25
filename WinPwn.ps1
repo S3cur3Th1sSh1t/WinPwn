@@ -1904,7 +1904,7 @@ function GPOAudit
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     pathcheck
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Grouper2.ps1')
-    Invoke-Grouper2 -command "-f $currentPath\DomainRecon\GPOAudit.html"
+    Invoke-Grouper2 -command "-i 4 -f $currentPath\DomainRecon\GPOAudit.html"
 }
 
 
