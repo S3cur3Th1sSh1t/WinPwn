@@ -1585,7 +1585,7 @@ function domainreconmodules
             prostituted -UACFilter NOT_ACCOUNTDISABLE -Properties distinguishedname >> "$currentPath\DomainRecon\Enabled_Users.txt"
 	        
             Write-Host -ForegroundColor Yellow 'Searching for Unconstrained delegation Systems and Users'
-	        $Computers = breviaries -Unconstrained >> "$currentPath\DomainRecon\Unconstrained_Systems.txt"
+	        $Computers = breviaries -Unconstrained -Properties DnsHostName >> "$currentPath\DomainRecon\Unconstrained_Delegation_Systems.txt"
             $Users = prostituted -AllowDelegation -AdminCount >> "$currentPath\DomainRecon\AllowDelegationUsers.txt"
 	    $Users.samaccountname >> "$currentPath\DomainRecon\AllowDelegationUsers_samaccountnames_only.txt"     
             Write-Host -ForegroundColor Yellow 'Identify kerberos and password policy..'
