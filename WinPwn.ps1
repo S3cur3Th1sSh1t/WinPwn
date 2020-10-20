@@ -320,7 +320,7 @@ __        ___       ____
  \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
   \ V  V / | | | | |  __/ \ V  V /| | | |
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
-   --> ADIDNS menu
+   --> ADIDNS menu @S3cur3Th1sSh1t
 '@
             Write-Host "================ WinPwn ================"
             Write-Host -ForegroundColor Green '1. Add ADIDNS Node! '
@@ -784,7 +784,7 @@ __        ___       ____
   \ V  V / | | | | |  __/ \ V  V /| | | |
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
 
-   --> Get System
+   --> Get System @S3cur3Th1sSh1t
 
 '@
         
@@ -1603,7 +1603,7 @@ __        ___       ____
   \ V  V / | | | | |  __/ \ V  V /| | | |
    \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
 
-   --> SYSTEM Shellz
+   --> SYSTEM Shellz @S3cur3Th1sSh1t
 
 '@
     
@@ -3853,5 +3853,5 @@ WinPwn -PowerSharpPack -consoleoutput -noninteractive					    -> Execute Seatbel
     }
  While ($masterquestion -ne 17)
      
-    
+   
 }
