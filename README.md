@@ -21,14 +21,14 @@ To spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MI
 
 This prevents non-microsoft DLLs (e.g. AV/EDR products) to load into PowerShell.
 
-If you find yourself stuck on a windows system with no internet access - no problem at all, just use Offline_Winpwn.ps1, all scripts and executables are included.
+If you find yourself stuck on a windows system with no internet access - no problem at all, just use `Offline_Winpwn.ps1`, the most important scripts and executables are included.
 
 Functions available after Import:
 * #### `WinPwn` -> Menu to choose attacks:
 ![alt text](https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/images/WinPwn.JPG)
 * #### `Inveigh` -> Executes Inveigh in a new Console window , SMB-Relay attacks with Session management (Invoke-TheHash) integrated
-* #### `sessionGopher` -> Executes Sessiongopher Asking you for parameters
-* #### `kittielocal` ->
+* #### `SessionGopher` -> Executes Sessiongopher Asking you for parameters
+* #### `Kittielocal` ->
   * Obfuscated Invoke-Mimikatz version
   * Safetykatz in memory
   * Dump lsass using rundll32 technique
@@ -38,7 +38,7 @@ Functions available after Import:
   * Exfiltrate Wifi-Credentials
   * Dump SAM-File NTLM Hashes
   * SharpCloud
-* #### `localreconmodules` -> 
+* #### `Localreconmodules` -> 
   * Collect installed software, vulnerable software, Shares, network information, groups, privileges and many more
   * Check typical vulns like SMB-Signing, LLMNR Poisoning, MITM6 , WSUS over HTTP
   * Checks the Powershell event logs for credentials or other sensitive informations
@@ -47,7 +47,7 @@ Functions available after Import:
   * Find sensitive files (config files, RDP files, keepass Databases)
   * Search for .NET Binaries on the local system 
   * Optional: Get-Computerdetails (Powersploit) and PSRecon
-* #### `domainreconmodules` -> 
+* #### `Domainreconmodules` -> 
   * Collect various domain informations for manual review
   * Find AD-Passwords in description fields
   * Search for potential sensitive domain share files
@@ -61,6 +61,7 @@ Functions available after Import:
   * An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon
   * Check Printers for common vulns
   * Search for Resource-Based Constrained Delegation attack paths 
+  * And more, just take a look
 * #### `Privescmodules` 
   * itm4ns Invoke-PrivescCheck
   * winPEAS
@@ -77,6 +78,7 @@ Functions available after Import:
   * CVE-2019-1215 - September 2019 - x64 only!
   * CVE-2020-0638 - February 2020 - x64 only!
   * CVE-2020-0796 - SMBGhost
+  * CVE-2020-0787 - March 2020 - all windows versions
   * Juicy-Potato Exploit
   * itm4ns Printspoofer
 * #### `UACBypass` ->
@@ -89,17 +91,49 @@ Functions available after Import:
   * Pop System Shell using NamedPipe Impersonation
   * Pop System Shell using Token Manipulation
   * Bind System Shell using UsoClient DLL load or CreateProcess
-* #### `shareenumeration` -> Invoke-Filefinder and Invoke-Sharefinder (Powerview / Powersploit)
-* #### `groupsearch` -> Get-DomainGPOUserLocalGroupMapping - find Systems where you have Admin-access or RDP access to via Group Policy Mapping (Powerview / Powersploit)
+* #### `Shareenumeration` -> Invoke-Filefinder and Invoke-Sharefinder (Powerview / Powersploit)
+* #### `Domainshares`  -> Snaffler or Passhunt search over all domain systems
+* #### `Groupsearch` -> Get-DomainGPOUserLocalGroupMapping - find Systems where you have Admin-access or RDP access to via Group Policy Mapping (Powerview / Powersploit)
 * #### `Kerberoasting` -> Executes Invoke-Kerberoast in a new window and stores the hashes for later cracking
-* #### `powerSQL` -> SQL Server discovery, Check access with current user, Audit for default credentials + UNCPath Injection Attacks
+* #### `PowerSQL` -> SQL Server discovery, Check access with current user, Audit for default credentials + UNCPath Injection Attacks
 * #### `Sharphound` -> Bloodhound 3.0 Report
-* #### `adidnswildcard` -> Create a Active Directory-Integrated DNS Wildcard Record
+* #### `Adidnsmenu` -> Create Active Directory-Integrated DNS Nodes or remove them
 * #### `MS17-10` -> Scan active windows Servers in the domain or all systems for MS17-10 (Eternalblue) vulnerability
 * #### `Sharpcradle` -> Load C# Files from a remote Webserver to RAM
 * #### `DomainPassSpray` -> DomainPasswordSpray Attacks, one password for all domain users
-* #### `bluekeep` -> Bluekeep Scanner for domain systems
+* #### `Bluekeep` -> Bluekeep Scanner for domain systems
 
+Without parameters, most of the functions can only be used from an interactive shell. So i decided to add the parameters `-noninteractive` and `-consoleoutput` to make the script usable from 
+an asynchronous C2-Framework like Empire, Covenant, Cobalt Strike or others. They can be used as follows:
+
+Usage: 
+
+  -noninteractive 	-> No questions for functions so that they run with predefined or user defined parameters  
+            
+  -consoleoutput    -> The loot/report folders are not created. Every function returns the output to the console 
+				    so that you can take a look at everything in the Agent logs of your C2-Framework 
+Examples:
+
+`WinPwn -noninteractive -consoleoutput -DomainRecon` 	-> This will return every single domain recon script and 
+														   function and will probably give you really much output
+
+`WinPwn -noninteractive -consoleoutput -Localrecon` 	-> This will enumerate as much information for the local
+														   system as possible
+														   
+`Generalrecon -noninteractive`							-> Execute basic local recon functions and store the output
+														   in the corresponding folders
+
+`UACBypass -noninteractive -command "C:\temp\stager.exe" -technique ccmstp`	-> Execute a stager in  a high integrity 
+																			   process from a low privileged session
+																			   
+`Kittielocal -noninteractive -consoleoutput -browsercredentials`			-> Dump Browser-Credentials via Sharpweb
+																			   returning the output to console
+																			   
+`Kittielocal -noninteractive -browsercredentials`								-> Dump SAM File NTLM-Hashes and store
+																			   the output in a file
+																			   
+`WinPwn -PowerSharpPack -consoleoutput -noninteractive`					    -> Execute Seatbelt, PowerUp, Watson and 
+																			   more C# binaries in memory
 
 ## TO-DO
 - [x] Some obfuskation

