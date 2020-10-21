@@ -134,6 +134,8 @@ Examples:
 																			   
 `WinPwn -PowerSharpPack -consoleoutput -noninteractive`					    -> Execute Seatbelt, PowerUp, Watson and 
 																			   more C# binaries in memory
+																			   
+`Dotnetsearch -consoleoutput -noninteractive`						    -> Search in `C:\Program Files\` and `C:\Program Files (x86)\` for .NET assemblies
 
 ## TO-DO
 - [x] Some obfuskation
