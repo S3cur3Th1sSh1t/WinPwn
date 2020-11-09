@@ -60,7 +60,8 @@ Functions available after Import:
   * Group Policy Audit with Grouper2
   * An AD-Report is generated in CSV Files (or XLS if excel is installed) with ADRecon
   * Check Printers for common vulns
-  * Search for Resource-Based Constrained Delegation attack paths 
+  * Search for Resource-Based Constrained Delegation attack paths
+  * Check all DCs for zerologon - CVE-2020-1472
   * And more, just take a look
 * #### `Privescmodules` 
   * itm4ns Invoke-PrivescCheck
@@ -180,6 +181,7 @@ Examples:
 - [X] [@l0ss and @Sh3r4](https://github.com/SnaffCon/Snaffler) - Snaffler
 - [X] [FSecureLABS](https://github.com/FSecureLABS) - GPO Tools
 - [X] [vletoux](https://github.com/vletoux) - PingCastle Scanners
+- [X] [NCCGroup + BC-Security](https://github.com/BC-SECURITY/Invoke-ZeroLogon) - ZeroLogon Scanner
 - [X] [All people working on Bloodhound](https://github.com/BloodHoundAD) - SharpHound Collector
 
 ## Legal disclaimer:
