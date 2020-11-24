@@ -2479,7 +2479,7 @@ function zerologon
                 {
                     Write-Host "Found vulnerable DC: " 
                     $domc
-                    if(!$consoleoutput){$domc > "$currentPath\Vulnerabilities\ZerologonvulnerableDC.txt"}
+                    if(!$consoleoutput){$domc >> "$currentPath\Vulnerabilities\ZerologonvulnerableDC.txt"}
 
                 }
 	       }
