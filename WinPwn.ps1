@@ -2155,7 +2155,7 @@ function oxidresolver
         [Switch]
         $noninteractive,
         [Switch]
-        $consoleoutput,
+        $consoleoutput
     )
     iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-OxidResolver.ps1')
     if(!$consoleoutput){pathcheck}
