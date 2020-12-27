@@ -184,5 +184,9 @@ Examples:
 - [X] [NCCGroup + BC-Security](https://github.com/BC-SECURITY/Invoke-ZeroLogon) - ZeroLogon Scanner
 - [X] [All people working on Bloodhound](https://github.com/BloodHoundAD) - SharpHound Collector
 
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/S3cur3Th1sSh1t/WinPwn.svg)](https://starchart.cc/S3cur3Th1sSh1t/WinPwn)
+
 ## Legal disclaimer:
 Usage of WinPwn for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
