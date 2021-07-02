@@ -80,6 +80,7 @@ Functions available after Import:
   * CVE-2020-0638 - February 2020 - x64 only!
   * CVE-2020-0796 - SMBGhost
   * CVE-2020-0787 - March 2020 - all windows versions
+  * CVE-2021-34527 - July 2021 - PrintNightmare
   * Juicy-Potato Exploit
   * itm4ns Printspoofer
 * #### `UACBypass` ->
