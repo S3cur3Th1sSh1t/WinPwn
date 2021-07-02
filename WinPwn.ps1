@@ -829,7 +829,7 @@ __        ___       ____
 	    Write-Host -ForegroundColor Green '9. CVE-2020-0683 - February 2020 - x64 only! '
         Write-Host -ForegroundColor Green '10. CVE-2020-0796 - March 2020 - SMBGhost only SMBV3 with compression - no bind shell! '
 	    Write-Host -ForegroundColor Green '11. CVE-2020-0787 - March 2020 - all windows versions - BITSArbitraryFileMove ! '
-        Write-Host -ForegroundColor Green '12. PrintNightmare - CVE-2021-34527 - July 2021 - All Windows versions running the Spooler Service!'
+        Write-Host -ForegroundColor Green '12. PrintNightmare - CVE-2021-34527/CVE-2021-1675 - June 2021 - All Windows versions running the Spooler Service!'
         Write-Host -ForegroundColor Green '13. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
         Write-Host -ForegroundColor Green '14. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
         Write-Host -ForegroundColor Green '15. Exit. '
