@@ -2158,10 +2158,10 @@ function ADCSInfos
                 try
                 {
                     $CertURI = "http://" + $FQDN + "/certsrv/certfnsh.asp" 
-                    $WebResponse = iwr  -UseDefaultCredentials -MaximumRedirection 0 -uri $CertURI
+                    $WebResponse = iwr  -UseDefaultCredentials -MaximumRedirection 1 -uri $CertURI
                     if ($WebResponse.Content -Match "Active Directory Certificate Services")
                     {
-                        Write-Host -ForegroundColor Red "$FQDN serves certificates over HTTP and is therefore ESC8 vulnerable!"
+                        Write-Host -ForegroundColor Red "$FQDN serves certificates over HTTP or has only redirects to HTTPS and is therefore ESC8 vulnerable!"
                         if(!$consoleoutput){$FQDN >> "$currentPath\Vulnerabilities\ADCS_ESC8_Vulnerable.txt"}
                     }
                     else
@@ -2171,15 +2171,44 @@ function ADCSInfos
                 }
                 catch
                 {
-                    Write-Host -ForegroundColor Yellow "Not able to connect to $CertURI, maybe the user is not authorized"
+                    Write-Host -ForegroundColor Yellow "Not able to connect to $CertURI, maybe the current user is not authorized"
                 }
+                $client.Close()
 
             }
             else
             {
-                Write-Host -ForegroundColor Yellow "$FQDN has Port 80 closed, not vulnerable!"
+                Write-Host -ForegroundColor Yellow "$FQDN has Port 80 closed, still checking 443 as the server can be vulnerable if channel binding is disabled!"
+                $client = New-Object System.Net.Sockets.TcpClient
+                $beginConnect = $client.BeginConnect($FQDN,"443",$null,$null)
+                Sleep 2
+                if($client.Connected)
+                {
+                    Write-Host -ForegroundColor Yellow "$FQDN has Port 443 opened, maybe vulnerable!"
+                    if(!$consoleoutput){$FQDN >> "$currentPath\DomainRecon\ADCS_Maybe_ESC8_HTTPS_Vulnerable.txt"}
+                    try
+                    {
+                        $CertURI = "https://" + $FQDN + "/certsrv/certfnsh.asp" 
+                        $WebResponse = iwr  -UseDefaultCredentials -MaximumRedirection 0 -uri $CertURI
+                        if ($WebResponse.Content -Match "Active Directory Certificate Services")
+                        {
+                            Write-Host -ForegroundColor Red "$FQDN serves certificates over HTTPS and is therefore potentially ESC8 vulnerable!"
+                            if(!$consoleoutput){$FQDN >> "$currentPath\Vulnerabilities\ADCS_ESC8_HTTPS_Vulnerable.txt"}
+                        }
+                        else
+                        {
+                            Write-Host -ForegroundColor Yellow "$FQDN hosts a Webserver over HTTPS but doesn't match the ADCS content, check that manually!"
+                        }
+                    }
+                    catch
+                    {
+                        Write-Host -ForegroundColor Yellow "Not able to connect to $CertURI, maybe the current user is not authorized"
+                    }
+                    $client.Close()
+
+               }
             }
-            $client.Close()
+            
             
         }
         catch
