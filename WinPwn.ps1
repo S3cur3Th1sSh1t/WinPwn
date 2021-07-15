@@ -2158,7 +2158,7 @@ function ADCSInfos
                 try
                 {
                     $CertURI = "http://" + $FQDN + "/certsrv/certfnsh.asp" 
-                    $WebResponse = iwr  -UseDefaultCredentials -uri $CertURI
+                    $WebResponse = iwr  -UseDefaultCredentials -MaximumRedirection 0 -uri $CertURI
                     if ($WebResponse.Content -Match "Active Directory Certificate Services")
                     {
                         Write-Host -ForegroundColor Red "$FQDN serves certificates over HTTP and is therefore ESC8 vulnerable!"
