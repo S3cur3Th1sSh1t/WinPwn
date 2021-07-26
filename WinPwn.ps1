@@ -2129,12 +2129,12 @@ function ADCSInfos
     $Dom = Get-ADDomain
     Write-Host -ForegroundColor Yellow '-------> Searching AD for ADCS Servers'
     $ServerSearch = "CN=AIA,CN=Public Key Services,CN=Services,CN=Configuration,$Dom"
-    $Servers = Get-ADObject -Filter "*" -SearchBase $ServerSearch
+    $Servers = Get-ADObject -Filter 'ObjectClass -eq "certificationAuthority"' -SearchBase $ServerSearch
     if($consoleoutput){$Servers}else{$Servers >> "$currentPath\DomainRecon\ADCSServer.txt"}
 
     $SearchCertTemplates = "CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,$Dom"
     Write-Host -ForegroundColor Yellow '-------> Searching AD for ADCS Templates'
-    $CertTemplates = Get-ADObject -Filter "*" -SearchBase $SearchCertTemplates
+    $CertTemplates = Get-ADObject -Filter 'ObjectClass -eq "pKICertificateTemplate"' -SearchBase $SearchCertTemplates
     if($consoleoutput){$CertTemplates}else{$CertTemplates >> "$currentPath\DomainRecon\ADCSTemplates.txt"}
 
     Write-Host -ForegroundColor Yellow '-------> Searching for the active CA-Server and checking for ESC8 (https://posts.specterops.io/certified-pre-owned-d95910965cd2)'
