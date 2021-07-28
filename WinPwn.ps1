@@ -1994,7 +1994,7 @@ __        ___       ____
         Write-Host -ForegroundColor Green '22. Get network interface IPs of all domain systems via IOXIDResolver! '
         Write-Host -ForegroundColor Green '23. Get the ADCS server(s) and templates + ESC8 Check! '
         Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay!'
-        Write-Host -ForegroundColor Green '25. Check the Domain Controllers for LDAP Signing being enforced!'
+        Write-Host -ForegroundColor Green '25. Check the Domain Controllers for LDAP Signing being enforced (experimental)!'
         Write-Host -ForegroundColor Green '26. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
