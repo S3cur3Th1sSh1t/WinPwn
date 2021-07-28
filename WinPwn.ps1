@@ -1993,7 +1993,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '21. Check username=password combinations! '
         Write-Host -ForegroundColor Green '22. Get network interface IPs of all domain systems via IOXIDResolver! '
         Write-Host -ForegroundColor Green '23. Get the ADCS server(s) and templates + ESC8 Check! '
-        Write-Host -ForegroundColor Green '24. Go back '
+        Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay'
+        Write-Host -ForegroundColor Green '25. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2023,9 +2024,10 @@ __        ___       ____
 	 21{Domainpassspray -usernameaspassword}
          22{Oxidresolver}
          23{ADCSInfos}
+         24{Invoke-RBDC-over-DAVRPC}
        }
     }
- While ($masterquestion -ne 24)
+ While ($masterquestion -ne 25)
 }
 
 function generaldomaininfo{
@@ -2183,6 +2185,84 @@ if(!$consoleoutput){
 	
     Write-Host -ForegroundColor Yellow '-------> Searching for Systems we have RDP access to..'
 	if(!$consoleoutput){rewires -LocalGroup RDP -Identity $env:Username -domain $domain  >> "$currentPath\DomainRecon\RDPAccess_Systems.txt"}else{rewires -LocalGroup RDP -Identity $env:Username -domain $domain} 
+}
+
+function Invoke-RBDC-over-DAVRPC
+{
+<#
+        .DESCRIPTION
+        Search in AD for pingable Windows servers and Check if they are vulnerable to RBCD via Petitpotam + relay to ldap.
+        https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #Domain Recon
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput   
+    )
+    if(!$consoleoutput){pathcheck}
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+
+    IEX ($viewdevobfs)
+    $serversystems = "yes"
+    if(!$noninteractive)
+    {
+        $serversystems = Read-Host -Prompt 'Start DAV RPC Scan for Windows Servers only (alternatively we can scan all Servers + Clients but this can take a while)? (yes/no)'
+    }
+    if ($serversystems -eq "yes" -or $serversystems -eq "y" -or $serversystems -eq "Yes" -or $serversystems -eq "Y")
+    {
+	    if(Test-Path -Path "$currentPath\DomainRecon\Windows_Servers.txt")
+        {
+            Write-Host -ForegroundColor Yellow "Found an existing Server list, using this one instead of generating a new one!"
+            $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Servers.txt"
+        }
+        else
+        {
+            Write-Host -ForegroundColor Yellow 'Searching for active Servers in the domain, this can take a while depending on the domain size'
+	        $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
+            $ActiveServers = $ActiveServers.dnshostname
+            if(!$consoleoutput){$ActiveServers >> "$currentPath\DomainRecon\Windows_Servers.txt"}
+        }
+	foreach ($acserver in $ActiveServers)
+        {
+		try{
+         	    Get-ChildItem -Path "\\$acserver\pipe\DAV RPC SERVICE"
+                Write-Host -ForegroundColor Yellow "Found vulnerable Server - " + $acserver + ". If no LDAP Signing is enforced (default config) you can pwn via https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb!"
+                if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\RBCD_Petitpotam_VulnerableServers.txt"}else{Write-Host -ForegroundColor Red $acserver + "is vulnerable to RBCD via Petitpotam LDAP relay!"}
+                
+		}catch{}
+        }
+    }
+    else
+    {
+       	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Systems2.txt")
+        {
+            Write-Host -ForegroundColor Yellow "Found an existing Windows system list, using this one instead of generating a new one!"
+            $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Systems.txt"
+        }
+        else
+        {
+            Write-Host -ForegroundColor Yellow 'Searching every windows system in the domain, this can take a while depending on the domain size'
+	        $ActiveServers = breviaries -Ping -OperatingSystem "Windows*"
+            $ActiveServers = $ActiveServers.dnshostname
+            if(!$consoleoutput){$ActiveServers >> "$currentPath\DomainRecon\Windows_Systems.txt"}
+        }
+	foreach ($acserver in $ActiveServers)
+        {
+		try{
+         	   $path = Get-ChildItem -Path "\\$acserver\pipe\DAV RPC SERVICE"
+               
+               Write-Host -ForegroundColor Yellow "Found vulnerable System - " + $acserver + ". If no LDAP Signing is enforced (default config) you can pwn via https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb!"
+               if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\RBCD_Petitpotam_VulnerableSystems.txt"}else{Write-Host -ForegroundColor Red $acserver + "is vulnerable to RBCD via Petitpotam LDAP relay!"}
+               
+		}catch{}
+        }
+    }
+
 }
 
 function ADCSInfos
