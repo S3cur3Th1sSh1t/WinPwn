@@ -1995,7 +1995,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '23. Get the ADCS server(s) and templates + ESC8 Check! '
         Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay!'
         Write-Host -ForegroundColor Green '25. Check the ADCS Templates for Privilege Escalation vulnerabilities via Certify!'
-        Write-Host -ForegroundColor Green '26. Go back '
+        Write-Host -ForegroundColor Green '26. Enumerate ADCS Template informations and permissions via Certify!'
+        Write-Host -ForegroundColor Green '27. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2027,9 +2028,42 @@ __        ___       ____
          23{ADCSInfos}
          24{Invoke-RBDC-over-DAVRPC}
          25{Invoke-VulnerableADCSTemplates}
+         26{Invoke-ADCSTemplateRecon}
        }
     }
- While ($masterquestion -ne 26)
+ While ($masterquestion -ne 27)
+}
+
+function Invoke-ADCSTemplateRecon
+{
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    IEX($Certify)
+
+    Write-Host -ForegroundColor Yellow "Collecting general CA/ADCS informations!"
+    if(!$consoleoutput){Invoke-Certify -Command "cas" >> "$currentPath\DomainRecon\ADCS_Infos.txt"}else{Invoke-Certify -Command "cas"}
+
+    Write-Host -ForegroundColor Yellow "Checking enrolleeSuppliesSubject templates!"
+    if(!$consoleoutput){Invoke-Certify -Command "find /enrolleeSuppliesSubject" >> "$currentPath\DomainRecon\ADCS_enrolleeSuppliesSubject.txt"}else{Invoke-Certify -Command "find /enrolleeSuppliesSubject"}
+
+    Write-Host -ForegroundColor Yellow "Checking templates with Client authentication enabled!"
+    if(!$consoleoutput){Invoke-Certify -Command "find /clientauth" >> "$currentPath\DomainRecon\ADCS_ClientAuthTemplates.txt"}else{Invoke-Certify -Command "find /clientauth"}
+
+    Write-Host -ForegroundColor Yellow "Checking all templates permissions!"
+    if(!$consoleoutput){Invoke-Certify -Command "find /showAllPermissions" >> "$currentPath\DomainRecon\ADCS_Template_AllPermissions.txt"}else{Invoke-Certify -Command "find /showAllPermissions"}
+
+    Write-Host -ForegroundColor Yellow "Enumerate access control information for PKI objects!"
+    if(!$consoleoutput){Invoke-Certify -Command "pkiobjects" >> "$currentPath\DomainRecon\ADCS_Template_AllPermissions.txt"}else{Invoke-Certify -Command "pkiobjects"}
+
+
+    Write-Host -ForegroundColor Yellow "You should check the privileges/groups for enrollment and or for modification rights!"
+
 }
 
 function Invoke-VulnerableADCSTemplates
@@ -2045,7 +2079,6 @@ function Invoke-VulnerableADCSTemplates
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
     IEX($Certify)
-    Invoke-Certify -Command "find /vulnerable"
     if(!$consoleoutput){Invoke-Certify -Command "find /vulnerable" >> "$currentPath\Vulnerabilities\ADCSVulnerableTemplates.txt"}else{Invoke-Certify -Command "find /vulnerable"}
 
 }
