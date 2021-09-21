@@ -2302,10 +2302,13 @@ function Invoke-RBDC-over-DAVRPC
 	foreach ($acserver in $ActiveServers)
         {
 		try{
-         	    Get-ChildItem -Path "\\$acserver\pipe\DAV RPC SERVICE"
-                Write-Host -ForegroundColor Yellow "Found vulnerable Server - " + $acserver + ". If no LDAP Signing is enforced (default config) you can pwn via https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb!"
-                if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\RBCD_Petitpotam_VulnerableServers.txt"}else{Write-Host -ForegroundColor Red $acserver + "is vulnerable to RBCD via Petitpotam LDAP relay!"}
-                
+         	   $path = ""
+         	   $path = Get-ChildItem -Path "\\$acserver\pipe\DAV RPC SERVICE"
+               if (!($path -eq $null))
+               {
+                 Write-Host -ForegroundColor Yellow "Found vulnerable Server - " + $acserver + ". If no LDAP Signing is enforced (default config) you can pwn via https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb!"
+                 if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\RBCD_Petitpotam_VulnerableServers.txt"}else{Write-Host -ForegroundColor Red $acserver + "is vulnerable to RBCD via Petitpotam LDAP relay!"}
+               }
 		}catch{}
         }
     }
@@ -2326,11 +2329,13 @@ function Invoke-RBDC-over-DAVRPC
 	foreach ($acserver in $ActiveServers)
         {
 		try{
+         	   $path = ""
          	   $path = Get-ChildItem -Path "\\$acserver\pipe\DAV RPC SERVICE"
-               
-               Write-Host -ForegroundColor Yellow "Found vulnerable System - " + $acserver + ". If no LDAP Signing is enforced (default config) you can pwn via https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb!"
-               if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\RBCD_Petitpotam_VulnerableSystems.txt"}else{Write-Host -ForegroundColor Red $acserver + "is vulnerable to RBCD via Petitpotam LDAP relay!"}
-               
+               if (!($path -eq $null))
+               {
+                    Write-Host -ForegroundColor Yellow "Found vulnerable System - " + $acserver + ". If no LDAP Signing is enforced (default config) you can pwn via https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb!"
+                    if(!$consoleoutput){echo "$acserver" >> "$currentPath\Vulnerabilities\RBCD_Petitpotam_VulnerableSystems.txt"}else{Write-Host -ForegroundColor Red $acserver + "is vulnerable to RBCD via Petitpotam LDAP relay!"}
+               }
 		}catch{}
         }
     }
