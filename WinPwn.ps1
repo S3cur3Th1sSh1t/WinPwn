@@ -2601,11 +2601,12 @@ function Spoolvulnscan
     if ($exploit){$answer = "yes"}
     if ($answer -eq "yes" -or $answer -eq "y" -or $answer -eq "Yes" -or $answer -eq "Y")
     {
-              if ((!$captureIP) -and (!$noninteractive))
+              if (($captureIP -eq "") -and ($noninteractive))
               {
                 Write-Host -ForegroundColor Yellow "You have to specify an hash capturing IP-Adress via -captureIP parameter!"
+		return
               }
-              elseif((!$captureIP))
+              elseif($captureIP -eq "")
               {
                  Write-Host -ForegroundColor Yellow "Please enter the hash capturing IP-Adress:"
                  $captureIP = Read-Host
