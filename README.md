@@ -1,7 +1,7 @@
 [![](https://img.shields.io/badge/Donate-Bitcoin-blue.svg?style=flat)](https://blockchain.info/address/1MXReD1F4w5SUXK3phLVJ5M8KrXJHfecmZ)
 
 # WinPwn
-In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I also often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetrationtest processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
+In many past internal penetration tests I often had problems with the existing Powershell Recon / Exploitation scripts due to missing proxy support. I also often ran the same scripts one after the other to get information about the current system and/or the domain. To automate as many internal penetration test processes (reconnaissance as well as exploitation) and for the proxy reason I wrote my own script with automatic proxy recognition and integration. 
 The script is mostly based on well-known large other offensive security Powershell projects.
 
 Any suggestions, feedback, Pull requests and comments are welcome! 
@@ -138,7 +138,7 @@ Examples:
 `Dotnetsearch -consoleoutput -noninteractive`						    -> Search in `C:\Program Files\` and `C:\Program Files (x86)\` for .NET assemblies
 
 ## TO-DO
-- [x] Some obfuskation
+- [x] Some obfuscation
 - [x] More obfuscation
 - [ ] Proxy via PAC-File support
 - [x] Get the scripts from my own creds repository (https://github.com/S3cur3Th1sSh1t/Creds) to be independent from changes in the original repositories
