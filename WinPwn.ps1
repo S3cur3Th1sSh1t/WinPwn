@@ -3111,8 +3111,7 @@ function Sharphound
         [Switch]
         $alltrustedomains   
     )
-    $Wcl = new-object System.Net.WebClient
-    $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+
     
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
