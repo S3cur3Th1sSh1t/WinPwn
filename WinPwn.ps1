@@ -2220,6 +2220,42 @@ function generaldomaininfo{
 
     if(!$consoleoutput){Get-ADUser -Filter {UserAccountControl -band 0x0020} >> "$currentPath\Vulnerabilities\UsersWithoutPasswordPolicy.txt"}else{Write-Host -ForegroundColor Yellow '------->  Users without password policy:';Get-ADUser -Filter {UserAccountControl -band 0x0020}}
 
+# Dictionary to hold superclass names
+$superClass = @{}
+
+# List to hold class names that inherit from container and are allowed to live under computer object
+$vulnerableSchemas = [System.Collections.Generic.List[string]]::new()
+
+# Resolve schema naming context
+$schemaNC = (Get-ADRootDSE).schemaNamingContext
+
+# Enumerate all class schemas
+$classSchemas = Get-ADObject -LDAPFilter '(objectClass=classSchema)' -SearchBase $schemaNC -Properties lDAPDisplayName,subClassOf,possSuperiors
+
+# Enumerate all class schemas that computer is allowed to contain
+$computerInferiors = $classSchemas |Where-Object possSuperiors -eq 'computer'
+
+# Populate superclass table
+$classSchemas |ForEach-Object {
+    $superClass[$_.lDAPDisplayName] = $_.subClassOf
+}
+
+# Resolve class inheritance for computer inferiors
+$computerInferiors |ForEach-Object {
+  $class = $cursor = $_.lDAPDisplayName
+  while($superClass[$cursor] -notin 'top'){
+    if($superClass[$cursor] -eq 'container'){
+      $vulnerableSchemas.Add($class)
+      break
+    }
+    $cursor = $superClass[$cursor]
+  }
+}
+
+# Outpupt list of vulnerable class schemas 
+$vulnerableSchemas
+if(!$consoleoutput){$vulnerableSchemas >> "$currentPath\Vulnerabilities\VulnerableSchemas.txt"}else{Write-Host -ForegroundColor Yellow '------->  Found vulnerable old Exchange Schema (https://twitter.com/tiraniddo/status/1420754900984631308):';$vulnerableSchemas}
+
     Write-Host -ForegroundColor Yellow '-------> Searching for Users without password Change for a long time'
   $Date = (Get-Date).AddYears(-1).ToFileTime()
     if(!$consoleoutput){prostituted -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset >> "$currentPath\DomainRecon\Users_Nochangedpassword.txt"}else{prostituted -LDAPFilter "(pwdlastset<=$Date)" -Properties samaccountname,pwdlastset}
