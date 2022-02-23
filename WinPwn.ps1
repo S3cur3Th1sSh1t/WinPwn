@@ -2212,19 +2212,19 @@ function Invoke-ADCSTemplateRecon
     IEX($Certify)
 
     Write-Host -ForegroundColor Yellow "Collecting general CA/ADCS informations!"
-    if(!$consoleoutput){Invoke-Certify -Command "cas" >> "$currentPath\DomainRecon\ADCS_Infos.txt"}else{Invoke-Certify -Command "cas"}
+    if(!$consoleoutput){Invoke-Certify cas >> "$currentPath\DomainRecon\ADCS_Infos.txt"}else{Invoke-Certify cas}
 
     Write-Host -ForegroundColor Yellow "Checking enrolleeSuppliesSubject templates!"
-    if(!$consoleoutput){Invoke-Certify -Command "find /enrolleeSuppliesSubject" >> "$currentPath\DomainRecon\ADCS_enrolleeSuppliesSubject.txt"}else{Invoke-Certify -Command "find /enrolleeSuppliesSubject"}
+    if(!$consoleoutput){Invoke-Certify find /enrolleeSuppliesSubject >> "$currentPath\DomainRecon\ADCS_enrolleeSuppliesSubject.txt"}else{Invoke-Certify find /enrolleeSuppliesSubject}
 
     Write-Host -ForegroundColor Yellow "Checking templates with Client authentication enabled!"
-    if(!$consoleoutput){Invoke-Certify -Command "find /clientauth" >> "$currentPath\DomainRecon\ADCS_ClientAuthTemplates.txt"}else{Invoke-Certify -Command "find /clientauth"}
+    if(!$consoleoutput){Invoke-Certify find /clientauth >> "$currentPath\DomainRecon\ADCS_ClientAuthTemplates.txt"}else{Invoke-Certify find /clientauth}
 
     Write-Host -ForegroundColor Yellow "Checking all templates permissions!"
-    if(!$consoleoutput){Invoke-Certify -Command "find /showAllPermissions" >> "$currentPath\DomainRecon\ADCS_Template_AllPermissions.txt"}else{Invoke-Certify -Command "find /showAllPermissions"}
+    if(!$consoleoutput){Invoke-Certify find /showAllPermissions >> "$currentPath\DomainRecon\ADCS_Template_AllPermissions.txt"}else{Invoke-Certify find /showAllPermissions}
 
     Write-Host -ForegroundColor Yellow "Enumerate access control information for PKI objects!"
-    if(!$consoleoutput){Invoke-Certify -Command "pkiobjects" >> "$currentPath\DomainRecon\ADCS_Template_AllPermissions.txt"}else{Invoke-Certify -Command "pkiobjects"}
+    if(!$consoleoutput){Invoke-Certify pkiobjects >> "$currentPath\DomainRecon\ADCS_Template_AllPermissions.txt"}else{Invoke-Certify pkiobjects}
 
 
     Write-Host -ForegroundColor Yellow "You should check the privileges/groups for enrollment and or for modification rights!"
@@ -2244,7 +2244,7 @@ function Invoke-VulnerableADCSTemplates
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
     IEX($Certify)
-    if(!$consoleoutput){Invoke-Certify -Command "find /vulnerable" >> "$currentPath\Vulnerabilities\ADCSVulnerableTemplates.txt"}else{Invoke-Certify -Command "find /vulnerable"}
+    if(!$consoleoutput){Invoke-Certify -Command find /vulnerable >> "$currentPath\Vulnerabilities\ADCSVulnerableTemplates.txt"}else{Invoke-Certify -Command find /vulnerable}
 
 }
 
