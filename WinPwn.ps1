@@ -2244,7 +2244,7 @@ function Invoke-VulnerableADCSTemplates
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
     IEX($Certify)
-    if(!$consoleoutput){Invoke-Certify -Command find /vulnerable >> "$currentPath\Vulnerabilities\ADCSVulnerableTemplates.txt"}else{Invoke-Certify -Command find /vulnerable}
+    if(!$consoleoutput){Invoke-Certify find /vulnerable >> "$currentPath\Vulnerabilities\ADCSVulnerableTemplates.txt"}else{Invoke-Certify find /vulnerable}
 
 }
 
