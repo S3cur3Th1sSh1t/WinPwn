@@ -183,6 +183,11 @@ Examples:
 - [X] [vletoux](https://github.com/vletoux) - PingCastle Scanners
 - [X] [NCCGroup + BC-Security](https://github.com/BC-SECURITY/Invoke-ZeroLogon) - ZeroLogon Scanner
 - [X] [All people working on Bloodhound](https://github.com/BloodHoundAD) - SharpHound Collector
+- [X] [klezVirus](https://github.com/klezVirus) - SharpLdapRelayScan
+- [X] [cube0x0](https://github.com/cube0x0) - LdapSignCheck + other toolings
+- [X] [@s4ntiago_p](https://twitter.com/s4ntiago_p) - NanoDump
+- [X] [@thefLinkk](https://twitter.com/thefLinkk) - Handlekatz
+- [X] [Many more people in the Community](https://github.com/search?q=infosec) - I'm sure, that I've forgotten many other invididuals who indirectly contributed into this Script
 
 ## Stargazers over time
 
