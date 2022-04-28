@@ -105,7 +105,8 @@ Functions available after Import:
 * #### `Bluekeep` -> Bluekeep Scanner for domain systems
 
 Without parameters, most of the functions can only be used from an interactive shell. So i decided to add the parameters `-noninteractive` and `-consoleoutput` to make the script usable from 
-an asynchronous C2-Framework like Empire, Covenant, Cobalt Strike or others. They can be used as follows:
+an asynchronous C2-Framework like Empire, Covenant, Cobalt Strike or others.
+Additionally the `-repo` parameter was added to use WinPwn with all its features from a local repository. They can be used as follows:
 
 Usage: 
 
@@ -137,6 +138,23 @@ Examples:
 																			   more C# binaries in memory
 																			   
 `Dotnetsearch -consoleoutput -noninteractive`						    -> Search in `C:\Program Files\` and `C:\Program Files (x86)\` for .NET assemblies
+
+`WinPwn -repo http://192.168.1.10:8000/WinPwn_Repo`					-> Use a local webserver as offline repo to use WinPwn without internet access	
+
+Get_WinPwn_Repo.sh:
+
+Usage:
+./Get_WinPwn_Repo.sh {Option}
+
+Example:
+./Get_WinPwn_Repo.sh --install
+
+Options:
+--install             Download the repository and place it to ./WinPwn_Repo/
+--remove              Remove the repository ./WinPwn_Repo/
+--reinstall           Remove the repository and download a new one to ./WinPwn_Repo/
+--start-server        Start a python HTTP server on port 8000
+--help                Show this help
 
 ## TO-DO
 - [x] Some obfuskation
