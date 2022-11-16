@@ -3538,9 +3538,8 @@ function PowerSQL
     {
         if(!$consoleoutput){
             Get-SQLServerInfo -Verbose -Instance $line >> "$currentPath\DomainRecon\SQLServer_Accessible_GeneralInformation.txt"
-            Invoke-SQLDumpInfo -Verbose -Instance $line $line >> "$currentPath\DomainRecon\SQLServer_Accessible_DumpInformation.txt"
-          $SQLComputerName = $Targets.Computername
-            Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\Vulnerabilities\SQLServer_Accessible_Audit_$SQLComputerName.txt"
+            Invoke-SQLDumpInfo -Verbose -Instance $line >> "$currentPath\DomainRecon\SQLServer_Accessible_DumpInformation.txt"
+            Invoke-SQLAudit -Verbose -Instance $line >> "$currentPath\Vulnerabilities\SQLServer_Accessible_Audit_AllServers.txt"
           Get-SQLServerLinkCrawl -verbose -instance "$line" >> "$currentPath\Vulnerabilities\SQLServerLinks_Pot_LateralMovement.txt"
             mkdir "$currentPath\DomainRecon\SQLInfoDumps"
             $Targets | Get-SQLColumnSampleDataThreaded -Verbose -Threads 10 -Keyword "password,pass,credit,ssn,pwd" -SampleSize 2 -ValidateCC -NoDefaults >> "$currentPath\DomainRecon\SQLServer_Accessible_PotentialSensitiveData.txt" 
