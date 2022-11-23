@@ -189,7 +189,7 @@ Options:
 - [X] [NETSPI](https://github.com/NetSPI/) - PowerUpSQL
 - [X] [Cn33liz](https://github.com/Cn33liz/) - p0wnedShell
 - [X] [rasta-mouse](https://github.com/rasta-mouse/) - AmsiScanBufferBypass
-- [X] [l0ss](https://github.com/l0ss/) - Grouper2
+- [X] [l0ss](https://github.com/l0ss/) - Grouper2,Snaffler,Grouper3
 - [X] [dafthack](https://github.com/dafthack/) - DomainPasswordSpray
 - [X] [enjoiz](https://github.com/enjoiz/Privesc) - PrivEsc
 - [X] [itm4n](https://github.com/itm4n) - Invoke-PrivescCheck & PrintSpoofer
@@ -210,6 +210,10 @@ Options:
 - [X] [cube0x0](https://github.com/cube0x0) - LdapSignCheck + other toolings
 - [X] [@s4ntiago_p](https://twitter.com/s4ntiago_p) - NanoDump
 - [X] [@thefLinkk](https://twitter.com/thefLinkk) - Handlekatz
+- [X] [@Mayyhem](https://github.com/Mayyhem/SharpSCCM) - SharpSCCM
+- [X] [@cube0x0](https://github.com/cube0x0/LdapSignCheck) - LdapSignCheck
+- [X] [@klezVirus](https://github.com/klezVirus/SharpLdapRelayScan) - SharpLdapRelayScan
+- [X] [@HarmJ0y, @leechristensen, @CCob](https://github.com/GhostPack/Certify/) - Certify
 - [X] [Many more people in the Community](https://github.com/search?q=infosec) - I'm sure, that I've forgotten many other invididuals who indirectly contributed into this Script
 
 ## Stargazers over time
