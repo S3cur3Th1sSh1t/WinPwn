@@ -2726,7 +2726,15 @@ if(($MAQ -lt 1) -or ($SeMachineAccountPrivilege -notmatch "Authenti")){
 	    
     if(!$consoleoutput){Get-ADUser -Filter {UserAccountControl -band 0x0020} >> "$currentPath\Vulnerabilities\UsersWithoutPasswordPolicy.txt"}else{Write-Host -ForegroundColor Yellow '------->  Users without password policy:';Get-ADUser -Filter {UserAccountControl -band 0x0020}}
 
-    if(!$consoleoutput){Get-ADComputer -LDAPFilter "(&(userAccountControl=4128)(logonCount=0))" >> "$currentPath\Vulnerabilities\Pre2000Computers.txt"}else{Write-Host -ForegroundColor Yellow '------->  Potentially Pre-Created Computer Accounts with password equal to hostname in lowercase :';Get-ADComputer -LDAPFilter "(&(userAccountControl=4128)(logonCount=0))}
+    if(!$consoleoutput)
+    {
+      Get-ADComputer -LDAPFilter "(&(userAccountControl=4128)(logonCount=0))" >> "$currentPath\Vulnerabilities\Pre2000Computers.txt"
+    }
+    else
+    {
+      Write-Host -ForegroundColor Yellow '------->  Potentially Pre-Created Computer Accounts with password equal to hostname in lowercase :'
+      Get-ADComputer -LDAPFilter "(&(userAccountControl=4128)(logonCount=0))"
+    }
 
 # Dictionary to hold superclass names
 $superClass = @{}
