@@ -1380,7 +1380,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '7. Search for sensitive files on this local system (config files, rdp files, password files and more)! '
         Write-Host -ForegroundColor Green '8. Execute PSRecon or Get-ComputerDetails (powersploit)! '
         Write-Host -ForegroundColor Green '9. Search for any .NET binary file in a share! '
-        Write-Host -ForegroundColor Green '10. Go back '
+	Write-Host -ForegroundColor Green '10. Search for vulnerable drivers (check against loldrivers.io)'
+        Write-Host -ForegroundColor Green '11. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -1395,9 +1396,38 @@ __        ___       ____
              7{sensitivefiles}
              8{morerecon}
              9{dotnetsearch}
+	     10{vulnerabledrivers}
        }
     }
-  While ($masterquestion -ne 10)
+  While ($masterquestion -ne 11)
+}
+
+function vulnerabledrivers
+{
+
+# Simple script to check drivers in C:\windows\system32\drivers against the loldrivers list
+# Author: Oddvar Moe - @oddvar.moe
+
+$drivers = get-childitem -Path c:\windows\system32\drivers
+$web_client = new-object system.net.webclient
+$loldrivers = $web_client.DownloadString(" https://www.loldrivers.io/api/drivers.json") | ConvertFrom-Json
+
+Write-output("Checking {0} drivers in C:\windows\system32\drivers against loldrivers.io json file" -f $drivers.Count)
+foreach ($lol in $loldrivers.KnownVulnerableSamples)
+{
+    # Check for matching driver name
+    if($drivers.Name -contains $lol.Filename)
+    {
+        #CHECK HASH
+        $Hash = Get-FileHash -Path "c:\windows\system32\drivers\$($lol.Filename)"
+        if($lol.Sha256 -eq $Hash.Hash)
+        {
+            write-output("The drivername {0} is vulnerable with a matching SHA256 hash of {1}" -f $lol.Filename, $lol.SHA256)
+	    write-output("The drivername {0} is vulnerable with a matching SHA256 hash of {1}" -f $lol.Filename, $lol.SHA256) >> "$currentPath\Vulnerabilities\vulnerabledrivers.txt"
+        }
+    }
+}
+
 }
 
 function Generalrecon{
