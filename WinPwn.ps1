@@ -1393,7 +1393,7 @@ function vulnerabledrivers
 
 $drivers = get-childitem -Path c:\windows\system32\drivers
 $web_client = new-object system.net.webclient
-$loldrivers = $web_client.DownloadString(" https://www.loldrivers.io/api/drivers.json") | ConvertFrom-Json
+$loldrivers = $web_client.DownloadString("https://www.loldrivers.io/api/drivers.json") | ConvertFrom-Json
 
 Write-output("Checking {0} drivers in C:\windows\system32\drivers against loldrivers.io json file" -f $drivers.Count)
 foreach ($lol in $loldrivers.KnownVulnerableSamples)
