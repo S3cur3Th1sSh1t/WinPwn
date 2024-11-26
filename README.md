@@ -207,6 +207,7 @@ Options:
 - [X] [@cube0x0](https://github.com/cube0x0/LdapSignCheck) - LdapSignCheck
 - [X] [@klezVirus](https://github.com/klezVirus/SharpLdapRelayScan) - SharpLdapRelayScan
 - [X] [@HarmJ0y, @leechristensen, @CCob](https://github.com/GhostPack/Certify/) - Certify
+- [X] [@Yudasm](https://github.com/Friends-Security/ShadowHound) - ShadowHound
 - [X] [Many more people in the Community](https://github.com/search?q=infosec) - I'm sure, that I've forgotten many other invididuals who indirectly contributed into this Script
 
 ## Stargazers over time
