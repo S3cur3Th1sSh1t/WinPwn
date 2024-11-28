@@ -157,7 +157,7 @@ Options:
 ## TO-DO
 - [x] Some obfuskation
 - [x] More obfuscation
-- [ ] Proxy via PAC-File support
+- [X] Proxy via PAC-File support
 - [x] Get the scripts from my own creds repository (https://github.com/S3cur3Th1sSh1t/Creds) to be independent from changes in the original repositories
 - [ ] More Recon/Exploitation functions
 - [x] Add menu for better handling of functions
