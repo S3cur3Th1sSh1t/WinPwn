@@ -5240,3 +5240,33 @@ function scriptblocklogbypass
         $GroupPolicyCache['HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\PowerShell\ScriptB'+'lockLogging'] = $val
   }
 }
+
+
+
+function ConfigureProxyUsingPAC {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$PACFileURL
+    )
+    
+    # Validates that the URL is valid and safe
+    if (-not ($PACFileURL -match '^https?://')) {
+        Write-Host "Invalid URL! Please provide a URL starting with http:// or https://" -ForegroundColor Red
+        return
+    }
+
+    # Try to configure the Proxy using the PAC file
+    try {
+        # Enable use of Automatic Proxy on the system
+        $RegPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+        Set-ItemProperty -Path $RegPath -Name "AutoConfigURL" -Value $PACFileURL
+        Set-ItemProperty -Path $RegPath -Name "ProxyEnable" -Value 1
+
+        Write-Host "Proxy configuration via PAC completed successfully!" -ForegroundColor Green
+    } catch {
+        Write-Host "Error configuring Proxy: $_" -ForegroundColor Red
+    }
+}
+
+# Usage example:
+# ConfigureProxyUsingPAC -PACFileURL "http://example.com/proxy.pac"
